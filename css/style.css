@@ -470,3 +470,7 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
 .n-ref { color: var(--c-accent); font-weight: 600; margin-right: 2px; }
 .n-credit { margin: 12px 0 4px; font-size: 12px; line-height: 1.45; color: var(--c-muted); }
 .n-credit a { color: var(--c-accent); }
+.pl-know { margin: 0 0 8px; }
+.pl-know ul { margin: 2px 0 0; padding-left: 18px; }
+.pl-know li { margin: 0 0 5px; }
+.pl-know li::marker { color: var(--c-accent); }

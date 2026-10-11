@@ -249,3 +249,291 @@ window.WAY_INFO = {
     sure: 'A province.'
   }
 };
+
+// Good to know: three or four short facts per place, biblical and historical.
+// References are to the Berean Standard Bible; outside sources are named.
+window.WAY_KNOW = {
+  nazareth: [
+    'Nathanael asked, “Can anything good come from Nazareth?” (John 1:46), a sign of how obscure it was.',
+    'Jesus was known as “Jesus of Nazareth”, and His followers were later called Nazarenes (Acts 24:5).',
+    'Mark calls Jesus “the carpenter” (Mark 6:3). The Greek word, tektōn, covers a builder or craftsman in wood or stone.',
+    'Sepphoris, the Galilean capital rebuilt by Herod Antipas, lay about 6 km to the north-west. The Gospels never mention it.'
+  ],
+  bethlehem: [
+    'In Hebrew the name means “house of bread”.',
+    'Micah foretold a ruler from Bethlehem (Micah 5:2), quoted by the chief priests and scribes in Matthew 2:5–6.',
+    'Ruth and Boaz lived here (Ruth 1–4), and Samuel anointed David here (1 Samuel 16).',
+    'Luke’s word for the “inn” (Luke 2:7) is the one he uses for the guest room of the Last Supper (Luke 22:11). Many think it means a family guest room.'
+  ],
+  capernaum: [
+    'Peter and Andrew had a home here (Mark 1:29), and Levi’s tax booth was nearby (Mark 2:13–14).',
+    'Its tax office probably collected duties on goods crossing between Antipas’s Galilee and Philip’s territory to the east.',
+    'Jesus taught about the bread of life in its synagogue (John 6:59).',
+    'Despite His miracles there, Jesus warned it for not repenting (Matthew 11:20, 23).'
+  ],
+  jerusalem: [
+    'The Law called Israel’s men to appear before the Lord three times a year: at the Feasts of Unleavened Bread (with Passover), Weeks (Pentecost) and Tabernacles (Deuteronomy 16:16). The city swelled with pilgrims at each.',
+    'The Sanhedrin, the Jewish council led by the high priest, met here.',
+    'Jesus wept over the city and foretold its fall (Luke 19:41–44). The Romans destroyed it in AD 70.',
+    'John mentions three Passovers during Jesus’ ministry (John 2:13; 6:4; 11:55).'
+  ],
+  bethany: [
+    'Jesus stayed here at night during His last week (Mark 11:11; Matthew 21:17).',
+    'He was anointed in the home of Simon the Leper in Bethany (Mark 14:3).',
+    'Luke places the ascension near Bethany (Luke 24:50).',
+    'It is a different place from “Bethany beyond the Jordan”, where John baptized (John 1:28).'
+  ],
+  jericho: [
+    'The road up to Jerusalem climbs about 1,000 m in some 25 km. It is the setting of the Good Samaritan (Luke 10:30).',
+    'Herod the Great died at Jericho, Josephus says, probably in 4 BC.',
+    'A rich oasis on the pilgrim route, it was home to a wealthy chief tax collector, Zacchaeus (Luke 19:2).',
+    'Old Testament Jericho, whose walls fell before Joshua (Joshua 6), is the older mound, Tell es-Sultan. How its ruins fit the account is debated.'
+  ],
+  nain: [
+    'Only Luke tells of the widow’s son raised here (Luke 7:11–17).',
+    'A widow who lost her only son lost her support as well. Luke says Jesus “had compassion on her” (Luke 7:13).',
+    'Shunem, where Elisha raised a woman’s son (2 Kings 4:8–37), lies on the same hill. The crowd at Nain cries, “A great prophet has appeared among us!” (Luke 7:16).'
+  ],
+  bethsaida: [
+    'Its name probably means “house of fishing”.',
+    'Jesus healed a blind man here in two stages (Mark 8:22–26).',
+    'Luke sets the feeding of the five thousand near Bethsaida (Luke 9:10).',
+    'With Chorazin, it heard Jesus’ warning for not repenting (Matthew 11:21).'
+  ],
+  cphilippi: [
+    'Here Peter confessed Jesus as the Christ (Mark 8:27–29; Matthew 16:13–16).',
+    'It was first called Paneas, after the god Pan; the Arabic name Banias keeps that name.',
+    'Herod the Great built a temple to Augustus here, according to Josephus.',
+    'It lies about 40 km north of the Sea of Galilee, at the edge of Jewish territory.'
+  ],
+  tyre: [
+    'Hiram, king of Tyre, sent cedar and craftsmen for Solomon’s temple (1 Kings 5).',
+    'Alexander the Great besieged the island city in 332 BC and built a causeway that joined it to the mainland.',
+    'People from Tyre and Sidon came to hear Jesus in Galilee (Mark 3:8).',
+    'Tyrian silver coins were the usual money for paying the temple tax.'
+  ],
+  sidon: [
+    'Jezebel was the daughter of a king of the Sidonians (1 Kings 16:31).',
+    'Elijah was sent to “the widow of Zarephath in Sidon” (Luke 4:26; 1 Kings 17:9).',
+    'Mark says Jesus returned from Tyre “through Sidon” to the Sea of Galilee (Mark 7:31), a long loop north.',
+    'Paul’s ship called at Sidon on the voyage to Rome (Acts 27:3).'
+  ],
+  cana1: [
+    'John calls it “Cana in Galilee” (John 2:1). Nathanael came from there (John 21:2).',
+    'Jesus’ second sign was spoken at Cana for an official’s son lying sick in Capernaum (John 4:46–54).',
+    'Stone vessels were used for purity rites, as in John 2:6; many have been found in Galilee, including pieces of large jars.',
+    'Kafr Kanna lies on the road from Nazareth to the lake, which made it convenient for later pilgrims.'
+  ],
+  cana2: [
+    'John calls it “Cana in Galilee” (John 2:1). Nathanael came from there (John 21:2).',
+    'Jesus’ second sign was spoken at Cana for an official’s son lying sick in Capernaum (John 4:46–54).',
+    'Josephus stayed at “a village of Galilee called Cana”, very likely this site.',
+    'Stone vessels were used for purity rites, as in John 2:6; many have been found in Galilee, including pieces of large jars.'
+  ],
+  baptism: [
+    'John preached “a baptism of repentance for the forgiveness of sins” (Mark 1:4).',
+    'John also baptized at Aenon near Salim, “because the water was plentiful there” (John 3:23).',
+    'Tradition links this stretch of river with Israel’s crossing under Joshua (Joshua 3) and Elijah’s departure (2 Kings 2).'
+  ],
+  nativity: [
+    'About AD 150, Justin Martyr wrote that Jesus was born in a cave near Bethlehem.',
+    'The first church was begun under Constantine, about 327, with the support of his mother Helena.',
+    'The entrance, the “Door of Humility”, is only about 1.2 m high.',
+    'Tradition says Persian invaders spared it in 614 because a mosaic showed the Magi in Persian dress.'
+  ],
+  jacobswell: [
+    'The Samaritan woman says, “the well is deep” (John 4:11). It is about 40 m deep today.',
+    'John explains that Jews did not associate with Samaritans (John 4:9).',
+    'Joseph’s bones were buried in the plot Jacob had bought nearby (Joshua 24:32; John 4:5).',
+    'The woman’s town, Sychar, is often identified with the village of Askar close by.'
+  ],
+  beatitudes: [
+    'Luke has a shorter sermon on “a level place” (Luke 6:17).',
+    'Matthew gives eight or nine blessings, depending on how they are counted (Matthew 5:3–12). Luke has four, with four woes (Luke 6:20–26).',
+    'Nearby Tabgha has the Church of the Multiplication, with a well-known Byzantine mosaic of loaves and fish.'
+  ],
+  ephraim: [
+    'Jesus withdrew here after the council resolved to put Him to death (John 11:53–54).',
+    'It is often identified with Ophrah of Benjamin (Joshua 18:23) and Ephron (2 Chronicles 13:19).',
+    'Et-Taiyibeh lies about 20 km north-east of Jerusalem, at the edge of the wilderness above the Jordan Valley.',
+    'Today it is a largely Christian village.'
+  ],
+  cenacle: [
+    'Acts says the disciples gathered in an “upper room” after the ascension (Acts 1:13). Whether it was the same room is not said.',
+    'Guests reclined at the Passover meal; John describes the beloved disciple “reclining at His side” (John 13:23).',
+    'The room was a mosque under the Ottomans, and a prayer niche (mihrab) remains.',
+    'The name Mount Zion moved to this western hill in later centuries; first it meant the City of David.'
+  ],
+  gethsemane: [
+    'Luke says Jesus went to the Mount of Olives “as usual” (Luke 22:39), and John that Judas knew the place (John 18:2).',
+    'A 2012 study dated some of the olive trees here to the twelfth century; their roots may be older.',
+    'A rock before the altar in the Church of All Nations is honored as the place where Jesus prayed.',
+    'Nearby, the Grotto of Gethsemane, a cave probably used for an oil press, is another traditional site.'
+  ],
+  sepulchre: [
+    'Excavations under and around the church found an old quarry with first-century tombs. Most archaeologists place it outside the city walls of Jesus’ day.',
+    'Hadrian built a pagan temple over the site in the second century, which may have kept its memory alive.',
+    'For centuries Muslim families have held the keys and opened the doors each day.',
+    'An agreement known as the Status Quo still governs which community uses each part of the church.'
+  ],
+  gardentomb: [
+    'It became widely known after General Charles Gordon promoted it in 1883.',
+    'A rock face nearby was thought to look like a skull (“Skull Hill”).',
+    'Most archaeologists date the tomb to the Iron Age, around the eighth to seventh century BC.',
+    'Its custodians present it as a place to picture the burial and resurrection rather than as a proven site.'
+  ],
+  praetH: [
+    'Herod named the palace towers Hippicus, Phasael and Mariamne, after a friend, his brother and his wife.',
+    'Josephus says the governor Florus held court in front of this palace in AD 66, one reason many favor it as the praetorium.',
+    'Only Luke records that Pilate sent Jesus to Herod Antipas, who was in Jerusalem at the time (Luke 23:7).',
+    'The name “Tower of David” is a later tradition; the tower is Herodian.'
+  ],
+  antonia: [
+    'John names the place of judgment “the Stone Pavement”, in Aramaic “Gabbatha” (John 19:13).',
+    'The paving long shown as that Pavement, under the Sisters of Zion convent, is now dated to the time of Hadrian.',
+    'Paul was taken into the barracks here after the riot in the temple (Acts 21:34).',
+    'It replaced an earlier fortress, the Baris, built by the Hasmonean rulers.'
+  ],
+  bethesda: [
+    'Two large pools were divided by a central wall. Four colonnades around them and one across the middle may explain John’s five (John 5:2).',
+    'Some manuscripts add a verse about an angel stirring the water (John 5:4). It is not in the earliest manuscripts.',
+    'In Roman times a healing shrine stood beside the pools.',
+    'Manuscripts spell the name differently, Bethesda or Bethzatha.'
+  ],
+  siloam: [
+    'John explains that Siloam means “Sent” (John 9:7).',
+    'Hezekiah’s tunnel, about 533 m long, was cut around 700 BC (2 Kings 20:20). An inscription in it describes the two crews meeting.',
+    'Jesus spoke of eighteen people killed when the tower in Siloam fell (Luke 13:4).',
+    'At the Feast of Tabernacles, priests drew water here for a temple ceremony (Mishnah, Sukkah 4:9), widely seen as the background to Jesus’ words in John 7:37–38.'
+  ],
+  peterhouse: [
+    'Mark says the whole town gathered at its door after sunset (Mark 1:32–33).',
+    'Pilgrims scratched graffiti on its plaster; the excavators read some as naming Jesus and Peter.',
+    'The pilgrim Egeria, in the 380s, is reported to have written that Peter’s house had been made into a church.',
+    'Houses here were rough basalt with roofs of beams and earth, easy to open up (Mark 2:4).'
+  ],
+  capsyn: [
+    'Jesus freed a man from an unclean spirit in the synagogue (Mark 1:23–26).',
+    'A synagogue was a place to read and teach Scripture on the Sabbath, and a meeting hall for the town.',
+    'Its white limestone was brought from elsewhere and stands out against the local black basalt.'
+  ],
+  einkarem: [
+    'The name means “spring of the vineyard”.',
+    'Luke says Zechariah was a priest (Luke 1:5) and that news of John’s birth spread through the hill country (Luke 1:65).',
+    'A spring in the village is known as Mary’s Spring, linked by tradition with her visit.'
+  ],
+  machaerus: [
+    'Josephus names Machaerus as the place where John the Baptist was killed (Antiquities 18.5.2).',
+    'First built by the Hasmonean king Alexander Jannaeus, it was rebuilt by Herod the Great.',
+    'It stands about 700 m above sea level, more than 1,100 m above the Dead Sea.',
+    'Josephus names Herodias’s daughter Salome; the Gospels do not give her name.'
+  ],
+  tabor: [
+    'At Deborah’s command, Barak gathered Israel’s army on Tabor (Judges 4:6, 12).',
+    'It is about 575 m high and rises some 450 m above the plain.',
+    'Cyril of Jerusalem in the fourth century named it as the mountain of the transfiguration; a fragment credited to Origen may be earlier.',
+    'Josephus says there was a fortified settlement on the summit in his day; some see that as a difficulty for the tradition.'
+  ],
+  hermon: [
+    'At about 2,814 m, it is the highest mountain in the region.',
+    'Its snowmelt feeds the springs of the Jordan.',
+    'Psalm 133 speaks of “the dew of Hermon” (Psalm 133:3).',
+    'The Gospels say only “a high mountain” (Mark 9:2).'
+  ],
+  templelbl: [
+    'Gentiles could enter the outer court. Stone notices warning them not to go further, on pain of death, have been found.',
+    'The half-shekel temple tax was usually paid in Tyrian silver, hence the money changers (Mark 11:15).',
+    'Solomon’s Colonnade ran along the east side of the courts (John 10:23).',
+    'Herod’s platform covers about 14 hectares (35 acres).'
+  ],
+  olives: [
+    'At about 800 m, it rises above the temple mount.',
+    'Zechariah foresaw the Lord standing on the Mount of Olives (Zechariah 14:4).',
+    'Jesus taught here about the end of the age (Mark 13:3).',
+    'Jews have buried their dead on its slopes for thousands of years.'
+  ],
+  kidron: [
+    'David crossed the Kidron fleeing from Absalom (2 Samuel 15:23).',
+    'Reforming kings burned idols in the Kidron (1 Kings 15:13; 2 Kings 23:6).',
+    '“Absalom’s Pillar” here is a tomb monument from about the first century, much later than Absalom.'
+  ],
+  sog: [
+    'It is about 21 km long, 13 km wide and some 43 m deep at most.',
+    'Winds funnel down from the surrounding hills and can raise sudden storms (Mark 4:37).',
+    'A first-century fishing boat was found in the mud near Ginosar in 1986.',
+    'Magdala, the likely hometown of Mary Magdalene, is usually identified with Taricheae, a Greek name drawn from its salted fish.'
+  ],
+  jordanlbl: [
+    'The name probably means “the one that goes down”, and it falls steadily to the Dead Sea.',
+    'Israel crossed into the land at the Jordan near Jericho (Joshua 3).',
+    'Naaman was healed after washing in it seven times (2 Kings 5:14).'
+  ],
+  deadsea: [
+    'The Bible calls it the Salt Sea (Genesis 14:3).',
+    'Its water is about a third salt, roughly ten times saltier than the ocean.',
+    'The Dead Sea Scrolls, the oldest known copies of most of the Hebrew Bible, were found from 1947 near Qumran on its north-west shore.',
+    'Herod’s fortress of Masada stands above its western shore.'
+  ],
+  gerizim: [
+    'The Samaritans accept only the five books of Moses as Scripture.',
+    'The woman at the well says, “Our fathers worshiped on this mountain” (John 4:20).',
+    'Blessings were to be proclaimed from Gerizim and curses from Ebal (Deuteronomy 27:12–13).',
+    'Remains of the Samaritan temple precinct have been excavated on the summit.'
+  ],
+  ebal: [
+    'Joshua built an altar on Mount Ebal (Joshua 8:30).',
+    'At about 940 m, it is a little higher than Gerizim.',
+    'A structure excavated there in the 1980s is identified by some as Joshua’s altar; others disagree.'
+  ],
+  wildlabel: [
+    'John the Baptist preached “in the wilderness of Judea” (Matthew 3:1).',
+    'David hid from Saul in this wilderness (1 Samuel 23–24).',
+    'Rainfall drops sharply a few kilometers east of Jerusalem, so the land turns to desert within a short walk.',
+    'The traditional Mount of Temptation rises above Jericho, with a Greek Orthodox monastery on its cliff.'
+  ],
+  galilee: [
+    'Isaiah spoke of “Galilee of the nations” (Isaiah 9:1), quoted in Matthew 4:15.',
+    'Galileans had a recognizable accent; Peter’s gave him away (Matthew 26:73).',
+    'Josephus describes it as fertile and crowded with villages.',
+    'Herod Antipas ruled first from Sepphoris, then from Tiberias, which he founded about AD 20.'
+  ],
+  samaria: [
+    'Jews and Samaritans disagreed about where God should be worshiped (John 4:20).',
+    'Galilean pilgrims often crossed Samaria to reach Jerusalem; once a Samaritan village refused to welcome Jesus (Luke 9:52–53).',
+    'Herod rebuilt the old capital, Samaria, and renamed it Sebaste in honor of Augustus.',
+    'Jesus made a Samaritan the hero of a parable and the one leper who returned to give thanks (Luke 10:33; 17:16).'
+  ],
+  judea: [
+    'Archelaus ruled Judea after Herod until Rome removed him in AD 6 (Matthew 2:22).',
+    'A stone found at Caesarea in 1961 names Pontius Pilate as prefect of Judea.',
+    'A revolt that began in AD 66 led to the destruction of Jerusalem in AD 70; the last fortresses fell a few years later.'
+  ],
+  perea: [
+    'The name comes from the Greek word for “beyond”.',
+    'Some Jewish travelers between Galilee and Judea went this way, east of the Jordan, rather than through Samaria.',
+    'Machaerus, where Josephus says John the Baptist was killed, stood in Perea.'
+  ],
+  decapolis: [
+    'The name means “ten cities”, though ancient lists of them vary.',
+    'The herd of pigs (Mark 5:11) marks a Gentile area: Jews did not eat pork.',
+    'The healed man proclaimed what Jesus had done “throughout the Decapolis” (Mark 5:20).',
+    'Many of these cities counted their years from Pompey’s conquest in 63 BC.'
+  ],
+  phoenicia: [
+    'Mark calls the mother who pleaded for her daughter “a Greek woman of Syrophoenician origin” (Mark 7:26).',
+    'The Phoenician alphabet is the ancestor of the Greek and Latin alphabets.',
+    'Tyre was famous for purple dye made from murex shells.',
+    'The coastal cities depended on the farmland inland for food (Acts 12:20).'
+  ],
+  egypt: [
+    'Matthew links the return from Egypt with Hosea 11:1: “Out of Egypt I called My Son” (Matthew 2:15).',
+    'The five books of Moses were first translated into Greek in Alexandria, beginning the Septuagint.',
+    'Philo of Alexandria put the Jewish population of Egypt at a million.',
+    'The family returned after Herod’s death (Matthew 2:19), so the stay may have been short.'
+  ],
+  syria: [
+    'Its capital, Antioch, was where the disciples were first called Christians (Acts 11:26).',
+    'Its governor commanded Roman legions; the prefect of Judea had only auxiliary troops.',
+    'Josephus records a census under Quirinius in AD 6; how it relates to Luke’s census is debated.'
+  ]
+};

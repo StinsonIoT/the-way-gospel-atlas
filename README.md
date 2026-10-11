@@ -82,7 +82,7 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `fonts/`: Newsreader and Instrument Sans (SIL Open Font License), served from the site
 - `tools/make-share.py`: rebuilds the per-scene share pages and images in `s/`
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
-- `js/places.js`: the place profiles
+- `js/places.js`: the place profiles (in Jesus' day, today, how sure) and three or four “Good to know” facts for each place, independently fact-checked
 - `js/study.js`: the Gospel parallels for each scene and the 30-day reading plan
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type

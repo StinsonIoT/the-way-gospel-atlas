@@ -71,7 +71,7 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const refLink = (ref, cls) => ref ? `<a class="${cls || 'ref'}" data-ref="${esc(ref[0])}" href="https://biblehub.com/bsb/${ref[1]}/${ref[2]}.htm" target="_blank" rel="noopener">${esc(ref[0])}<span class="ref-icon" aria-hidden="true"></span></a>` : '';
   // Scripture references inside notes, e.g. "(Luke 2:44)", become tappable.
-  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Leviticus|Micah|Isaiah|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
+  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Hosea|Micah|Isaiah|Zechariah|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
     (m) => `<button type="button" class="vref" data-ref="${m}">${m}</button>`);
   const SYM = {
     named: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="5" class="s-fill"/></svg>',
@@ -557,7 +557,8 @@
   function placeInfoHTML(key) {
     const inf = INFO[key];
     if (!inf) return '';
-    return `<div class="pl-info">${inf.then ? `<p><b>In Jesus’ day</b> ${linkRefs(esc(inf.then))}</p>` : ''}${inf.today ? `<p><b>Today</b> ${linkRefs(esc(inf.today))}</p>` : ''}${inf.sure ? `<p class="pl-sure"><b>How sure</b> ${esc(inf.sure)}</p>` : ''}</div>`;
+    const know = (window.WAY_KNOW || {})[key] || [];
+    return `<div class="pl-info">${inf.then ? `<p><b>In Jesus’ day</b> ${linkRefs(esc(inf.then))}</p>` : ''}${know.length ? `<div class="pl-know"><b>Good to know</b><ul>${know.map((t) => `<li>${linkRefs(esc(t))}</li>`).join('')}</ul></div>` : ''}${inf.today ? `<p><b>Today</b> ${linkRefs(esc(inf.today))}</p>` : ''}${inf.sure ? `<p class="pl-sure"><b>How sure</b> ${esc(inf.sure)}</p>` : ''}</div>`;
   }
   Object.keys(PLACES).forEach((id) => {
     const p = PLACES[id];
@@ -646,13 +647,15 @@
   }
   // Bible references: "John 4", "Mk 14:36", "1 Maccabees 4". A scene matches when
   // its reference covers that chapter (and verse, if given).
-  const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'], leviticus: ['lev'], micah: ['mic'], isaiah: ['isa'], psalms: ['ps', 'psa', 'psalm'] };
+  const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'], leviticus: ['lev'], micah: ['mic'], isaiah: ['isa'], psalms: ['ps', 'psa', 'psalm'],
+    genesis: ['gen'], exodus: ['ex', 'exo'], deuteronomy: ['deut', 'dt'], joshua: ['josh'], judges: ['judg', 'jdg'], ruth: ['ru'], '1 samuel': ['1sa', '1 sam'], '2 samuel': ['2sa', '2 sam'],
+    '1 kings': ['1ki', '1 kgs'], '2 kings': ['2ki', '2 kgs'], '1 chronicles': ['1ch', '1 chr'], '2 chronicles': ['2ch', '2 chr'], hosea: ['hos'], zechariah: ['zech', 'zec'] };
   const bookOf = (w) => Object.keys(BOOKS).find((b) => b.startsWith(w) && w.length >= 3 || BOOKS[b].includes(w));
   function refSpans(label) {
     // "John 4:1–42", "Mark 4:35–5:20", "Matthew 5–7", "Mark 14:26 · John 18:1"
     const out = [];
     norm(label).split('·').forEach((part) => {
-      const m = /^\s*([a-z]+)\s+(\d+)(?::(\d+))?(?:\s*[–-]\s*(\d+)(?::(\d+))?)?/.exec(part);
+      const m = /^\s*((?:[123]\s*)?[a-z]+)\s+(\d+)(?::(\d+))?(?:\s*[–-]\s*(\d+)(?::(\d+))?)?/.exec(part);
       if (!m) return;
       const book = bookOf(m[1]); if (!book) return;
       const c1 = +m[2], v1 = m[3] ? +m[3] : 0;
@@ -664,7 +667,7 @@
   }
   const stepSpans = STEPS.map((st) => [st.ref ? st.ref[0] : '', ...(st.items || []).map((x) => x[1]), ...(HARM[st.id] || []).slice(0, 4)].flatMap(refSpans));
   function refQuery(q) {
-    const m = /^\s*([a-z]+)\.?\s+(\d+)(?::(\d+))?\s*$/.exec(norm(q));
+    const m = /^\s*((?:[123]\s*)?[a-z]+)\.?\s+(\d+)(?::(\d+))?\s*$/.exec(norm(q));
     if (!m) return null;
     const book = bookOf(m[1]);
     return book ? { book, c: +m[2], v: m[3] ? +m[3] : null } : null;
@@ -988,8 +991,10 @@
   // Tapping a reference opens the passage in a panel over the map, so the reader
   // never leaves the scene. Text: Berean Standard Bible (public domain), loaded
   // from the Free Use Bible API; if that fails, a link to BibleHub is offered.
-  const API_BOOK = { matthew: 'MAT', mark: 'MRK', luke: 'LUK', john: 'JHN', acts: 'ACT', leviticus: 'LEV', micah: 'MIC', isaiah: 'ISA', psalms: 'PSA' };
-  const HUB_BOOK = { matthew: 'matthew', mark: 'mark', luke: 'luke', john: 'john', acts: 'acts', leviticus: 'leviticus', micah: 'micah', isaiah: 'isaiah', psalms: 'psalms' };
+  const API_BOOK = { matthew: 'MAT', mark: 'MRK', luke: 'LUK', john: 'JHN', acts: 'ACT', leviticus: 'LEV', micah: 'MIC', isaiah: 'ISA', psalms: 'PSA',
+    genesis: 'GEN', exodus: 'EXO', deuteronomy: 'DEU', joshua: 'JOS', judges: 'JDG', ruth: 'RUT', '1 samuel': '1SA', '2 samuel': '2SA', '1 kings': '1KI', '2 kings': '2KI',
+    '1 chronicles': '1CH', '2 chronicles': '2CH', hosea: 'HOS', zechariah: 'ZEC' };
+  const HUB_BOOK = Object.fromEntries(Object.keys(API_BOOK).map((b) => [b, b.replace(' ', '_')]));
   const chapterCache = new Map();
   function loadChapter(book, c) {
     const key = book + c;
