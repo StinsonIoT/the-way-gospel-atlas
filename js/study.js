@@ -4,6 +4,8 @@
 // accounts differ or where a match is only partial. The longer ending of Mark
 // (16:9–20), absent from the earliest manuscripts, is not used.
 window.WAY_HARMONY = {
+  word: ['', '', '', 'John 1:1–14', 'Each Gospel begins differently: Matthew with a genealogy, Mark with John the Baptist, Luke with Zechariah in the temple, John before creation.'],
+  zechariah: ['', '', 'Luke 1:5–25', ''],
   annunciation: ['', '', 'Luke 1:26–38', '', 'Matthew tells instead of an angel appearing to Joseph in a dream (Matthew 1:20–21).'],
   visitation: ['', '', 'Luke 1:39–80', ''],
   decree: ['', '', 'Luke 2:1–3', ''],
@@ -91,7 +93,7 @@ window.WAY_HARMONY = {
 // A 30-day reading plan through the story: about three scenes a day, in story
 // order. Each day: [title, [scene ids]].
 window.WAY_PLAN = [
-  ['The land and the promise', ['land', 'marks', 'annunciation']],
+  ['In the beginning', ['land', 'marks', 'word', 'zechariah', 'annunciation']],
   ['Toward Bethlehem', ['visitation', 'decree', 'journey']],
   ['Born and presented', ['birth', 'shepherds', 'present']],
   ['Childhood', ['magi', 'egypt', 'nazareth', 'twelve']],
@@ -126,6 +128,8 @@ window.WAY_PLAN = [
 // One open question per scene, for personal reflection or a small group.
 // Each stays with what the passage says; none presumes an answer.
 window.WAY_ASK = {
+  word: 'John calls Jesus the Word through whom all things were made, who “became flesh”. What changes when you read the rest of the story with that in mind?',
+  zechariah: 'Zechariah and Elizabeth had prayed for a child, and the answer came when they were old. What long-standing prayer are you still carrying?',
   annunciation: 'Mary answers, “I am the Lord’s servant.” What would it take for you to say that about something you do not yet understand?',
   visitation: 'Elizabeth blesses Mary before Mary says a word. Who has encouraged you like that, and whom could you encourage?',
   decree: 'An emperor’s order moves a young couple across the country. Where have you seen large events shape small lives, including yours?',
@@ -215,6 +219,7 @@ window.WAY_ASK = {
 // to an Old Testament passage. Each: [Old Testament reference, where the New
 // Testament cites it, a short note]. Later Christian readings are not included.
 window.WAY_OT = {
+  zechariah: [['Malachi 4:5–6', 'Luke 1:17', 'The angel says John will go before the Lord in the spirit and power of Elijah, “to turn the hearts of the fathers to their children”.']],
   birth: [['Isaiah 7:14', 'Matthew 1:22–23', 'Matthew quotes it: the virgin will bear a son, and they will call Him Immanuel, “God with us”.']],
   magi: [['Micah 5:2', 'Matthew 2:5–6', 'The chief priests and scribes quote it to Herod: a ruler will come from Bethlehem.']],
   egypt: [
@@ -280,7 +285,7 @@ window.WAY_OT = {
 // Browse by topic (Search tab). Each topic lists scenes in story order, with a
 // short line saying what to look for there.
 window.WAY_TOPICS = [
-  { id: 'miracles', label: 'Miracles', intro: 'Signs and healings, in story order.', items: [
+  { id: 'miracles', label: 'Miracles', group: 'What He did', intro: 'Signs and healings, in story order.', items: [
     ['cana', 'Water into wine, the first sign (John 2:11)'],
     ['firstday', 'An unclean spirit, a fever, a town at the door'],
     ['bethesda', 'A man disabled for 38 years walks'],
@@ -298,35 +303,45 @@ window.WAY_TOPICS = [
     ['bartimaeus', 'Blind Bartimaeus sees'],
     ['breakfast', 'A great catch of 153 fish']
   ] },
-  { id: 'parables', label: 'Parables', intro: 'Stories Jesus told to teach about the kingdom.', items: [
+  { id: 'parables', label: 'Parables', group: 'What He taught', intro: 'Stories Jesus told to teach about the kingdom.', items: [
     ['parables', 'The sower, the growing seed, the mustard seed'],
     ['samaritan', 'The good Samaritan'],
     ['lost', 'The lost sheep, the lost coin, the lost son'],
     ['watch', 'The fig tree, and the call to keep watch']
   ] },
-  { id: 'teaching', label: 'Teaching', intro: 'Sermons, conversations and debates.', items: [
-    ['synagogue', 'His first sermon, at Nazareth'],
-    ['nicodemus', 'Born again, with Nicodemus'],
-    ['samaria', 'Living water, with the Samaritan woman'],
-    ['sermon', 'The Sermon on the Mount'],
-    ['bread', 'The bread of life'],
-    ['confession', 'Who do you say I am?'],
-    ['booths', 'At the Feast of Tabernacles'],
-    ['shepherd', 'The good shepherd'],
-    ['children', 'Children, marriage and riches'],
-    ['greatest', 'The greatest commandment'],
-    ['watch', 'The end of the age'],
-    ['upper', 'The Last Supper']
+  { id: 'sermons', label: 'Sermons & preaching', group: 'What He taught', intro: 'His major sermons and discourses, and the first sermon of the church.', items: [
+    ['fishers', 'His first preaching: “The time is fulfilled… Repent and believe in the gospel!” (Mark 1:15)'],
+    ['synagogue', 'The sermon at Nazareth on Isaiah 61 (Luke 4:16–30)'],
+    ['sermon', 'The Sermon on the Mount (Matthew 5–7); Luke’s on a level place (Luke 6:17–49)'],
+    ['parables', 'Parables beside the sea (Mark 4; Matthew 13)'],
+    ['twelve-sent', 'Instructions for the Twelve as He sends them out (Matthew 10)'],
+    ['bread', 'The bread of life, in the synagogue at Capernaum (John 6:25–59)'],
+    ['booths', 'At the Feast of Tabernacles (John 7)'],
+    ['shepherd', 'The good shepherd (John 10)'],
+    ['watch', 'The end of the age, on the Mount of Olives (Mark 13; Matthew 24–25)'],
+    ['upper', 'The farewell discourse at the Last Supper (John 14–17)'],
+    ['pentecost', 'Peter preaches, and about three thousand are baptized (Acts 2:14–41)']
   ] },
-  { id: 'iam', label: '“I am” sayings', intro: 'John records Jesus describing Himself with “I am”.', items: [
+  { id: 'teaching', label: 'Conversations & debates', group: 'What He taught', intro: 'Questions, challenges and one-to-one conversations.', items: [
+    ['nicodemus', 'Nicodemus by night: born again'],
+    ['samaria', 'The Samaritan woman at the well'],
+    ['bethesda', 'Healing on the Sabbath, and the debate that follows (John 5)'],
+    ['confession', '“Who do you say I am?”'],
+    ['dedication', '“If You are the Christ, tell us plainly” (John 10:24)'],
+    ['lazarus', 'Martha: “I am the resurrection and the life”'],
+    ['children', 'Divorce, children, and the rich man (Mark 10)'],
+    ['greatest', 'Questions in the temple courts, and the greatest commandment']
+  ] },
+  { id: 'iam', label: '“I am” sayings', group: 'What He taught', intro: 'John records Jesus describing Himself with “I am”.', items: [
     ['bread', '“I am the bread of life” (John 6:35)'],
     ['siloam', '“I am the light of the world” (John 9:5)'],
     ['shepherd', '“I am the gate”, “I am the good shepherd” (John 10:9, 11)'],
     ['resurrection-life', '“I am the resurrection and the life” (John 11:25)'],
     ['upper', 'The same night: “I am the way and the truth and the life” and “I am the true vine” (John 14:6; 15:1)']
   ] },
-  { id: 'ot', label: 'Old Testament fulfilled', intro: 'Where the Gospels themselves quote or point to the Old Testament.', items: 'ot' },
-  { id: 'spirit', label: 'The Holy Spirit', intro: 'From the promise of His birth to Pentecost.', items: [
+  { id: 'ot', label: 'Old Testament fulfilled', group: 'Threads through the story', intro: 'Where the Gospels themselves quote or point to the Old Testament.', items: 'ot' },
+  { id: 'spirit', label: 'The Holy Spirit', group: 'Threads through the story', intro: 'From the promise of His birth to Pentecost.', items: [
+    ['zechariah', 'John “will be filled with the Holy Spirit even from his mother’s womb” (Luke 1:15)'],
     ['annunciation', '“The Holy Spirit will come upon you” (Luke 1:35)'],
     ['visitation', 'Elizabeth is filled with the Holy Spirit (Luke 1:41)'],
     ['present', 'The Holy Spirit was upon Simeon (Luke 2:25)'],
@@ -340,7 +355,7 @@ window.WAY_TOPICS = [
     ['close', '“You will receive power when the Holy Spirit comes upon you” (Acts 1:8)'],
     ['pentecost', 'The Spirit is poured out (Acts 2)']
   ] },
-  { id: 'risen', label: 'Resurrection', intro: 'The empty tomb and the appearances of the risen Jesus.', items: [
+  { id: 'risen', label: 'Resurrection', group: 'What He did', intro: 'The empty tomb and the appearances of the risen Jesus.', items: [
     ['risen', 'The empty tomb'],
     ['mary', 'Mary Magdalene'],
     ['emmaus', 'Two on the road to Emmaus'],
@@ -350,5 +365,49 @@ window.WAY_TOPICS = [
     ['sheep', 'Peter restored'],
     ['commission', 'The eleven on a mountain in Galilee'],
     ['ascension', 'Taken up while blessing them']
+  ] },
+  { id: 'prayer', label: 'Prayer', group: 'What He did', intro: 'Jesus at prayer, and what He taught about it.', items: [
+    ['baptism', 'Praying as He is baptized, when heaven opens (Luke 3:21)'],
+    ['firstday', 'Early the next morning, alone in a solitary place (Mark 1:35)'],
+    ['sermon', 'The Lord’s Prayer: “Our Father in heaven” (Matthew 6:9–13)'],
+    ['walking', 'Alone on the mountain at night (Mark 6:46)'],
+    ['confession', 'Praying in private before asking, “Who do the crowds say I am?” (Luke 9:18)'],
+    ['transfig', 'As He was praying, His face changed (Luke 9:29)'],
+    ['lazarus', '“Father, I thank You that You have heard Me” (John 11:41)'],
+    ['upper', 'His prayer for His followers (John 17)'],
+    ['pray', 'Gethsemane: “Not what I will, but what You will” (Mark 14:36)'],
+    ['sayings', '“Father, forgive them”; “Into Your hands I commit My Spirit” (Luke 23:34, 46)'],
+    ['ascension', 'He lifted up His hands and blessed them (Luke 24:50–51)']
+  ] },
+  { id: 'following', label: 'Following Jesus', group: 'Threads through the story', intro: 'His calls to follow, and what following meant.', items: [
+    ['followers', '“Come and see” (John 1:39)'],
+    ['fishers', '“Come, follow Me, and I will make you fishers of men” (Mark 1:17)'],
+    ['levi', 'A tax collector leaves his booth (Mark 2:14)'],
+    ['twelve-sent', 'The Twelve sent out two by two'],
+    ['cross', '“Deny himself, take up his cross, and follow Me” (Mark 8:34)'],
+    ['children', 'The rich man: “Then come, follow Me” (Mark 10:21)'],
+    ['bartimaeus', 'Healed, he follows Jesus on the road (Mark 10:52)'],
+    ['sheep', 'Peter, restored: “Follow Me” (John 21:19)'],
+    ['commission', '“Go and make disciples of all nations” (Matthew 28:19)']
+  ] },
+  { id: 'feasts', label: 'Feasts & festivals', group: 'Threads through the story', intro: 'The pilgrim feasts that set the rhythm of the story.', items: [
+    ['twelve', 'Passover: Jesus at twelve in the temple (Luke 2:41)'],
+    ['zeal', 'Passover: the first temple clearing in John (John 2:13)'],
+    ['bethesda', '“A feast of the Jews”, unnamed (John 5:1)'],
+    ['loaves', 'Passover was near (John 6:4)'],
+    ['booths', 'Tabernacles, the autumn harvest feast (John 7:2)'],
+    ['dedication', 'Dedication, in winter, remembering the temple restored in 164 BC (John 10:22)'],
+    ['upper', 'Passover and Unleavened Bread: the Last Supper (Mark 14:12)'],
+    ['pentecost', 'Pentecost, the Feast of Weeks (Acts 2:1)']
+  ] },
+  { id: 'forgiveness', label: 'Forgiveness & second chances', group: 'Threads through the story', intro: 'Sins forgiven, outsiders welcomed, failures restored.', items: [
+    ['roof', '“Son, your sins are forgiven” (Mark 2:5)'],
+    ['levi', 'He came to call sinners (Mark 2:17)'],
+    ['samaria', 'A woman who had had five husbands becomes a witness to her town (John 4:18, 39)'],
+    ['lost', 'The father runs to the son who came home (Luke 15:20)'],
+    ['zacchaeus', '“Today salvation has come to this house” (Luke 19:9)'],
+    ['sayings', '“Father, forgive them”; the criminal promised Paradise (Luke 23:34, 43)'],
+    ['sheep', 'Peter, who denied Him three times, restored'],
+    ['peace', 'He sends them with authority to forgive sins (John 20:23)']
   ] }
 ];

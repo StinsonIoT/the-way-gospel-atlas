@@ -540,7 +540,7 @@
     if (cur) cur.scrollIntoView({ block: 'center' });
   }
   // ---------- tabs: Chapters · Places · Search ----------
-  const TABS = ['chapters', 'plan', 'places', 'search'];
+  const TABS = ['chapters', 'topics', 'plan', 'places', 'search'];
   function showTab(name, focus) {
     TABS.forEach((t) => {
       document.getElementById('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
@@ -733,10 +733,13 @@
       return `<li><button type="button" data-i="${h.i}"><span class="r-title">${esc(stepLabel(st))}</span><small>${esc(where)}</small>${snip}</button></li>`;
     }).join('');
   }
-  // ---------- Browse by topic ----------
+  // ---------- Topics tab ----------
   const TOPICS = window.WAY_TOPICS || [];
   const topicChips = document.getElementById('topic-chips');
-  topicChips.innerHTML = TOPICS.map((t) => `<button type="button" data-topic="${t.id}" aria-pressed="false">${esc(t.label)}</button>`).join('');
+  const topicResults = document.getElementById('topic-results');
+  const topicGroups = [...new Set(TOPICS.map((t) => t.group || ''))];
+  topicChips.innerHTML = topicGroups.map((g) => `<p class="topics-k">${esc(g)}</p><div class="topic-chips" role="group" aria-label="${esc(g)}">`
+    + TOPICS.filter((t) => (t.group || '') === g).map((t) => `<button type="button" data-topic="${t.id}" aria-pressed="false">${esc(t.label)}</button>`).join('') + '</div>').join('');
   function topicItems(t) {
     if (t.items !== 'ot') return t.items;
     const OTL = window.WAY_OT || {};
@@ -745,21 +748,22 @@
   function showTopic(id) {
     const t = TOPICS.find((x) => x.id === id);
     topicChips.querySelectorAll('[data-topic]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.topic === id ? 'true' : 'false'));
-    if (!t) { results.innerHTML = ''; qHint.hidden = false; return; }
-    qInput.value = '';
-    qHint.hidden = true;
+    if (!t) { topicResults.innerHTML = ''; return; }
     const items = topicItems(t).map(([sid, note]) => [STEPS.findIndex((st) => st.id === sid), note]).filter(([i]) => i >= 0);
-    results.innerHTML = `<li class="topic-head"><b>${esc(t.label)}</b> <span>${esc(t.intro)} ${items.length} scenes.</span></li>` + items.map(([i, note]) => {
+    topicResults.innerHTML = `<li class="topic-head"><b>${esc(t.label)}</b> <span>${esc(t.intro)} ${items.length} scenes.</span></li>` + items.map(([i, note]) => {
       const st = STEPS[i];
       return `<li><button type="button" data-i="${i}"><span class="r-title">${esc(stepLabel(st))}</span><span class="snip">${esc(note)}</span><small>${esc(st.ref ? st.ref[0].replace(/\s*·\s*BSB$/, '') : '')}</small></button></li>`;
     }).join('');
+    topicResults.scrollIntoView({ block: 'nearest' });
   }
   topicChips.addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-topic]');
     if (!b) return;
     showTopic(b.getAttribute('aria-pressed') === 'true' ? null : b.dataset.topic);
   });
-  qInput.addEventListener('input', () => topicChips.querySelectorAll('[aria-pressed="true"]').forEach((b) => b.setAttribute('aria-pressed', 'false')));
+  topicResults.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-i]'); if (b) goTo(+b.dataset.i);
+  });
   let qTimer = 0;
   qInput.addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(runSearch, 120); });
   qInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { const first = results.querySelector('[data-i]'); if (first) goTo(+first.dataset.i); } });

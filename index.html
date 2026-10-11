@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Way — A Gospel Atlas">
 <meta property="og:title" content="Follow the Way — A Gospel Atlas">
-<meta property="og:description" content="The life of Jesus on the map, from Bethlehem to Pentecost, in 88 scenes with the Berean Standard Bible.">
+<meta property="og:description" content="The life of Jesus on the map, from Bethlehem to Pentecost, in 90 scenes with the Berean Standard Bible.">
 <meta property="og:url" content="https://stinsoniot.github.io/the-way-gospel-atlas/">
 <meta property="og:image" content="https://stinsoniot.github.io/the-way-gospel-atlas/og.png">
 <meta property="og:image:width" content="1200">
@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin>
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=42">
+<link rel="stylesheet" href="css/style.css?v=43">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -87,18 +87,22 @@
   </div>
   <div class="tabs" role="tablist" aria-label="Find your way">
     <button type="button" role="tab" id="tab-chapters" aria-controls="panel-chapters" aria-selected="true">Chapters</button>
+<button type="button" role="tab" id="tab-topics" aria-controls="panel-topics" aria-selected="false">Topics</button>
     <button type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false">Plan</button>
     <button type="button" role="tab" id="tab-places" aria-controls="panel-places" aria-selected="false">Places</button>
     <button type="button" role="tab" id="tab-search" aria-controls="panel-search" aria-selected="false">Search</button>
   </div>
   </div>
   <div id="panel-chapters" role="tabpanel" aria-labelledby="tab-chapters"><div id="toc-body"></div></div>
+  <div id="panel-topics" role="tabpanel" aria-labelledby="tab-topics" hidden>
+    <div id="topic-chips" class="topics"></div>
+    <ol id="topic-results" class="results"></ol>
+  </div>
   <div id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" hidden><div id="plan-body"></div></div>
   <div id="panel-places" role="tabpanel" aria-labelledby="tab-places" hidden><div id="places-body"></div></div>
   <div id="panel-search" role="tabpanel" aria-labelledby="tab-search" hidden>
     <input id="q" type="search" placeholder="People, places, verses, words…" aria-label="Search the story" autocomplete="off" enterkeyhint="search">
     <p id="q-hint" class="q-hint">Try “Peter”, “Siloam”, “John 4” or “Passover”.</p>
-    <div class="topics"><p class="topics-k">Browse by topic</p><div id="topic-chips" class="topic-chips" role="group" aria-label="Browse by topic"></div></div>
     <ol id="results" class="results"></ol>
   </div>
   <p class="toc-links"><a href="holyweek.html">Holy Week guide</a> · <a href="about.html">About the atlas</a> · <a href="sources.html">Sources</a></p>
@@ -150,10 +154,10 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=42"></script>
-<script src="js/scenes.js?v=42"></script>
+<script src="vendor/maplibre-contour.min.js?v=43"></script>
+<script src="js/scenes.js?v=43"></script>
 <script src="js/places.js?v=6"></script>
-<script src="js/study.js?v=7"></script>
-<script src="js/app.js?v=42"></script>
+<script src="js/study.js?v=8"></script>
+<script src="js/app.js?v=43"></script>
 </body>
 </html>

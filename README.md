@@ -1,6 +1,6 @@
 # The Way — A Gospel Atlas
 
-A scroll-driven atlas of the whole Gospel story, in 88 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection, and The Spirit comes (the ascension and Pentecost). It is built for iPhone first and also works on desktop.
+A scroll-driven atlas of the whole Gospel story, in 90 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection, and The Spirit comes (the ascension and Pentecost). It is built for iPhone first and also works on desktop.
 
 ## What it does
 
@@ -35,7 +35,7 @@ Tapping a Scripture reference (on a card, under a verse, or inside a note) opens
 
 ## Getting around
 
-The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with four tabs: **Chapters** (every chapter and scene, with a filter for the scenes each Gospel tells), **Plan** (a 30-day reading plan, about three scenes a day, ticked off as you read, plus your saved scenes), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
+The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with five tabs: **Chapters** (every chapter and scene, with a filter for the scenes each Gospel tells), **Topics** (see below), **Plan** (a 30-day reading plan, about three scenes a day, ticked off as you read, plus your saved scenes), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
 
 ## The four Gospels
 
@@ -49,9 +49,9 @@ The Scripture reader has a **Study notes** tab: the Tyndale Open Study Notes (©
 
 `holyweek.html` goes deeper into the last week: day by day (with a note on the dating debate), sixteen people, the temple, the cross and the seven sayings, the tomb, the women at the tomb, what Roman and Jewish writers recorded, what the Old Testament said (only passages the New Testament quotes or points to) and, in the New Testament's own words, the victory over death. It is linked from the Holy Week chapter card, the menu and the footer, and built by `tools/make-holyweek.py`. All of it was independently fact-checked.
 
-## Browse by topic
+## Topics
 
-The Search tab has **Browse by topic**: Miracles, Parables, Teaching, “I am” sayings, Old Testament fulfilled, The Holy Spirit and Resurrection. Each lists the scenes in story order with a line on what to look for (`WAY_TOPICS` in `js/study.js`).
+The menu's **Topics** tab gathers scenes by theme. What He did: Miracles, Resurrection, Prayer. What He taught: Parables, Sermons & preaching, Conversations & debates, “I am” sayings. Threads through the story: Old Testament fulfilled, The Holy Spirit, Following Jesus, Feasts & festivals, Forgiveness & second chances. Each lists the scenes in story order with a line on what to look for (`WAY_TOPICS` in `js/study.js`).
 
 ## Old Testament links
 

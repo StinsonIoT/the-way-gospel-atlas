@@ -497,3 +497,8 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
 .s-hist { fill: none; stroke: var(--c-fg, #1C2A25); stroke-width: 2; }
 .guide-link { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; padding: 10px 16px; border-radius: 14px; background: var(--c-fg); color: var(--c-bg); text-decoration: none; font: 600 14px/1.35 var(--sans); }
 .guide-link span { font-size: 18px; }
+#panel-topics .topics-k { margin: 14px 2px 8px; }
+#panel-topics .topics-k:first-child { margin-top: 2px; }
+#topic-results:empty { display: none; }
+#topic-results { margin-top: 14px; }
+.tabs button { padding: 0 2px; font-size: 12.5px; }

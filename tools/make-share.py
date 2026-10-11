@@ -1,6 +1,7 @@
 """Make the share pages and preview images, one per scene.
 
     python3 tools/make-share.py [fonts_dir]
+    ONLY=word,zechariah python3 tools/make-share.py [fonts_dir]   # just these scenes
 
 Writes s/<scene id>.html (preview tags, then forwards to the scene) and
 s/<scene id>.jpg (1200 x 630, rendered from the atlas itself with ?og).
@@ -83,8 +84,9 @@ async def main():
                 await r.fulfill(status=200, content_type='font/woff2', body=open(files[key], 'rb').read())
             await ctx.route('https://fonts.gstatic.com/local/**', font)
         pg = await ctx.new_page()
+        only = [x for x in os.environ.get('ONLY', '').split(',') if x]
         for n, s in enumerate(steps):
-            if s['id'] == 'title':
+            if s['id'] == 'title' or (only and s['id'] not in only):
                 continue
             title, desc = meta(s)
             open(os.path.join(REPO, 's', s['id'] + '.html'), 'w').write(PAGE.format(
