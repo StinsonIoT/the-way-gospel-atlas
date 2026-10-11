@@ -29,6 +29,10 @@ Many scenes carry two optional notes, opened with a tap: **Life in Jesus' day** 
 
 Tapping a Scripture reference (on a card, under a verse, or inside a note) opens the passage in a panel over the map, so the reader stays on the scene. The text is the Berean Standard Bible (public domain), loaded in the browser from the [Free Use Bible API](https://bible.helloao.org); if it can't be reached, the panel offers the passage on BibleHub instead. A **Listen** button plays the BSB audio recording of just the verses shown (using the API's per-verse timings), continuing across chapter breaks, with lock-screen controls on iPhone.
 
+## Exploring the map
+
+"Or explore the map freely" (on the title screen and in the Places tab) opens a free map of the whole land: drag, pinch, tilt and turn over the real terrain, with both 3D models. Place names appear as you zoom in, and tapping one opens its profile. Quick jumps go to Galilee, Capernaum 3D, Nazareth, Jacob's well, the Jericho road, Jerusalem 3D and Bethlehem, and every place profile has a "Show on the map" button. "Explore Jerusalem in 3D" opens the same mode over the city.
+
 ## Getting around
 
 The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with three tabs: **Chapters** (every chapter and scene), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.

@@ -111,6 +111,7 @@
         <h1>Follow<br>the <em>Way.</em></h1>
         <p class="lede">From a manger in Bethlehem to the Mount of Olives: the life, death and resurrection of Jesus, read in the Berean Standard Bible.</p>
         <div id="resume" class="resume" hidden></div>
+        <button type="button" class="hero-explore" data-explore="land">Or explore the map freely</button>
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;
     }
@@ -295,10 +296,23 @@
       if (box) { const r = box.getBoundingClientRect(); if (r.bottom > 0 && r.top < window.innerHeight) placed.push(r); }
     }
     const hits = (r, q) => r.left < q.right + pad && r.right > q.left - pad && r.top < q.bottom + pad && r.bottom > q.top - pad;
+    const vw = window.innerWidth;
+    const blocked = (r, id) => r.left < 2 || r.right > vw - 2 || placed.some((q) => hits(r, q)) || marks.some((m) => m.id !== id && hits(r, m.r));
     live.forEach((v) => {
-      const r = v.el.querySelector('.lbl').getBoundingClientRect();
-      const hit = placed.some((q) => hits(r, q)) || marks.some((m) => m.id !== v.id && hits(r, m.r));
-      v.el.classList.toggle('clash', hit);
+      const el = v.el, lbl = el.querySelector('.lbl');
+      // Labels beside a dot may flip to the other side to avoid a clash.
+      const home = el._home || (el._home = el.classList.contains('mk-left') ? 'mk-left' : el.classList.contains('mk-right') ? 'mk-right' : '');
+      if (home && !el.classList.contains(home)) { el.classList.remove('mk-left', 'mk-right'); el.classList.add(home); }
+      let r = lbl.getBoundingClientRect();
+      let hit = blocked(r, v.id);
+      if (hit && home) {
+        const other = home === 'mk-left' ? 'mk-right' : 'mk-left';
+        el.classList.replace(home, other);
+        r = lbl.getBoundingClientRect();
+        hit = blocked(r, v.id);
+        if (hit) el.classList.replace(other, home);
+      }
+      el.classList.toggle('clash', hit);
       if (!hit) placed.push(r);
     });
   }
@@ -524,7 +538,7 @@
   });
   const GROUP_NAMES = { town: 'Towns and cities', jeru: 'In Jerusalem', site: 'Traditional and proposed sites', nature: 'Seas, rivers and mountains', region: 'Regions' };
   const markSym = (t) => t === 'named' ? SYM.named : (t === 'trad' || t === 'proposal') ? SYM.trad : t === 'region' ? SYM.region : '';
-  document.getElementById('places-body').innerHTML = Object.keys(GROUP_NAMES).map((g) => {
+  document.getElementById('places-body').innerHTML = `<button type="button" class="pl-explore" data-explore="land">Explore the map freely</button>` + Object.keys(GROUP_NAMES).map((g) => {
     const list = placeGroups[g].filter((pl) => pl.steps.length).sort((a, b) => a.label.localeCompare(b.label));
     if (!list.length) return '';
     return `<h3 class="pl-group">${GROUP_NAMES[g]}</h3>` + list.map((pl) => `
@@ -533,7 +547,7 @@
           <span class="pl-sym">${markSym(pl.type)}</span><span>${esc(pl.label)}${pl.note ? `<small>${esc(pl.note)}</small>` : ''}</span><span class="cnt">${pl.steps.length}</span>
           <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg>
         </button>
-        <div class="toc-scenes pl-body" id="pl-${pl.key}">${placeInfoHTML(pl.key)}<p class="pl-in">In the story</p><ol class="pl-list">${pl.steps.map((i) => {
+        <div class="toc-scenes pl-body" id="pl-${pl.key}">${placeInfoHTML(pl.key)}<button type="button" class="pl-show" data-explore="place:${pl.key}">Show on the map</button><p class="pl-in">In the story</p><ol class="pl-list">${pl.steps.map((i) => {
           const st = STEPS[i]; const g2 = groups.find((gg) => gg.steps.includes(i));
           return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}<small>${esc((g2 && g2.num ? g2.num + ' · ' : '') + (st.ref ? st.ref[0] : (g2 ? g2.title : '')))}</small></button></li>`;
         }).join('')}</ol></div>
@@ -541,7 +555,6 @@
   }).join('');
   // Tapping a place's label on the map opens its profile.
   function openPlace(key) {
-    if (exploring) closeExplore();
     showTab('places');
     openToc();
     const head = document.querySelector(`#places-body .toc-head[aria-controls="pl-${key}"]`);
@@ -1030,31 +1043,93 @@
     if (started) { computeCams(); queue(); }
   });
 
-  // ---------- Explore Jerusalem (free rotate and zoom) ----------
-  const EXPLORE = { pal: 'day', plan: 1, temple: 0, show: ['templelbl', 'antonia', 'palacelbl', 'uppercity', 'lowercity', 'bethesda', 'siloam', 'olives', 'kidron', 'cenacle', 'gethsemane', 'sepulchre', 'gardentomb'] };
-  function openExplore() {
-    exploring = true;
-    document.documentElement.classList.add('exploring');
-    apply(EXPLORE, EXPLORE, 0, null);
-    chapterEl.textContent = 'Explore Jerusalem';
-    lastCh = '';
-    setHandlers(true);
-    const small = window.innerWidth < 900;
-    map.flyTo({ center: [35.2322, 31.7757], zoom: small ? 14.5 : 15.2, pitch: 60, bearing: -24,
-      padding: small ? { top: 60, bottom: 200, left: 0, right: 0 } : { top: 60, bottom: 40, left: 0, right: 0 },
-      duration: reduceMotion ? 0 : 1800, essential: true });
-    exploreClose.focus();
+  // ---------- Explore the map (free pan, zoom, tilt and turn) ----------
+  // One mode for the whole land. Place names appear as you zoom in; tapping a
+  // name opens its profile. Both 3D models are shown.
+  const EXPLORE_SKIP = ['star', 'tiberias', 'bethlbl', 'fieldslbl', 'uppercity', 'lowercity', 'capvillage', 'sanctlbl', 'moab', 'praetA', 'praetH'];
+  const EXPLORE = { pal: 'day', plan: 1, village: 1, temple: 0,
+    show: Object.keys(PLACES).filter((id) => !['ring', 'rule'].includes(PLACES[id].type) && !EXPLORE_SKIP.includes(id)) };
+  const IN_JERU = (p) => p.lng > 35.222 && p.lng < 35.25 && p.lat > 31.765 && p.lat < 31.79;
+  const IN_CAP = ['capsyn', 'peterhouse'];
+  function minZoomFor(id) {
+    const p = PLACES[id];
+    if (IN_CAP.includes(id)) return 14.2;
+    if (id === 'jerusalem') return 0;
+    if (IN_JERU(p)) return 13.4;
+    if (p.type === 'region' || p.type === 'water') return 0;
+    if (p.type === 'named') return 7.6;
+    if (p.type === 'area') return 9.6;
+    return 9.4; // traditional and proposed sites
+  }
+  const MAXZ = { jerusalem: 13.4, capernaum: 14.2, sog: 12.5, deadsea: 11.5, galilee: 10, samaria: 10, judea: 10, perea: 10, decapolis: 10, phoenicia: 10, syria: 9, egypt: 9 };
+  function exploreLabels() {
+    if (!exploring) return;
+    const z = map.getZoom();
+    EXPLORE.show.forEach((id) => {
+      const el = markerEls[id]; if (!el) return;
+      const on = z >= minZoomFor(id) && (MAXZ[id] == null || z < MAXZ[id]);
+      const v = on ? '1.000' : '0.000';
+      if (el._op !== v) { el._op = v; el.style.opacity = v; el.style.visibility = on ? 'visible' : 'hidden'; }
+    });
+    queueDeclutter();
+  }
+  map.on('zoom', exploreLabels);
+  const small = () => window.innerWidth < 900;
+  const exPad = () => (small() ? { top: 70, bottom: 230, left: 0, right: 0 } : { top: 70, bottom: 40, left: 0, right: 0 });
+  const VIEWS = {
+    land:      { label: 'Whole land', center: [35.40, 32.15], zoom: 7.9, pitch: 35, bearing: 0 },
+    galilee:   { label: 'Galilee', center: [35.42, 32.76], zoom: 9.7, pitch: 45, bearing: 8 },
+    capernaum: { label: 'Capernaum 3D', center: [35.5752, 32.8812], zoom: 16.1, pitch: 60, bearing: 14 },
+    nazareth:  { label: 'Nazareth', center: [35.30, 32.69], zoom: 12.2, pitch: 55, bearing: 8 },
+    samaria:   { label: 'Jacob’s well', center: [35.278, 32.212], zoom: 12.6, pitch: 58, bearing: -12 },
+    jericho:   { label: 'Jericho road', center: [35.34, 31.81], zoom: 10.6, pitch: 60, bearing: -78 },
+    jerusalem: { label: 'Jerusalem 3D', center: [35.2322, 31.7757], zoom: 14.5, pitch: 60, bearing: -24 },
+    bethlehem: { label: 'Bethlehem', center: [35.205, 31.71], zoom: 12.6, pitch: 50, bearing: 0 }
+  };
+  const jumps = document.querySelector('.explore-jumps');
+  jumps.innerHTML = Object.keys(VIEWS).map((k) => `<button type="button" data-view="${k}">${esc(VIEWS[k].label)}</button>`).join('');
+  function flyView(v) {
+    const z = v.zoom - (small() && v.zoom > 13 ? 0 : 0);
+    map.flyTo({ center: v.center, zoom: z, pitch: v.pitch, bearing: v.bearing, padding: exPad(), duration: reduceMotion ? 0 : 1800, essential: true });
+  }
+  function placeView(key) {
+    const p = PLACES[key] || PLACES[Object.keys(ALIAS).find((a) => ALIAS[a] === key)];
+    if (!p) return VIEWS.land;
+    const z = IN_CAP.includes(key) ? 16.3 : IN_JERU(p) ? 15.4 : key === 'jerusalem' ? 14.3 : key === 'capernaum' ? 15.6
+      : p.type === 'region' ? 9.2 : p.type === 'water' ? 10.2 : 12.4;
+    return { center: [p.lng, p.lat], zoom: z, pitch: z > 13 ? 58 : 45, bearing: 0 };
+  }
+  function openExplore(target) {
+    const v = typeof target === 'object' && target ? target : (VIEWS[target] || VIEWS.land);
+    if (toc.open) toc.close();
+    if (!exploring) {
+      exploring = true;
+      document.documentElement.classList.add('exploring');
+      apply(EXPLORE, EXPLORE, 0, null);
+      chapterEl.textContent = 'Explore the map';
+      lastCh = '';
+      setHandlers(true);
+    }
+    flyView(v);
+    setTimeout(exploreLabels, 50);
+    exploreClose.focus({ preventScroll: true });
   }
   function closeExplore() {
     setHandlers(false);
     exploring = false;
     document.documentElement.classList.remove('exploring');
-    exploreBtn.focus();
     queue();
   }
-  exploreBtn.addEventListener('click', openExplore);
+  jumps.addEventListener('click', (ev) => { const b = ev.target.closest('[data-view]'); if (b) openExplore(b.dataset.view); });
+  document.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-explore]');
+    if (!b) return;
+    const t = b.dataset.explore;
+    openExplore(t.startsWith('place:') ? placeView(t.slice(6)) : t);
+  });
+  exploreBtn.addEventListener('click', () => openExplore('jerusalem'));
   exploreClose.addEventListener('click', closeExplore);
-  document.addEventListener('keydown', (ev) => { if (exploring && ev.key === 'Escape') closeExplore(); });
+  document.addEventListener('keydown', (ev) => { if (exploring && ev.key === 'Escape' && !toc.open) closeExplore(); });
 
   // Key dialog
   const dlg = document.getElementById('key');

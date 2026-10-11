@@ -152,6 +152,13 @@ html.exploring, html.exploring body { overflow: hidden; }
 html.exploring #map { pointer-events: auto; touch-action: none; }
 html.exploring #story, html.exploring .credits, html.exploring .explore-open { visibility: hidden; opacity: 0 !important; }
 html.exploring .explore-ui { display: flex; }
+.explore-jumps { display: flex; gap: 6px; overflow-x: auto; margin: 0 -14px; padding: 2px 14px 4px; scrollbar-width: none; }
+.explore-jumps::-webkit-scrollbar { display: none; }
+.explore-ui .explore-jumps button { flex: none; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #DDD2BC; background: #FBF7EF; color: #1C2A25; font: 500 13px var(--sans); }
+.hero-explore { margin-top: 14px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--m-txt) 28%, transparent); background: transparent; color: var(--m-txt); font: 500 14px var(--sans); cursor: pointer; }
+.pl-explore { width: 100%; min-height: 46px; margin: 4px 0 6px; border: 0; border-radius: 12px; background: var(--c-fg); color: var(--c-bg); font: 600 14px var(--sans); cursor: pointer; }
+.pl-show { margin: 8px 0 0; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--c-line); background: transparent; color: var(--c-fg); font: 500 13px var(--sans); cursor: pointer; }
+.toc-scenes .pl-show { width: auto; display: inline-flex; flex-direction: row; align-items: center; justify-content: center; font: 500 13px var(--sans); border: 1px solid var(--c-line); border-radius: 999px; padding: 0 14px; min-height: 36px; }
 
 /* ---------- footer & dialog ---------- */
 .credits { position: relative; z-index: 1; background: #F1E8D6; color: #3E4C46; padding: 28px 20px calc(40px + env(safe-area-inset-bottom)); font-size: 13px; line-height: 1.55; }

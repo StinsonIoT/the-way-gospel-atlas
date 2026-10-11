@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Instrument+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=23">
+<link rel="stylesheet" href="css/style.css?v=25">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -51,8 +51,9 @@
   <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2 L17 6 L17 14 L10 18 L3 14 L3 6 Z"/><path d="M3 6 L10 10 L17 6 M10 10 L10 18"/></svg>
   Explore Jerusalem in 3D
 </button>
-<div class="explore-ui" role="region" aria-label="Explore Jerusalem">
-  <p><b>Jerusalem, first century.</b> A simplified model over real terrain. Drag to move, pinch to zoom, two fingers to tilt and turn. Houses are illustrative; landmarks follow published dimensions.</p>
+<div class="explore-ui" role="region" aria-label="Explore the map">
+  <p id="explore-msg"><b>Explore the map.</b> Drag, pinch, and use two fingers to tilt. Tap a name for its story.</p>
+  <div class="explore-jumps" role="group" aria-label="Go to"></div>
   <button id="explore-close" type="button">Back to the story</button>
 </div>
 <main id="story"></main>
@@ -115,9 +116,9 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=23"></script>
-<script src="js/scenes.js?v=23"></script>
+<script src="vendor/maplibre-contour.min.js?v=25"></script>
+<script src="js/scenes.js?v=25"></script>
 <script src="js/places.js?v=3"></script>
-<script src="js/app.js?v=23"></script>
+<script src="js/app.js?v=25"></script>
 </body>
 </html>
