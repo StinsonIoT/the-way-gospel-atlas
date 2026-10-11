@@ -35,7 +35,11 @@ Tapping a Scripture reference (on a card, under a verse, or inside a note) opens
 
 ## Getting around
 
-The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with three tabs: **Chapters** (every chapter and scene), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
+The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with four tabs: **Chapters** (every chapter and scene, with a filter for the scenes each Gospel tells), **Plan** (a 30-day reading plan, about three scenes a day, ticked off as you read, plus your saved scenes), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
+
+## The four Gospels
+
+Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that opens the parallel passages, each readable in place, with a note where the accounts differ. **Follow** steps through the story one Gospel at a time, from a bar under the header. Parallels follow the standard Gospel synopses; the longer ending of Mark (16:9–20) is not used. Reading progress and saved scenes are kept on the device only.
 
 ## Sharing and installing
 
@@ -61,6 +65,7 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `manifest.webmanifest`, `sw.js`, `og.png`, icons: install, offline cache and link previews
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
 - `js/places.js`: the place profiles
+- `js/study.js`: the Gospel parallels for each scene and the 30-day reading plan
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type
 - `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, `jerusalem3d.geojson` and `capernaum3d.geojson` (the 3D models: heights in metres, `illustrative: true` on houses)

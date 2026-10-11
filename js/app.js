@@ -90,6 +90,19 @@
     return `<div class="more">${ks.map((k) => `<button type="button" class="more-btn more-${k}" aria-expanded="false" aria-controls="x-${s.id}-${k}">${ICON[k]}<span>${EXTRA_LABEL[k]}</span></button>`).join('')}</div>`
       + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${linkRefs(esc(s[k]))}</div>`).join('');
   }
+  // Which Gospels tell each scene (js/study.js), and the bookmark button.
+  const HARM = window.WAY_HARMONY || {};
+  const GOSPELS = [['mt', 'Matthew', 'Mt'], ['mk', 'Mark', 'Mk'], ['lk', 'Luke', 'Lk'], ['jn', 'John', 'Jn']];
+  const BOOKMARK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.2 H12 V14 L8 10.9 L4 14 Z"/></svg>';
+  function studyRow(s) {
+    const h = HARM[s.id];
+    if (!h) return '';
+    const told = GOSPELS.filter((g, k) => h[k]).map((g) => g[1]);
+    const say = told.length === 1 ? 'Only in ' + told[0] : told.length === 4 ? 'In all four Gospels' : 'Told in ' + told.length + ' Gospels';
+    return `<div class="study"><button type="button" class="gos-btn" data-gos="${s.id}" aria-haspopup="dialog" aria-label="${esc(say)}: ${esc(told.join(', '))}. Compare the accounts">`
+      + `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span><span class="gos-say" aria-hidden="true">${esc(say)}</span></button>`
+      + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></div>`;
+  }
   const LEGEND = [
     ['named', 'Named place.', 'The text names the town; the dot is approximate.'],
     ['region', 'Regional setting.', 'An area is named; the exact site is unknown.'],
@@ -122,6 +135,7 @@
         <div class="verse-foot">${refLink(s.ref, 'ref')}</div>
         ${s.after ? `<p class="after">${linkRefs(esc(s.after))}</p>` : ''}
         ${extrasHTML(s)}
+        ${studyRow(s)}
       </div>`;
     }
     let body = '';
@@ -137,6 +151,7 @@
         <div class="actions">${refLink(s.ref, 'btn btn-solid')}<a class="btn" href="#top">Begin again</a></div>
         <p class="more">The story continues in the book of Acts.</p>`;
     }
+    body += studyRow(s);
     const tight = s.kind === 'list' && s.items && s.items.length > 5 ? ' step-list-tight' : '';
     return `<article class="card card-${pal.card}${tight}">${kick}<h2>${s.title}</h2>${body}</article>`;
   }
@@ -408,6 +423,8 @@
   function noteStep(r) {
     if (r === lastHashStep) return;
     lastHashStep = r;
+    updateFollow(r);
+    noteSeen(r);
     clearTimeout(hashTimer);
     hashTimer = setTimeout(() => {
       try { history.replaceState(null, '', r === 0 ? location.pathname + location.search : '#' + sections[r].id); } catch (err) { /* ignore */ }
@@ -486,6 +503,7 @@
       sec.classList.toggle('now', here);
       sec.querySelector('.toc-head').setAttribute('aria-expanded', here ? 'true' : 'false');
     });
+    if (gFilter) applyFilter();
     const cur = tocBody.querySelector(`[data-i="${r}"]`);
     if (cur) cur.setAttribute('aria-current', 'step');
     tocOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
@@ -494,13 +512,16 @@
     if (cur) cur.scrollIntoView({ block: 'center' });
   }
   // ---------- tabs: Chapters · Places · Search ----------
-  const TABS = ['chapters', 'places', 'search'];
+  const TABS = ['chapters', 'plan', 'places', 'search'];
   function showTab(name) {
     TABS.forEach((t) => {
       document.getElementById('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
       document.getElementById('panel-' + t).hidden = t !== name;
     });
     if (name === 'search') setTimeout(() => qInput.focus(), 30);
+    if (name === 'plan') renderPlan();
+    const gf = document.querySelector('#toc .gfilter');
+    if (gf) gf.hidden = name !== 'chapters';
   }
   TABS.forEach((t) => document.getElementById('tab-' + t).addEventListener('click', () => showTab(t)));
 
@@ -622,7 +643,7 @@
     });
     return out;
   }
-  const stepSpans = STEPS.map((st) => [st.ref ? st.ref[0] : '', ...(st.items || []).map((x) => x[1])].flatMap(refSpans));
+  const stepSpans = STEPS.map((st) => [st.ref ? st.ref[0] : '', ...(st.items || []).map((x) => x[1]), ...(HARM[st.id] || []).slice(0, 4)].flatMap(refSpans));
   function refQuery(q) {
     const m = /^\s*([a-z]+)\.?\s+(\d+)(?::(\d+))?\s*$/.exec(norm(q));
     if (!m) return null;
@@ -684,6 +705,201 @@
   qInput.addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(runSearch, 120); });
   qInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { const first = results.querySelector('[data-i]'); if (first) goTo(+first.dataset.i); } });
   results.addEventListener('click', (ev) => { const b = ev.target.closest('[data-i]'); if (b) goTo(+b.dataset.i); });
+
+  // ---------- Gospels: compare the accounts, filter, follow one Gospel ----------
+  const gosDlg = document.getElementById('gospels');
+  const gIndex = (key) => GOSPELS.findIndex((g) => g[0] === key);
+  const toldBy = (key) => { const k = gIndex(key); return STEPS.map((st, i) => (HARM[st.id] && HARM[st.id][k] ? i : -1)).filter((i) => i >= 0); };
+  const harmCount = STEPS.filter((st) => HARM[st.id]).length;
+  let gosOpener = null;
+  function openGospels(id) {
+    const i = STEPS.findIndex((st) => st.id === id);
+    const h = HARM[id];
+    if (!h) return;
+    document.getElementById('gos-scene').textContent = stepLabel(STEPS[i]);
+    document.getElementById('gos-list').innerHTML = GOSPELS.map((g, k) => h[k]
+      ? `<li><span class="gn">${g[1]}</span><button type="button" class="gos-read" data-ref="${esc(h[k])}">${esc(h[k])}<span class="ref-icon" aria-hidden="true"></span></button>`
+        + `<button type="button" class="gos-follow" data-follow="${g[0]}"${follow === g[0] ? ' aria-pressed="true"' : ''}>${follow === g[0] ? 'Following' : 'Follow'}</button></li>`
+      : `<li class="off"><span class="gn">${g[1]}</span><span class="gos-none">Does not tell this scene</span></li>`).join('');
+    const note = document.getElementById('gos-note');
+    note.innerHTML = h[4] ? linkRefs(esc(h[4])) : '';
+    note.hidden = !h[4];
+    gosOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+    if (gosOpener && gosOpener.blur) gosOpener.blur();
+    gosDlg.showModal();
+  }
+  gosDlg.addEventListener('close', () => {
+    if (gosOpener && gosOpener.focus && !touchedSinceJump) { try { gosOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+    gosOpener = null;
+  });
+  gosDlg.addEventListener('click', (ev) => {
+    if (ev.target === gosDlg) { gosDlg.close(); return; }
+    const f = ev.target.closest('[data-follow]');
+    if (f) { setFollow(follow === f.dataset.follow ? null : f.dataset.follow); gosDlg.close(); }
+  });
+  document.getElementById('gos-close').addEventListener('click', () => gosDlg.close());
+  story.addEventListener('click', (ev) => { const b = ev.target.closest('[data-gos]'); if (b) openGospels(b.dataset.gos); });
+
+  // Follow one Gospel: a bar under the header steps to that Gospel's next scene.
+  const followBar = document.getElementById('follow');
+  let follow = null, followList = [];
+  try { follow = localStorage.getItem('the-way:follow'); } catch (err) { /* ignore */ }
+  if (gIndex(follow) < 0) follow = null;
+  function setFollow(key) {
+    follow = key;
+    try { if (key) localStorage.setItem('the-way:follow', key); else localStorage.removeItem('the-way:follow'); } catch (err) { /* ignore */ }
+    followList = key ? toldBy(key) : [];
+    followBar.hidden = !key;
+    document.documentElement.classList.toggle('following', !!key);
+    if (key) document.getElementById('f-name').textContent = GOSPELS[gIndex(key)][1];
+    lastFollowR = -1;
+    updateFollow(Math.round(progress()));
+    queueDeclutter();
+  }
+  let lastFollowR = -1;
+  function updateFollow(r) {
+    if (!follow || r === lastFollowR) return;
+    lastFollowR = r;
+    const done = followList.filter((i) => i <= r).length;
+    const here = followList.includes(r);
+    document.getElementById('f-pos').textContent = here ? `${done} of ${followList.length}` : `not in ${GOSPELS[gIndex(follow)][1]}`;
+    document.getElementById('f-prev').disabled = !followList.some((i) => i < r);
+    document.getElementById('f-next').disabled = !followList.some((i) => i > r);
+    followBar.classList.toggle('off-path', !here);
+  }
+  document.getElementById('f-next').addEventListener('click', () => { const r = Math.round(progress()); const n = followList.find((i) => i > r); if (n != null) goTo(n); });
+  document.getElementById('f-prev').addEventListener('click', () => { const r = Math.round(progress()); const p = followList.filter((i) => i < r).pop(); if (p != null) goTo(p); });
+  document.getElementById('f-x').addEventListener('click', () => setFollow(null));
+  document.getElementById('f-info').addEventListener('click', () => { gFilter = follow; showTab('chapters'); openToc(); });
+
+  // Chapters tab: show only the scenes one Gospel tells.
+  let gFilter = null;
+  const gfBox = document.createElement('div');
+  gfBox.className = 'gfilter-wrap';
+  gfBox.className = 'gfilter';
+  gfBox.setAttribute('role', 'group');
+  gfBox.setAttribute('aria-label', 'Show the scenes told in');
+  gfBox.innerHTML = [['', 'All'], ...GOSPELS].map((g) => `<button type="button" data-gf="${g[0]}">${g[1]}</button>`).join('');
+  document.querySelector('#toc .toc-top').appendChild(gfBox);
+  const gfSum = document.createElement('div');
+  gfSum.id = 'gf-sum'; gfSum.className = 'gf-sum'; gfSum.hidden = true;
+  tocBody.parentNode.insertBefore(gfSum, tocBody);
+  function applyFilter() {
+    const k = gIndex(gFilter);
+    gfBox.querySelectorAll('[data-gf]').forEach((b) => b.setAttribute('aria-pressed', (b.dataset.gf || null) === gFilter ? 'true' : 'false'));
+    tocBody.querySelectorAll('.toc-ch').forEach((sec) => {
+      let shown = 0;
+      sec.querySelectorAll('[data-i]').forEach((b) => {
+        const st = STEPS[+b.dataset.i]; const h = HARM[st.id];
+        const ok = k < 0 || (h && h[k]);
+        b.parentNode.hidden = !ok;
+        if (ok) shown++;
+        const sm = b.querySelector('small');
+        const sub = k >= 0 && h ? h[k] : stepSub(st);
+        if (sm) sm.textContent = sub; else if (sub) b.insertAdjacentHTML('beforeend', `<small>${esc(sub)}</small>`);
+      });
+      sec.hidden = !shown;
+      sec.querySelector('.cnt').textContent = shown;
+      const g = groups[+sec.dataset.g];
+      sec.querySelector('.toc-head').setAttribute('aria-expanded', k >= 0 || g.steps.includes(Math.round(progress())) ? 'true' : 'false');
+    });
+    const sum = gfSum;
+    sum.hidden = k < 0;
+    if (k >= 0) {
+      const name = GOSPELS[k][1];
+      sum.innerHTML = `<p>${name} tells ${toldBy(gFilter).length} of the ${harmCount} scenes here.</p><button type="button" class="gf-follow" data-follow-f="${gFilter}">${follow === gFilter ? 'Stop following ' + name : 'Follow ' + name + ' through the story'}</button>`;
+    }
+  }
+  gfBox.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-gf]');
+    if (b) { gFilter = b.dataset.gf || null; applyFilter(); toc.scrollTop = 0; }
+  });
+  gfSum.addEventListener('click', (ev) => {
+    const f = ev.target.closest('[data-follow-f]');
+    if (f) {
+      const key = f.dataset.followF;
+      if (follow === key) { setFollow(null); applyFilter(); return; }
+      setFollow(key);
+      const r = Math.round(progress());
+      const n = followList.find((i) => i >= r);
+      goTo(n != null ? n : followList[0]);
+    }
+  });
+
+  applyFilter();
+
+  // ---------- Reading plan and saved scenes (kept on this device) ----------
+  const PLAN = (window.WAY_PLAN || []).map(([title, ids]) => ({ title, steps: ids.map((id) => STEPS.findIndex((st) => st.id === id)).filter((i) => i >= 0) }));
+  const loadSet = (key) => { try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); } catch (err) { return new Set(); } };
+  const saveSet = (key, set) => { try { localStorage.setItem(key, JSON.stringify([...set])); } catch (err) { /* private mode */ } };
+  const seen = loadSet('the-way:seen');
+  const saved = loadSet('the-way:saved');
+  // A scene counts as read once it has been on screen for a moment.
+  let seenTimer = 0;
+  function noteSeen(r) {
+    clearTimeout(seenTimer);
+    if (r < 1 || exploring) return;
+    const id = STEPS[r].id;
+    if (seen.has(id)) return;
+    seenTimer = setTimeout(() => { if (Math.round(progress()) === r) { seen.add(id); saveSet('the-way:seen', seen); } }, 1500);
+  }
+  function syncSaveButtons() {
+    story.querySelectorAll('[data-save]').forEach((b) => {
+      const on = saved.has(b.dataset.save);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('aria-label', on ? 'Saved. Tap to remove' : 'Save this scene');
+    });
+  }
+  story.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-save]');
+    if (!b) return;
+    const id = b.dataset.save;
+    if (saved.has(id)) saved.delete(id); else saved.add(id);
+    saveSet('the-way:saved', saved);
+    syncSaveButtons();
+  });
+  syncSaveButtons();
+  const planBody = document.getElementById('plan-body');
+  let resetArmed = false;
+  function renderPlan() {
+    resetArmed = false;
+    const doneDay = (d) => d.steps.every((i) => seen.has(STEPS[i].id));
+    const next = PLAN.findIndex((d) => !doneDay(d));
+    const days = PLAN.filter(doneDay).length;
+    const total = PLAN.reduce((n, d) => n + d.steps.length, 0);
+    const read = PLAN.reduce((n, d) => n + d.steps.filter((i) => seen.has(STEPS[i].id)).length, 0);
+    const startOf = (d) => { const u = d.steps.find((i) => !seen.has(STEPS[i].id)); return u != null ? u : d.steps[0]; };
+    const sub = (d) => d.steps.map((i) => stepLabel(STEPS[i])).join(' · ');
+    let html = `<div class="plan-head"><p class="plan-k">Reading plan</p><h3>30 days through the Gospels</h3>
+      <p class="plan-sub">About three scenes a day, at your own pace. A day is ticked once you have scrolled through its scenes.</p>
+      <div class="plan-bar" aria-hidden="true"><i style="width:${(100 * read / total).toFixed(1)}%"></i></div>
+      <p class="plan-count">${days} of ${PLAN.length} days · ${read} of ${total} scenes</p>`;
+    html += next >= 0
+      ? `<button type="button" class="plan-go" data-i="${startOf(PLAN[next])}"><span class="plan-go-k">${read ? 'Continue' : 'Start'} · Day ${next + 1}</span><span class="plan-go-t">${esc(PLAN[next].title)}</span><small>${esc(sub(PLAN[next]))}</small></button>`
+      : '<p class="plan-done">You have read the whole story. Well done.</p>';
+    html += '</div><ol class="plan-days">' + PLAN.map((d, k) => {
+      const dn = doneDay(d);
+      return `<li class="${dn ? 'done' : ''}${k === next ? ' next' : ''}"><button type="button" data-i="${startOf(d)}"><span class="d-num">${dn ? '✓' : k + 1}</span><span class="d-t">${esc(d.title)}<small>${esc(sub(d))}</small></span></button></li>`;
+    }).join('') + '</ol>';
+    const list = STEPS.map((st, i) => i).filter((i) => saved.has(STEPS[i].id));
+    html += '<h3 class="plan-h">Saved scenes</h3>' + (list.length
+      ? '<ul class="saved-list">' + list.map((i) => { const st = STEPS[i]; return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}${st.ref ? `<small>${esc(st.ref[0])}</small>` : ''}</button><button type="button" class="unsave" data-unsave="${st.id}" aria-label="Remove ${esc(stepLabel(st))} from saved">${BOOKMARK}</button></li>`; }).join('') + '</ul>'
+      : `<p class="q-hint">Tap the bookmark ${BOOKMARK} on any scene to save it here.</p>`);
+    html += `<p class="plan-note">Your progress and saved scenes stay on this device.</p>${read || saved.size ? '<button type="button" class="plan-reset">Reset reading progress</button>' : ''}`;
+    planBody.innerHTML = html;
+  }
+  planBody.addEventListener('click', (ev) => {
+    const u = ev.target.closest('[data-unsave]');
+    if (u) { saved.delete(u.dataset.unsave); saveSet('the-way:saved', saved); syncSaveButtons(); renderPlan(); return; }
+    const rs = ev.target.closest('.plan-reset');
+    if (rs) {
+      if (!resetArmed) { resetArmed = true; rs.textContent = 'Tap again to clear your progress'; return; }
+      seen.clear(); saveSet('the-way:seen', seen); renderPlan(); return;
+    }
+    const b = ev.target.closest('[data-i]');
+    if (b) goTo(+b.dataset.i);
+  });
+  if (follow) setFollow(follow);
 
   // ---------- Scripture reader ----------
   // Tapping a reference opens the passage in a panel over the map, so the reader

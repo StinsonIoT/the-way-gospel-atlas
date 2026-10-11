@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Instrument+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=27">
+<link rel="stylesheet" href="css/style.css?v=28">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -44,6 +44,12 @@
     <button id="chapter-btn" class="chapter" type="button" aria-haspopup="dialog" aria-label="Open chapter menu"><span id="chapter" aria-live="polite">The Way</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg></button>
     <button id="search-open" class="icon-btn" type="button" aria-label="Search the story" aria-haspopup="dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="12.8" y1="12.8" x2="17" y2="17"/></svg></button>
     <button id="key-open" class="key-btn" type="button">Map key</button>
+  </div>
+  <div id="follow" class="follow" hidden>
+    <button id="f-prev" type="button" aria-label="Previous scene in this Gospel"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 2.5 L4 6 L7.5 9.5"/></svg></button>
+    <button id="f-info" type="button" class="f-info"><span>Following <b id="f-name">Mark</b></span><span id="f-pos"></span></button>
+    <button id="f-next" type="button" class="f-next">Next<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 L8 6 L4.5 9.5"/></svg></button>
+    <button id="f-x" type="button" aria-label="Stop following this Gospel"><svg viewBox="0 0 18 18" aria-hidden="true"><line x1="5" y1="5" x2="13" y2="13"/><line x1="13" y1="5" x2="5" y2="13"/></svg></button>
   </div>
 </header>
 
@@ -74,11 +80,13 @@
   </div>
   <div class="tabs" role="tablist" aria-label="Find your way">
     <button type="button" role="tab" id="tab-chapters" aria-controls="panel-chapters" aria-selected="true">Chapters</button>
+    <button type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false">Plan</button>
     <button type="button" role="tab" id="tab-places" aria-controls="panel-places" aria-selected="false">Places</button>
     <button type="button" role="tab" id="tab-search" aria-controls="panel-search" aria-selected="false">Search</button>
   </div>
   </div>
   <div id="panel-chapters" role="tabpanel" aria-labelledby="tab-chapters"><div id="toc-body"></div></div>
+  <div id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" hidden><div id="plan-body"></div></div>
   <div id="panel-places" role="tabpanel" aria-labelledby="tab-places" hidden><div id="places-body"></div></div>
   <div id="panel-search" role="tabpanel" aria-labelledby="tab-search" hidden>
     <input id="q" type="search" placeholder="People, places, verses, words…" aria-label="Search the story" autocomplete="off" enterkeyhint="search">
@@ -105,6 +113,19 @@
   <p class="p-foot">Berean Standard Bible · public domain · audio via the Free Use Bible API · <a id="passage-hub" href="https://biblehub.com/bsb/" target="_blank" rel="noopener">Open on BibleHub</a></p>
 </dialog>
 
+<dialog id="gospels" aria-labelledby="gos-title">
+  <div class="dlg-head">
+    <h2 id="gos-title">In the Gospels</h2>
+    <button id="gos-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 18 18" aria-hidden="true"><line x1="3" y1="3" x2="15" y2="15"/><line x1="15" y1="3" x2="3" y2="15"/></svg>
+    </button>
+  </div>
+  <p id="gos-scene" class="gos-scene"></p>
+  <ul id="gos-list" class="gos-list"></ul>
+  <p id="gos-note" class="gos-note" hidden></p>
+  <p class="gos-foot">Tap a passage to read it. <b>Follow</b> steps through the story one Gospel at a time.</p>
+</dialog>
+
 <dialog id="key" aria-labelledby="key-title">
   <div class="dlg-head">
     <h2 id="key-title">How sure is each mark?</h2>
@@ -116,9 +137,10 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=27"></script>
-<script src="js/scenes.js?v=27"></script>
+<script src="vendor/maplibre-contour.min.js?v=28"></script>
+<script src="js/scenes.js?v=28"></script>
 <script src="js/places.js?v=3"></script>
-<script src="js/app.js?v=27"></script>
+<script src="js/study.js?v=1"></script>
+<script src="js/app.js?v=28"></script>
 </body>
 </html>
