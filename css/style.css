@@ -441,3 +441,7 @@ html.og .kicker { font-size: 15px; }
 html.og .verse blockquote { font-size: 40px; }
 html.og body::after { content: 'THE WAY · A GOSPEL ATLAS'; position: fixed; z-index: 30; left: 48px; top: 36px; font: 600 15px var(--sans); letter-spacing: .24em; color: var(--m-accent);
   padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--m-land) 80%, transparent); }
+.plan-offline { width: 100%; min-height: 46px; border: 1px solid var(--c-line); border-radius: 12px; background: transparent; color: var(--c-fg); font: 600 14px var(--sans); cursor: pointer; }
+.plan-offline[data-done] { color: var(--c-muted); font-weight: 500; }
+.plan-offline:disabled { opacity: .7; cursor: default; }
+.plan-off-sub { margin-top: 4px; }

@@ -49,7 +49,7 @@ Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that open
 
 - **About** (`about.html`) and **Sources** (`sources.html`) pages explain how the atlas was made and list every source the notes cite.
 - Shared links show a preview card (`og.png`). Each scene also has a share button: it sends a link to `s/<scene>.html`, a small page with that scene's own preview card (`s/<scene>.jpg`) that forwards to the scene. `tools/make-share.py` regenerates these pages and images after scene changes.
-- On iPhone, Share → Add to Home Screen installs it as an app (`manifest.webmanifest`, icons). A small offline cache (`sw.js`) makes it reopen quickly; terrain tiles still need a connection.
+- On iPhone, Share → Add to Home Screen installs it as an app (`manifest.webmanifest`, icons). The offline cache (`sw.js`) makes it reopen quickly and work without a signal: the atlas's own files, every Bible passage you have opened, and the most recent terrain tiles (up to 900) are kept. The Plan tab can also save the text of all four Gospels at once. Audio still needs a connection.
 - The atlas remembers the last scene you reached and offers to continue from there.
 
 ## Running it
@@ -67,12 +67,14 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `index.html`: page shell, header, menus, map key and passage dialogs
 - `about.html`, `sources.html`, `css/page.css`: the About and Sources pages
 - `manifest.webmanifest`, `sw.js`, `og.png`, icons: install, offline cache and link previews
+- `fonts/`: Newsreader and Instrument Sans (SIL Open Font License), served from the site
+- `tools/make-share.py`: rebuilds the per-scene share pages and images in `s/`
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
 - `js/places.js`: the place profiles
 - `js/study.js`: the Gospel parallels for each scene and the 30-day reading plan
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type
-- `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, `jerusalem3d.geojson` and `capernaum3d.geojson` (the 3D models: heights in metres, `illustrative: true` on houses)
+- `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, `jerusalem3d.json` and `capernaum3d.json` (the 3D models: heights in metres, `illustrative: true` on houses)
 - `vendor/`: MapLibre GL JS 4.7.1 and maplibre-contour 0.1.0 (both BSD-3-Clause; licences included)
 
 To add or edit a scene, change `js/scenes.js` only.

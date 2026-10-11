@@ -219,12 +219,13 @@
     style: {
       version: 8,
       sources: {
-        land: { type: 'geojson', data: 'data/land.geojson?v=8' },
-        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=10' },
-        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=8' },
-        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=8' },
-        city3d: { type: 'geojson', data: 'data/jerusalem3d.geojson?v=8' },
-        village3d: { type: 'geojson', data: 'data/capernaum3d.geojson?v=11' },
+        land: { type: 'geojson', data: 'data/land.json?v=9' },
+        lakes: { type: 'geojson', data: 'data/lakes.json?v=11' },
+        rivers: { type: 'geojson', data: 'data/rivers.json?v=9' },
+        jeru: { type: 'geojson', data: 'data/jerusalem.json?v=9' },
+        // The two 3D models load once the map has first drawn (see start()).
+        city3d: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
+        village3d: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         overlay: { type: 'geojson', data: overlay },
         zones: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         ...terrainSources
@@ -916,10 +917,50 @@
     html += '<h3 class="plan-h">Saved scenes</h3>' + (list.length
       ? '<ul class="saved-list">' + list.map((i) => { const st = STEPS[i]; return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}${st.ref ? `<small>${esc(st.ref[0])}</small>` : ''}</button><button type="button" class="unsave" data-unsave="${st.id}" aria-label="Remove ${esc(stepLabel(st))} from saved">${BOOKMARK}</button></li>`; }).join('') + '</ul>'
       : `<p class="q-hint">Tap the bookmark ${BOOKMARK} on any scene to save it here.</p>`);
+    if ('serviceWorker' in navigator && 'caches' in window) {
+      let when = null;
+      try { when = localStorage.getItem('the-way:offline-text'); } catch (err) { /* ignore */ }
+      html += `<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">Save the text of all four Gospels to this phone, so every passage opens without a signal (a few megabytes). Map areas you have viewed are kept as well. Listening needs a connection.</p>
+        <button type="button" class="plan-offline"${when ? ' data-done="1"' : ''}>${when ? 'Saved for offline ✓ · Save again' : 'Save the Gospels for offline'}</button>`;
+    }
     html += `<p class="plan-note">Your progress and saved scenes stay on this device.</p>${read || saved.size ? '<button type="button" class="plan-reset">Reset reading progress</button>' : ''}`;
     planBody.innerHTML = html;
   }
+  // Fetch every Gospel chapter (and Acts 1) once; the service worker keeps them.
+  const OFFLINE_BOOKS = [['matthew', 28], ['mark', 16], ['luke', 24], ['john', 21], ['acts', 1]];
+  let savingOffline = false;
+  async function saveOffline(btn) {
+    if (savingOffline) return;
+    savingOffline = true;
+    const jobs = OFFLINE_BOOKS.flatMap(([b, n]) => Array.from({ length: n }, (x, k) => [b, k + 1]));
+    let done = 0, failed = 0;
+    const next = async () => {
+      while (jobs.length) {
+        const [b, c] = jobs.shift();
+        const url = `https://bible.helloao.org/api/BSB/${API_BOOK[b]}/${c}.json`;
+        try {
+          if (!(await cache.match(url))) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(res.status);
+            await cache.put(url, res);
+          }
+        } catch (err) { failed++; }
+        done++;
+        if (btn.isConnected) btn.textContent = `Saving… ${done} of ${done + jobs.length}`;
+      }
+    };
+    btn.disabled = true;
+    const cache = await caches.open('the-way-bible');
+    await Promise.all([next(), next(), next(), next()]);
+    btn.disabled = false;
+    savingOffline = false;
+    if (failed) { btn.textContent = `${failed} chapters didn’t save · Try again`; return; }
+    try { localStorage.setItem('the-way:offline-text', new Date().toISOString()); } catch (err) { /* ignore */ }
+    btn.textContent = 'Saved for offline ✓ · Save again';
+  }
   planBody.addEventListener('click', (ev) => {
+    const off = ev.target.closest('.plan-offline');
+    if (off) { saveOffline(off); return; }
     const u = ev.target.closest('[data-unsave]');
     if (u) { saved.delete(u.dataset.unsave); saveSet('the-way:saved', saved); syncSaveButtons(); renderPlan(); return; }
     const rs = ev.target.closest('.plan-reset');
@@ -1519,6 +1560,16 @@
     else if (!OG) offerResume();
     render();
     document.body.classList.add('ready');
+    // The 3D models are the largest files; fetch them after the first draw so
+    // the land, sea and names come first on a slow connection.
+    let late = false;
+    const loadLate = () => {
+      if (late) return; late = true;
+      map.getSource('city3d').setData('data/jerusalem3d.json?v=9');
+      map.getSource('village3d').setData('data/capernaum3d.json?v=12');
+    };
+    map.once('idle', loadLate);
+    setTimeout(loadLate, 2500);
   }
   // Start as soon as the style is ready; do not wait for terrain tiles.
   map.on('style.load', start);
