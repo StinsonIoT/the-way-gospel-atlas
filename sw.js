@@ -1,7 +1,7 @@
 // The Way — offline cache. Pages load from the network first so updates show
 // at once; the map engine, styles, scripts and map data are served from cache
 // (their URLs carry a version number, so a new version is a new file).
-const CACHE = 'the-way-v7';
+const CACHE = 'the-way-v8';
 const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
   'vendor/maplibre-gl.js', 'vendor/maplibre-gl.css'];
 self.addEventListener('install', (e) => {

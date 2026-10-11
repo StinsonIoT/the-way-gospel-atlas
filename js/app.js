@@ -94,6 +94,7 @@
   const HARM = window.WAY_HARMONY || {};
   const GOSPELS = [['mt', 'Matthew', 'Mt'], ['mk', 'Mark', 'Mk'], ['lk', 'Luke', 'Lk'], ['jn', 'John', 'Jn']];
   const BOOKMARK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.2 H12 V14 L8 10.9 L4 14 Z"/></svg>';
+  const HEADPHONES = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 10 V8.5 a5.5 5.5 0 0 1 11 0 V10"/><rect x="2" y="9.5" width="3" height="4.5" rx="1.2"/><rect x="11" y="9.5" width="3" height="4.5" rx="1.2"/></svg>';
   function studyRow(s) {
     const h = HARM[s.id];
     if (!h) return '';
@@ -101,7 +102,8 @@
     const say = told.length === 1 ? 'Only in ' + told[0] : told.length === 4 ? 'In all four Gospels' : 'Told in ' + told.length + ' Gospels';
     return `<div class="study"><button type="button" class="gos-btn" data-gos="${s.id}" aria-haspopup="dialog" aria-label="${esc(say)}: ${esc(told.join(', '))}. Compare the accounts">`
       + `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span><span class="gos-say" aria-hidden="true">${esc(say)}</span></button>`
-      + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></div>`;
+      + `<span class="study-acts"><button type="button" class="listen-btn" data-tour-from="${s.id}" aria-label="Listen from this scene">${HEADPHONES}</button>`
+      + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></span></div>`;
   }
   const LEGEND = [
     ['named', 'Named place.', 'The text names the town; the dot is approximate.'],
@@ -124,7 +126,7 @@
         <h1>Follow<br>the <em>Way.</em></h1>
         <p class="lede">From a manger in Bethlehem to the Mount of Olives: the life, death and resurrection of Jesus, read in the Berean Standard Bible.</p>
         <div id="resume" class="resume" hidden></div>
-        <button type="button" class="hero-explore" data-explore="land">Or explore the map freely</button>
+        <div class="hero-acts"><button type="button" class="hero-listen" data-tour-start>${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 L13 8 L4.5 13.2 Z"/></svg>'}Listen to the story</button><button type="button" class="hero-explore" data-explore="land">Explore the map</button></div>
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;
     }
@@ -358,7 +360,9 @@
       // Zoom that fits the bounds in the padded area; the centre is the middle of
       // the bounds, and the map's padding keeps it centred in the free space even
       // when the camera is tilted.
-      const c = map.cameraForBounds(s.view, { padding: pad, bearing });
+      // (cameraForBounds gives nothing when the padding leaves no room, e.g.
+      // mid-resize; fall back to no padding.)
+      const c = map.cameraForBounds(s.view, { padding: pad, bearing }) || map.cameraForBounds(s.view, { bearing }) || { zoom: map.getZoom() };
       const mid = [(s.view[0][0] + s.view[1][0]) / 2, (s.view[0][1] + s.view[1][1]) / 2];
       const m = maplibregl.MercatorCoordinate.fromLngLat(mid);
       return { x: m.x, y: m.y, zoom: c.zoom - (pitch ? 0.35 : 0), pitch, bearing };
@@ -947,6 +951,7 @@
   let passageOpener = null;
   let passageToken = 0;
   async function openPassage(label) {
+    if (tour) tourPause();
     const spans = refSpans(label).filter((sp) => API_BOOK[sp.book]);
     if (!spans.length) return false;
     const first = spans[0];
@@ -1074,6 +1079,242 @@
     ev.preventDefault();
     openPassage(label);
   });
+
+  // ---------- Listen through the story ----------
+  // Press play once: each scene's passage is read aloud (BSB audio), then the
+  // map glides on to the next scene, or to the next one in the Gospel you follow.
+  // Scenes without a passage pause for a moment instead.
+  const tourEl = document.getElementById('t-audio');
+  const tourBar = document.getElementById('tour');
+  const tTitle = document.getElementById('t-title');
+  const tSub = document.getElementById('t-sub');
+  const tFill = document.getElementById('t-fill');
+  const tPlay = document.getElementById('t-play');
+  const TOUR_REF = { trials: 'Mark 14:53–15:15' };
+  function tourRef(st) {
+    if (TOUR_REF[st.id]) return TOUR_REF[st.id];
+    const l = st.ref && st.ref[0];
+    return l && refSpans(l).some((sp) => API_BOOK[sp.book]) ? l.replace(/\s*·\s*BSB$/, '') : null;
+  }
+  // The verses of a passage as audio segments: the recording of each chapter,
+  // from the first verse's start time to the start of the verse after the last.
+  async function buildAudio(label) {
+    const segs = [];
+    let reader = null;
+    for (const sp of refSpans(label).filter((x) => API_BOOK[x.book]).slice(0, 3)) {
+      const last = Math.min(sp.c2, sp.c1 + 2);
+      for (let c = sp.c1; c <= last; c++) {
+        const json = await loadChapter(sp.book, c);
+        const links = json.thisChapterAudioLinks || {};
+        if (!reader) reader = READERS.find((r) => links[r]) || Object.keys(links)[0];
+        const url = links[reader];
+        if (!url) continue;
+        const from = c === sp.c1 && sp.v1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
+        let start = 0, end = null;
+        const tl = (json.thisChapterAudioTimings || {})[reader];
+        if (tl) {
+          try {
+            const t = await fetch(new URL(tl, 'https://bible.helloao.org/').href).then((r) => (r.ok ? r.json() : null));
+            const v = t && t.verses;
+            if (v && v.length) { start = from > 1 && v[from - 1] != null ? v[from - 1] : 0; end = v[to] != null ? v[to] : null; }
+          } catch (err) { /* whole chapter */ }
+        }
+        segs.push({ url, start, end });
+      }
+    }
+    return { reader, segs };
+  }
+  // iPhone only lets audio start from a tap, so the first tap plays a moment of
+  // silence; after that the same player may move from passage to passage.
+  const SILENT = (() => {
+    const n = 800, b = new Uint8Array(44 + n), d = new DataView(b.buffer);
+    const str = (o, s) => { for (let k = 0; k < s.length; k++) b[o + k] = s.charCodeAt(k); };
+    str(0, 'RIFF'); d.setUint32(4, 36 + n, true); str(8, 'WAVEfmt '); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+    d.setUint32(24, 8000, true); d.setUint32(28, 8000, true); d.setUint16(32, 1, true); d.setUint16(34, 8, true); str(36, 'data'); d.setUint32(40, n, true);
+    b.fill(128, 44);
+    return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
+  })();
+  function unlockTour() {
+    tourEl.dataset.kind = 'silent';
+    tourEl.src = SILENT;
+    const pr = tourEl.play();
+    if (pr && pr.catch) pr.catch(() => {});
+  }
+  let tour = null, tourToken = 0, tourDwell = 0, glideTouch = false;
+  window.addEventListener('touchstart', () => { glideTouch = true; }, { passive: true });
+  const tourNext = (i) => { if (follow) { const n = followList.find((x) => x > i); return n == null ? -1 : n; } return i + 1 < N ? i + 1 : -1; };
+  function setTourPlaying(on) {
+    if (tour) tour.playing = on;
+    tourBar.classList.toggle('playing', on);
+    tPlay.setAttribute('aria-label', on ? 'Pause' : 'Play');
+    if ('mediaSession' in navigator) { try { navigator.mediaSession.playbackState = on ? 'playing' : 'paused'; } catch (err) { /* optional */ } }
+  }
+  // Scroll smoothly to a scene, so the map flies there; jump if it is far away
+  // or the screen is off.
+  function glideTo(i) {
+    return new Promise((res) => {
+      measure();
+      const y0 = window.scrollY, y1 = tops[i] + 2;
+      const jump = () => { setScroll(y1); queue(); res(); };
+      if (reduceMotion || document.hidden || Math.abs(y1 - y0) > window.innerHeight * 2.5) { jump(); return; }
+      const dur = 2600, t0 = performance.now();
+      glideTouch = false;
+      let done = false;
+      const finish = (snap) => { if (done) return; done = true; if (snap) setScroll(y1); queue(); res(); };
+      const step = (t) => {
+        if (done) return;
+        if (glideTouch) { finish(false); return; }
+        const f = Math.min(1, (t - t0) / dur);
+        const e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+        setScroll(y0 + (y1 - y0) * e); queue();
+        if (f < 1) requestAnimationFrame(step); else finish(true);
+      };
+      requestAnimationFrame(step);
+      setTimeout(() => finish(!glideTouch), dur + 600); // if frames stop (screen locked)
+    });
+  }
+  async function tourPlay(i) {
+    const token = ++tourToken;
+    clearTimeout(tourDwell);
+    if (tourEl.dataset.kind === 'tour') { tourEl.dataset.kind = 'idle'; tourEl.pause(); }
+    resetAudio();
+    const st = STEPS[i];
+    const label = tourRef(st);
+    tour = { i, segs: [], k: 0, label, playing: true, ended: false };
+    document.documentElement.classList.add('touring');
+    tourBar.hidden = false;
+    tTitle.textContent = stepLabel(st);
+    tSub.textContent = label ? 'Loading ' + label + '…' : 'A moment with this scene';
+    tFill.style.width = '0%';
+    setTourPlaying(true);
+    queueDeclutter();
+    if ('mediaSession' in navigator) {
+      try { navigator.mediaSession.metadata = new MediaMetadata({ title: stepLabel(st), artist: label ? label + ' · Berean Standard Bible' : 'The Way', album: 'The Way', artwork: [{ src: 'icon-512.png', sizes: '512x512', type: 'image/png' }] }); } catch (err) { /* optional */ }
+    }
+    const loading = label ? buildAudio(label).catch(() => ({ segs: [] })) : null;
+    if (Math.round(progress()) !== i) await glideTo(i);
+    if (token !== tourToken) return;
+    const a = loading ? await loading : { segs: [] };
+    if (token !== tourToken) return;
+    tour.segs = a.segs;
+    if (tour.segs.length) {
+      tSub.textContent = label + (a.reader ? ' · read by ' + a.reader.charAt(0).toUpperCase() + a.reader.slice(1) : '');
+      playTourSeg(0);
+    } else {
+      if (label) tSub.textContent = label + ' · audio unavailable';
+      dwell(token);
+    }
+    // Fetch the next passage while this one plays.
+    const n = tourNext(i);
+    const nl = n >= 0 ? tourRef(STEPS[n]) : null;
+    if (nl) refSpans(nl).filter((sp) => API_BOOK[sp.book]).slice(0, 1).forEach((sp) => loadChapter(sp.book, sp.c1).catch(() => {}));
+  }
+  function playTourSeg(k) {
+    const sg = tour.segs[k];
+    tour.k = k;
+    tourEl.dataset.kind = 'tour';
+    if (tourEl.getAttribute('src') !== sg.url) tourEl.src = sg.url;
+    const seek = () => { try { tourEl.currentTime = sg.start; } catch (err) { /* ignore */ } };
+    if (tourEl.readyState >= 1) seek(); else tourEl.addEventListener('loadedmetadata', seek, { once: true });
+    const pr = tourEl.play();
+    if (pr && pr.catch) pr.catch(() => { setTourPlaying(false); tSub.textContent = 'Tap play to listen'; });
+  }
+  function dwell(token) {
+    const st = STEPS[tour.i];
+    const words = strip([st.title, st.text, st.verse, st.note].filter(Boolean).join(' ')).split(' ').length;
+    const ms = clamp(words * 300, 6000, 14000), t0 = Date.now();
+    tour.dwellLeft = ms;
+    const tick = () => {
+      if (token !== tourToken || !tour.playing) return;
+      const f = (Date.now() - t0) / ms;
+      tFill.style.width = (100 * Math.min(1, f)).toFixed(1) + '%';
+      if (f >= 1) sceneDone(); else tourDwell = setTimeout(tick, 250);
+    };
+    tourDwell = setTimeout(tick, 250);
+  }
+  function sceneDone() {
+    if (!tour) return;
+    // If the reader scrolled away, stop here and let them pick up from there.
+    if (Math.round(progress()) !== tour.i) { tour.ended = true; setTourPlaying(false); tSub.textContent = 'Paused · tap play to listen from here'; return; }
+    const n = tourNext(tour.i);
+    if (n < 0) { endTour(true); return; }
+    const token = tourToken;
+    tourDwell = setTimeout(() => { if (token === tourToken && tour && tour.playing) tourPlay(n); }, 900);
+  }
+  function endTour(finished) {
+    tourToken++;
+    clearTimeout(tourDwell);
+    tourEl.pause();
+    tour = null;
+    setTourPlaying(false);
+    if (finished) {
+      tTitle.textContent = 'The end of the story';
+      tSub.textContent = 'Thank you for listening.';
+      setTimeout(() => { if (!tour) { tourBar.hidden = true; document.documentElement.classList.remove('touring'); queueDeclutter(); } }, 5000);
+    } else {
+      tourBar.hidden = true;
+      document.documentElement.classList.remove('touring');
+      queueDeclutter();
+    }
+  }
+  function tourPause() {
+    if (!tour || !tour.playing) return;
+    clearTimeout(tourDwell);
+    setTourPlaying(false);
+    if (tour.segs.length) tourEl.pause();
+  }
+  tourEl.addEventListener('timeupdate', () => {
+    if (!tour || tourEl.dataset.kind !== 'tour') return;
+    const sg = tour.segs[tour.k]; if (!sg) return;
+    if (sg.end != null && tourEl.currentTime >= sg.end - 0.05) { tourSegEnd(); return; }
+    const end = sg.end != null ? sg.end : tourEl.duration;
+    const span = Math.max(0.1, (end || sg.start + 1) - sg.start);
+    tFill.style.width = (100 * (tour.k + clamp((tourEl.currentTime - sg.start) / span, 0, 1)) / tour.segs.length).toFixed(1) + '%';
+  });
+  tourEl.addEventListener('ended', () => { if (tour && tourEl.dataset.kind === 'tour') tourSegEnd(); });
+  function tourSegEnd() {
+    if (tour.k < tour.segs.length - 1) { playTourSeg(tour.k + 1); return; }
+    tourEl.pause();
+    tourEl.dataset.kind = 'done';
+    sceneDone();
+  }
+  tourEl.addEventListener('pause', () => { if (tour && tour.playing && tourEl.dataset.kind === 'tour' && !tourEl.ended) setTourPlaying(false); });
+  tourEl.addEventListener('play', () => { if (tour && tourEl.dataset.kind === 'tour') setTourPlaying(true); });
+  function startTourAt(i) {
+    unlockTour();
+    if (exploring) closeExplore();
+    if (toc.open) toc.close();
+    tourPlay(Math.max(1, i));
+  }
+  tPlay.addEventListener('click', () => {
+    if (!tour) return;
+    if (tour.playing) { tourPause(); return; }
+    const r = Math.round(progress());
+    if (tour.ended || r !== tour.i) { startTourAt(r); return; }
+    setTourPlaying(true);
+    if (tour.segs.length) { const pr = tourEl.play(); if (pr && pr.catch) pr.catch(() => setTourPlaying(false)); }
+    else dwell(tourToken);
+  });
+  document.getElementById('t-next').addEventListener('click', () => {
+    if (!tour) return;
+    const n = tourNext(Math.max(tour.i, Math.round(progress()) - 1));
+    if (n < 0) { endTour(true); return; }
+    unlockTour();
+    tourPlay(n);
+  });
+  document.getElementById('t-x').addEventListener('click', () => endTour(false));
+  document.addEventListener('click', (ev) => {
+    const s = ev.target.closest('[data-tour-start]');
+    if (s) { startTourAt(1); return; }
+    const f = ev.target.closest('[data-tour-from]');
+    if (f) startTourAt(STEPS.findIndex((st) => st.id === f.dataset.tourFrom));
+  });
+  if ('mediaSession' in navigator) {
+    const h = (a, fn) => { try { navigator.mediaSession.setActionHandler(a, fn); } catch (err) { /* unsupported */ } };
+    h('play', () => { if (tour && !tour.playing) tPlay.click(); else if (!tour && aSegs.length) aBtn.click(); });
+    h('pause', () => { if (tour) tourPause(); else audioEl.pause(); });
+    h('nexttrack', () => { if (tour) document.getElementById('t-next').click(); });
+  }
 
   document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); showTab('chapters'); openToc(); });
   document.getElementById('search-open').addEventListener('click', () => { if (exploring) closeExplore(); showTab('search'); openToc(); });
@@ -1352,6 +1593,7 @@
     return { center: [p.lng, p.lat], zoom: z, pitch: z > 13 ? 58 : 45, bearing: 0 };
   }
   function openExplore(target) {
+    if (tour) endTour(false);
     const v = typeof target === 'object' && target ? target : (VIEWS[target] || VIEWS.land);
     if (toc.open) toc.close();
     if (!exploring) {
