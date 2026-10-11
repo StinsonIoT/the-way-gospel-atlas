@@ -386,12 +386,31 @@
       try { history.replaceState(null, '', r === 0 ? location.pathname + location.search : '#' + sections[r].id); } catch (err) { /* ignore */ }
     }, 500);
   }
+  // Jump to a scene. On iPhone (WebKit), closing a dialog or the keyboard can
+  // pull the page back to where it was, or to the top, on the next touch. So:
+  // drop focus first, close, wait two frames, scroll, and re-apply the
+  // position once if something moved it before the reader touches the screen.
+  let touchedSinceJump = false;
+  window.addEventListener('touchstart', () => { touchedSinceJump = true; }, { passive: true });
+  function setScroll(y) {
+    window.scrollTo(0, y);
+    if (document.scrollingElement) document.scrollingElement.scrollTop = y;
+  }
   function goTo(i) {
     if (exploring) closeExplore();
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    tocOpener = null;
     if (toc.open) toc.close();
-    measure();
-    window.scrollTo({ top: tops[i] + 2, behavior: 'instant' });
-    queue();
+    touchedSinceJump = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      measure();
+      const y = tops[i] + 2;
+      setScroll(y);
+      queue();
+      [180, 450].forEach((ms) => setTimeout(() => {
+        if (!touchedSinceJump && Math.abs(window.scrollY - y) > 4) { setScroll(y); queue(); }
+      }, ms));
+    }));
   }
   segBtns.forEach((b) => b.addEventListener('click', () => goTo(groups[+b.dataset.g].start)));
 
@@ -414,6 +433,7 @@
     const sb = ev.target.closest('[data-i]');
     if (sb) goTo(+sb.dataset.i);
   });
+  let tocOpener = null;
   function openToc() {
     const r = Math.round(progress());
     tocBody.querySelectorAll('[aria-current]').forEach((b) => b.removeAttribute('aria-current'));
@@ -425,6 +445,8 @@
     });
     const cur = tocBody.querySelector(`[data-i="${r}"]`);
     if (cur) cur.setAttribute('aria-current', 'step');
+    tocOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+    if (tocOpener && tocOpener.blur) tocOpener.blur();
     toc.showModal();
     if (cur) cur.scrollIntoView({ block: 'center' });
   }
@@ -596,6 +618,10 @@
   document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); showTab('chapters'); openToc(); });
   document.getElementById('search-open').addEventListener('click', () => { if (exploring) closeExplore(); showTab('search'); openToc(); });
   document.getElementById('toc-close').addEventListener('click', () => toc.close());
+  toc.addEventListener('close', () => {
+    if (tocOpener && tocOpener.focus && !touchedSinceJump) { try { tocOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+    tocOpener = null;
+  });
   toc.addEventListener('click', (ev) => { if (ev.target === toc) toc.close(); });
 
   let exploring = false;
