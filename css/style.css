@@ -474,3 +474,24 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
 .pl-know ul { margin: 2px 0 0; padding-left: 18px; }
 .pl-know li { margin: 0 0 5px; }
 .pl-know li::marker { color: var(--c-accent); }
+.extra-ot { background: color-mix(in srgb, #4F8A5F 12%, transparent); border-color: #4F8A5F; }
+.extra-ot b { color: #3D6E4A; }
+.card-dark .extra-ot b, .card-dusk .extra-ot b, .card-slate .extra-ot b, .card-ember .extra-ot b { color: #8FC29C; }
+.verse .extra-ot b { color: color-mix(in srgb, #4F8A5F 60%, var(--m-txt)); }
+.ot-list { list-style: none; margin: 4px 0 0; padding: 0; }
+.ot-list li { margin: 0 0 8px; }
+.ot-list li:last-child { margin: 0; }
+.ot-refs { display: block; font-weight: 600; }
+.ot-in { font-weight: 400; opacity: .8; }
+.study-acts-only .study-src { font: 600 11px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--c-muted, var(--m-muted)); }
+
+/* ---------- browse by topic ---------- */
+.topics { margin: 4px 0 6px; }
+.topics-k { margin: 6px 2px 8px; font: 600 11px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--c-accent); }
+.topic-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.topic-chips button { min-height: 36px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--c-line); background: transparent; color: var(--c-fg); font: 500 13px var(--sans); cursor: pointer; }
+.topic-chips button[aria-pressed="true"] { background: var(--c-fg); color: var(--c-bg); border-color: transparent; }
+.results .topic-head { padding: 10px 2px 8px; border-top: 0; font-size: 14px; color: var(--c-muted); line-height: 1.45; }
+.results .topic-head b { display: block; font: 400 20px var(--serif); color: var(--c-fg); }
+.mk .dot-hist { background: var(--m-land); box-shadow: inset 0 0 0 2px var(--m-txt), 0 0 0 2px var(--m-land); }
+.s-hist { fill: none; stroke: var(--c-fg, #1C2A25); stroke-width: 2; }

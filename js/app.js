@@ -71,7 +71,7 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const refLink = (ref, cls) => ref ? `<a class="${cls || 'ref'}" data-ref="${esc(ref[0])}" href="https://biblehub.com/bsb/${ref[1]}/${ref[2]}.htm" target="_blank" rel="noopener">${esc(ref[0])}<span class="ref-icon" aria-hidden="true"></span></a>` : '';
   // Scripture references inside notes, e.g. "(Luke 2:44)", become tappable.
-  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Hosea|Micah|Isaiah|Zechariah|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
+  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Numbers|Jeremiah|Daniel|Hosea|Joel|Jonah|Micah|Isaiah|Zechariah|Malachi|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
     (m) => `<button type="button" class="vref" data-ref="${m}">${m}</button>`);
   const SYM = {
     named: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="5" class="s-fill"/></svg>',
@@ -80,21 +80,25 @@
     link: '<svg viewBox="0 0 30 20" aria-hidden="true"><line x1="3" y1="10" x2="28" y2="10" class="s-link"/></svg>',
     recon: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="6" y="4" width="18" height="12" class="s-recon"/></svg>',
     trad: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="10" y="5" width="10" height="10" transform="rotate(45 15 10)" class="s-trad"/></svg>',
-    rule: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="4" y="4" width="22" height="12" rx="2" class="s-rule"/></svg>'
+    rule: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="4" y="4" width="22" height="12" rx="2" class="s-rule"/></svg>',
+    hist: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="4.2" class="s-hist"/></svg>'
   };
   const ICON = {
     life: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8 L8 3.5 L13.5 8 M4.5 6.5 V13 H11.5 V6.5 M7 13 V10 H9 V13"/></svg>',
+    ot: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 H11.5 A1.5 1.5 0 0 1 13 4 V13.5 H5.5 A1.5 1.5 0 0 1 4 12 Z M4 12 A1.5 1.5 0 0 1 5.5 10.5 H13 M6.5 5.5 H10.5 M6.5 7.5 H10.5"/></svg>',
     ask: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5 H13 V10.5 H7.5 L4.5 13 V10.5 H3 Z"/></svg>',
     found: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5 H14 M2 8.5 H14 M2 12 H14"/><circle cx="10" cy="10.2" r="1.1"/></svg>'
   };
-  const EXTRA_LABEL = { life: 'Life in Jesus’ day', found: 'Found by archaeologists', ask: 'Reflect' };
+  const EXTRA_LABEL = { life: 'Life in Jesus’ day', found: 'Found by archaeologists', ask: 'Reflect', ot: 'Old Testament' };
   const ASK = window.WAY_ASK || {};
-  STEPS.forEach((s) => { if (ASK[s.id]) s.ask = ASK[s.id]; });
+  const OT = window.WAY_OT || {};
+  STEPS.forEach((s) => { if (ASK[s.id]) s.ask = ASK[s.id]; if (OT[s.id]) s.ot = OT[s.id]; });
+  const otHTML = (items) => `<ul class="ot-list">${items.map(([ot, nt, note]) => `<li><span class="ot-refs">${linkRefs(esc(ot))} <span class="ot-in">in ${linkRefs(esc(nt))}</span></span>${linkRefs(esc(note))}</li>`).join('')}</ul>`;
   function extrasHTML(s) {
-    const ks = ['life', 'found', 'ask'].filter((k) => s[k]);
+    const ks = ['life', 'found', 'ot', 'ask'].filter((k) => s[k]);
     if (!ks.length) return '';
     return `<div class="more">${ks.map((k) => `<button type="button" class="more-btn more-${k}" aria-expanded="false" aria-controls="x-${s.id}-${k}">${ICON[k]}<span>${EXTRA_LABEL[k]}</span></button>`).join('')}</div>`
-      + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${linkRefs(esc(s[k]))}</div>`).join('');
+      + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${k === 'ot' ? otHTML(s.ot) : linkRefs(esc(s[k]))}</div>`).join('');
   }
   // Which Gospels tell each scene (js/study.js), and the bookmark button.
   const HARM = window.WAY_HARMONY || {};
@@ -104,14 +108,16 @@
   const HEADPHONES = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 10 V8.5 a5.5 5.5 0 0 1 11 0 V10"/><rect x="2" y="9.5" width="3" height="4.5" rx="1.2"/><rect x="11" y="9.5" width="3" height="4.5" rx="1.2"/></svg>';
   function studyRow(s) {
     const h = HARM[s.id];
-    if (!h) return '';
+    const acts = `<span class="study-acts"><button type="button" class="listen-btn" data-tour-from="${s.id}" aria-label="Listen from this scene">${HEADPHONES}</button>`
+      + `<button type="button" class="share-btn" data-share="${s.id}" aria-label="Share this scene">${SHARE}</button>`
+      + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></span>`;
+    // Scenes outside the Gospels (Acts) keep listen, share and save.
+    if (!h) return s.ref && s.kind !== 'title' && s.kind !== 'close' && /^Acts/.test(s.ref[0]) ? `<div class="study study-acts-only"><span class="study-src">Acts</span>${acts}</div>` : '';
     const told = GOSPELS.filter((g, k) => h[k]).map((g) => g[1]);
     const say = told.length === 1 ? 'Only in ' + told[0] : told.length === 4 ? 'In all four Gospels' : 'Told in ' + told.length + ' Gospels';
     return `<div class="study"><button type="button" class="gos-btn" data-gos="${s.id}" aria-haspopup="dialog">`
       + `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span><span class="gos-say">${esc(say)}</span><span class="vh">: ${esc(told.join(', '))}. Compare the accounts</span></button>`
-      + `<span class="study-acts"><button type="button" class="listen-btn" data-tour-from="${s.id}" aria-label="Listen from this scene">${HEADPHONES}</button>`
-      + `<button type="button" class="share-btn" data-share="${s.id}" aria-label="Share this scene">${SHARE}</button>`
-      + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></span></div>`;
+      + acts + '</div>';
   }
   const LEGEND = [
     ['named', 'Named place.', 'The text names the town; the dot is approximate.'],
@@ -120,6 +126,7 @@
     ['link', 'Narrative link.', 'The story moves on; travel is not described.'],
     ['recon', 'Reconstruction.', 'Simplified historical features, such as the temple courts.'],
     ['trad', 'Traditional site.', 'Identified by later tradition, not by the text.'],
+    ['hist', 'Historical site.', 'Known from history and archaeology; the Gospels do not name it.'],
     ['rule', 'Territory.', 'Who ruled where. Boundaries are approximate.']
   ];
   const legendHTML = '<ul class="legend">' + LEGEND.map((l) => `<li>${SYM[l[0]]}<span><b>${l[1]}</b> ${l[2]}</span></li>`).join('') + '</ul>';
@@ -285,6 +292,7 @@
     el.setAttribute('aria-hidden', 'true');
     let sym = '';
     if (p.type === 'named') sym = '<i class="dot"></i>';
+    if (p.type === 'hist') sym = '<i class="dot dot-hist"></i>';
     if (p.type === 'star') sym = '<i class="halo"></i><svg class="star" viewBox="0 0 14 14"><path d="M7,0 L8.6,5.4 L14,7 L8.6,8.6 L7,14 L5.4,8.6 L0,7 L5.4,5.4 Z"/></svg>';
     if (p.type === 'trad' || p.type === 'proposal') sym = '<i class="glow"></i><i class="dia"></i>';
     el.innerHTML = sym + `<span class="lbl"><span class="nm">${esc(p.label)}</span>${p.note ? `<span class="nt">${esc(p.note)}</span>` : ''}</span>`;
@@ -296,7 +304,7 @@
   // ---------- label collisions ----------
   // After every frame, hide any label that overlaps a more important one.
   // Named places and sites outrank area and water labels; the symbol stays.
-  const RANK = { star: 0, named: 1, trad: 2, proposal: 2, rule: 3, area: 3, water: 4 };
+  const RANK = { star: 0, named: 1, trad: 2, proposal: 2, hist: 2, rule: 3, area: 3, water: 4 };
   const markerOrder = Object.keys(PLACES).map((id, i) => ({ id, i, r: RANK[PLACES[id].type] ?? 3 }))
     .sort((x, y) => x.r - y.r || x.i - y.i).map((o) => o.id);
   let clashQueued = false;
@@ -532,12 +540,12 @@
   }
   // ---------- tabs: Chapters · Places · Search ----------
   const TABS = ['chapters', 'plan', 'places', 'search'];
-  function showTab(name) {
+  function showTab(name, focus) {
     TABS.forEach((t) => {
       document.getElementById('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
       document.getElementById('panel-' + t).hidden = t !== name;
     });
-    if (name === 'search') setTimeout(() => qInput.focus(), 30);
+    if (name === 'search' && focus) setTimeout(() => qInput.focus(), 30);
     if (name === 'plan') renderPlan();
     const gf = document.querySelector('#toc .gfilter');
     if (gf) gf.hidden = name !== 'chapters';
@@ -568,7 +576,7 @@
       const base = PLACES[key] || p;
       let g = 'site';
       if (inJerusalem(base) && key !== 'jerusalem') g = 'jeru';
-      else if (base.type === 'named') g = 'town';
+      else if (base.type === 'named' || base.type === 'hist') g = 'town';
       else if (base.type === 'region') g = 'region';
       else if (base.type === 'water' || base.type === 'area') g = 'nature';
       placeIndex[key] = { key, label: base.label.replace(' · houses illustrative', ''), type: base.type, note: base.note || '', group: g, ids: [], steps: [] };
@@ -580,7 +588,7 @@
     STEPS.forEach((st, i) => { if (st.show.some((x) => pl.ids.includes(x))) pl.steps.push(i); });
   });
   const GROUP_NAMES = { town: 'Towns and cities', jeru: 'In Jerusalem', site: 'Traditional and proposed sites', nature: 'Seas, rivers and mountains', region: 'Regions' };
-  const markSym = (t) => t === 'named' ? SYM.named : (t === 'trad' || t === 'proposal') ? SYM.trad : t === 'region' ? SYM.region : '';
+  const markSym = (t) => t === 'named' ? SYM.named : t === 'hist' ? SYM.hist : (t === 'trad' || t === 'proposal') ? SYM.trad : t === 'region' ? SYM.region : '';
   document.getElementById('places-body').innerHTML = `<button type="button" class="pl-explore" data-explore="land">Explore the map freely</button>` + Object.keys(GROUP_NAMES).map((g) => {
     const list = placeGroups[g].filter((pl) => pl.steps.length).sort((a, b) => a.label.localeCompare(b.label));
     if (!list.length) return '';
@@ -649,7 +657,8 @@
   // its reference covers that chapter (and verse, if given).
   const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'], leviticus: ['lev'], micah: ['mic'], isaiah: ['isa'], psalms: ['ps', 'psa', 'psalm'],
     genesis: ['gen'], exodus: ['ex', 'exo'], deuteronomy: ['deut', 'dt'], joshua: ['josh'], judges: ['judg', 'jdg'], ruth: ['ru'], '1 samuel': ['1sa', '1 sam'], '2 samuel': ['2sa', '2 sam'],
-    '1 kings': ['1ki', '1 kgs'], '2 kings': ['2ki', '2 kgs'], '1 chronicles': ['1ch', '1 chr'], '2 chronicles': ['2ch', '2 chr'], hosea: ['hos'], zechariah: ['zech', 'zec'] };
+    '1 kings': ['1ki', '1 kgs'], '2 kings': ['2ki', '2 kgs'], '1 chronicles': ['1ch', '1 chr'], '2 chronicles': ['2ch', '2 chr'], hosea: ['hos'], zechariah: ['zech', 'zec'],
+    numbers: ['num'], jeremiah: ['jer'], daniel: ['dan'], joel: ['jl'], jonah: ['jon'], malachi: ['mal'] };
   const bookOf = (w) => Object.keys(BOOKS).find((b) => b.startsWith(w) && w.length >= 3 || BOOKS[b].includes(w));
   function refSpans(label) {
     // "John 4:1–42", "Mark 4:35–5:20", "Matthew 5–7", "Mark 14:26 · John 18:1"
@@ -723,6 +732,33 @@
       return `<li><button type="button" data-i="${h.i}"><span class="r-title">${esc(stepLabel(st))}</span><small>${esc(where)}</small>${snip}</button></li>`;
     }).join('');
   }
+  // ---------- Browse by topic ----------
+  const TOPICS = window.WAY_TOPICS || [];
+  const topicChips = document.getElementById('topic-chips');
+  topicChips.innerHTML = TOPICS.map((t) => `<button type="button" data-topic="${t.id}" aria-pressed="false">${esc(t.label)}</button>`).join('');
+  function topicItems(t) {
+    if (t.items !== 'ot') return t.items;
+    const OTL = window.WAY_OT || {};
+    return STEPS.filter((st) => OTL[st.id]).map((st) => [st.id, OTL[st.id].map((x) => x[0]).join('; ')]);
+  }
+  function showTopic(id) {
+    const t = TOPICS.find((x) => x.id === id);
+    topicChips.querySelectorAll('[data-topic]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.topic === id ? 'true' : 'false'));
+    if (!t) { results.innerHTML = ''; qHint.hidden = false; return; }
+    qInput.value = '';
+    qHint.hidden = true;
+    const items = topicItems(t).map(([sid, note]) => [STEPS.findIndex((st) => st.id === sid), note]).filter(([i]) => i >= 0);
+    results.innerHTML = `<li class="topic-head"><b>${esc(t.label)}</b> <span>${esc(t.intro)} ${items.length} scenes.</span></li>` + items.map(([i, note]) => {
+      const st = STEPS[i];
+      return `<li><button type="button" data-i="${i}"><span class="r-title">${esc(stepLabel(st))}</span><span class="snip">${esc(note)}</span><small>${esc(st.ref ? st.ref[0].replace(/\s*·\s*BSB$/, '') : '')}</small></button></li>`;
+    }).join('');
+  }
+  topicChips.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-topic]');
+    if (!b) return;
+    showTopic(b.getAttribute('aria-pressed') === 'true' ? null : b.dataset.topic);
+  });
+  qInput.addEventListener('input', () => topicChips.querySelectorAll('[aria-pressed="true"]').forEach((b) => b.setAttribute('aria-pressed', 'false')));
   let qTimer = 0;
   qInput.addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(runSearch, 120); });
   qInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { const first = results.querySelector('[data-i]'); if (first) goTo(+first.dataset.i); } });
@@ -993,7 +1029,8 @@
   // from the Free Use Bible API; if that fails, a link to BibleHub is offered.
   const API_BOOK = { matthew: 'MAT', mark: 'MRK', luke: 'LUK', john: 'JHN', acts: 'ACT', leviticus: 'LEV', micah: 'MIC', isaiah: 'ISA', psalms: 'PSA',
     genesis: 'GEN', exodus: 'EXO', deuteronomy: 'DEU', joshua: 'JOS', judges: 'JDG', ruth: 'RUT', '1 samuel': '1SA', '2 samuel': '2SA', '1 kings': '1KI', '2 kings': '2KI',
-    '1 chronicles': '1CH', '2 chronicles': '2CH', hosea: 'HOS', zechariah: 'ZEC' };
+    '1 chronicles': '1CH', '2 chronicles': '2CH', hosea: 'HOS', zechariah: 'ZEC',
+    numbers: 'NUM', jeremiah: 'JER', daniel: 'DAN', joel: 'JOL', jonah: 'JON', malachi: 'MAL' };
   const HUB_BOOK = Object.fromEntries(Object.keys(API_BOOK).map((b) => [b, b.replace(' ', '_')]));
   const chapterCache = new Map();
   function loadChapter(book, c) {
@@ -1464,7 +1501,7 @@
   }
 
   document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); showTab('chapters'); openToc(); });
-  document.getElementById('search-open').addEventListener('click', () => { if (exploring) closeExplore(); showTab('search'); openToc(); });
+  document.getElementById('search-open').addEventListener('click', () => { if (exploring) closeExplore(); showTab('search', true); openToc(); });
   document.getElementById('toc-close').addEventListener('click', () => toc.close());
   toc.addEventListener('close', () => {
     if (tocOpener && tocOpener.focus && !touchedSinceJump) { try { tocOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
@@ -1674,7 +1711,7 @@
     if (id === 'jerusalem') return 0;
     if (IN_JERU(p)) return 13.4;
     if (p.type === 'region' || p.type === 'water') return 0;
-    if (p.type === 'named') return 7.6;
+    if (p.type === 'named' || p.type === 'hist') return 7.6;
     if (p.type === 'area') return 9.6;
     return 9.4; // traditional and proposed sites
   }

@@ -537,3 +537,48 @@ window.WAY_KNOW = {
     'Josephus records a census under Quirinius in AD 6; how it relates to Luke’s census is debated.'
   ]
 };
+
+// Places added with the Old Testament and Pentecost update.
+Object.assign(window.WAY_INFO, {
+  chorazin: { then: 'A Jewish town in the basalt hills about 3 km north of Capernaum. Jesus did miracles there, though the Gospels describe none of them (Matthew 11:21).', today: 'Korazim National Park: black basalt ruins of a later town, with a synagogue where a carved stone seat was found.', sure: 'Certain.' },
+  magdala: { then: 'A prosperous fishing town on the western shore of the lake, between Capernaum and Tiberias. Mary called Magdalene probably came from here (Luke 8:2).', today: 'Excavations in the 1970s and since 2009 have uncovered a first-century synagogue, streets, ritual baths and fish pools. A carved stone from the synagogue, the Magdala Stone, shows a temple menorah.', sure: 'The site is certain. The Gospels do not name the town; “Magdalene” is usually read as “of Magdala”.' },
+  bethphage: { then: 'A village on the Mount of Olives, near Bethany. As they approached Bethphage and Bethany, Jesus sent two disciples into “the village ahead of you” for the colt (Mark 11:1–2).', today: 'A Franciscan church of 1883 on the eastern slope keeps a stone painted in the Crusader period. The Palm Sunday procession starts here.', sure: 'The village is named in the Gospels; the exact site is traditional.' },
+  sychar: { then: 'A Samaritan town near Jacob’s well (John 4:5), where the woman told her neighbors about Jesus (John 4:28–30).', today: 'The village of Askar, at the edge of Nablus in the West Bank, is the usual candidate. Some think John means Shechem itself (Tell Balata).', sure: 'Uncertain; Askar is a common identification.' },
+  tibcity: { then: 'A new city on the western shore, founded by Herod Antipas about AD 20 and named for the emperor Tiberius. It became his capital.', today: 'The modern city of Tiberias. Ruins of the Roman city, with a theater and a city gate, lie to the south.', sure: 'Certain.' },
+  sepphoris: { then: 'The capital of Galilee in Jesus’ youth, about 6 km north-west of Nazareth. Herod Antipas rebuilt it after Roman troops destroyed it in 4 BC.', today: 'Tzippori National Park: a Roman theater, streets and houses, and later mosaics, including a woman’s face called the “Mona Lisa of the Galilee”.', sure: 'The site is certain. The Gospels never mention it.' }
+});
+Object.assign(window.WAY_KNOW, {
+  chorazin: [
+    'Jesus said that if the miracles done in Chorazin had been done in Tyre and Sidon, they would have repented long ago (Matthew 11:21; Luke 10:13).',
+    'It is named only in these sayings; no visit is described.',
+    'A stone seat found in its synagogue is often compared with “Moses’ seat” in Matthew 23:2.'
+  ],
+  magdala: [
+    'Matthew says Jesus went to “the region of Magadan” (Matthew 15:39); some later manuscripts read Magdala.',
+    'Jesus taught in synagogues throughout Galilee (Matthew 4:23); Magdala’s is one of the few securely dated to His time.',
+    'Luke names Mary Magdalene among women who ministered to Jesus and the Twelve “out of their own means” (Luke 8:2–3).',
+    'Josephus calls a town on this shore Taricheae, from its salted fish; most scholars identify it with Magdala.'
+  ],
+  bethphage: [
+    'The name probably means “house of unripe figs”.',
+    'Matthew, Mark and Luke name Bethphage as Jesus neared Jerusalem and sent two disciples for the colt (Matthew 21:1–2; Mark 11:1; Luke 19:29).',
+    'Each Palm Sunday, a procession walks from here over the Mount of Olives into the Old City.'
+  ],
+  sychar: [
+    'Many Samaritans from the town believed, first because of the woman’s word and then because of Jesus’ own (John 4:39–42).',
+    'Jesus stayed there two days (John 4:40).',
+    'Nearby Shechem is where Abram built his first altar in Canaan (Genesis 12:6–7).'
+  ],
+  tibcity: [
+    'The Gospels never say Jesus entered Tiberias. John mentions boats from Tiberias after the feeding of the five thousand (John 6:23).',
+    'Josephus says Antipas built it over a cemetery, so many observant Jews avoided it at first.',
+    'John also calls the lake the Sea of Tiberias (John 6:1; 21:1).',
+    'Centuries later, scholars in Tiberias (the Masoretes) added the vowel marks still used in Hebrew Bibles.'
+  ],
+  sepphoris: [
+    'Josephus called it “the ornament of all Galilee”.',
+    'Some scholars suggest Joseph and Jesus may have worked on its rebuilding; the Gospels say nothing about it.',
+    'A Christian tradition places the home of Mary’s parents, Joachim and Anne, here; a Crusader church marks it.',
+    'Rabbi Judah the Prince, who completed the Mishnah, the first written collection of Jewish oral law, around AD 200, lived his last years at Sepphoris.'
+  ]
+});

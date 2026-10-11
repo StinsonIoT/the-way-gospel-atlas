@@ -48,6 +48,12 @@ window.WAY = (function () {
     jacobswell: { lng: 35.2850, lat: 32.2097, label: 'Jacob’s well', note: 'traditional site', type: 'trad', side: 'right' },
     beatitudes: { lng: 35.5560, lat: 32.8810, label: 'Mount of Beatitudes', note: 'traditional', type: 'trad', side: 'left' },
     ephraim:    { lng: 35.3000, lat: 31.9500, label: 'Ephraim', note: 'possible site', type: 'proposal', side: 'right' },
+    chorazin:   { lng: 35.5636, lat: 32.9112, label: 'Chorazin', type: 'named', side: 'left' },
+    magdala:    { lng: 35.5164, lat: 32.8242, label: 'Magdala', note: 'not named in the Gospels', type: 'hist', side: 'left' },
+    bethphage:  { lng: 35.2499, lat: 31.7786, label: 'Bethphage', note: 'traditional site', type: 'trad', side: 'right' },
+    sychar:     { lng: 35.2895, lat: 32.2190, label: 'Sychar', note: 'possible site', type: 'proposal', side: 'right' },
+    tibcity:    { lng: 35.5425, lat: 32.7745, label: 'Tiberias', type: 'named', side: 'left' },
+    sepphoris:  { lng: 35.2800, lat: 32.7528, label: 'Sepphoris', note: 'not named in the Gospels', type: 'hist', side: 'left' },
     cenacle:    { lng: 35.2290, lat: 31.7718, label: 'Upper room', note: 'traditional', type: 'trad', side: 'right' },
     gethsemane: { lng: 35.2397, lat: 31.7794, label: 'Gethsemane', note: 'traditional', type: 'trad', side: 'right' },
     sepulchre:  { lng: 35.2296, lat: 31.7784, label: 'Holy Sepulchre', note: 'traditional', type: 'trad', side: 'right' },
@@ -362,7 +368,7 @@ window.WAY = (function () {
 
     { id: 'samaria', ch: 'II · Beginnings', pal: 'noon', view: [[35.12, 31.82], [35.46, 32.30]],
       life: 'Jews and Samaritans shared the Law of Moses but disagreed over where God should be worshiped. The Jewish ruler John Hyrcanus had destroyed the Samaritan temple on Gerizim in the late second century BC, and the two peoples avoided each other (John 4:9).',
-      show: ['jacobswell', 'jud-sychar', 'samaria', 'judea'],
+      show: ['jacobswell', 'jud-sychar', 'samaria', 'judea', 'sychar'],
       kicker: 'Samaria · near Sychar', ref: ['John 4:1–42', 'john', 4],
       title: 'Living <em>water.</em>',
       text: 'On His way from Judea to Galilee, Jesus rests at Jacob’s well about the sixth hour and asks a Samaritan woman for a drink. Many in her town come to believe.',
@@ -370,7 +376,7 @@ window.WAY = (function () {
       chips: ['trad', 'link'] },
 
     { id: 'water', ch: 'II · Beginnings', pal: 'noon', view: [[35.258, 32.192], [35.296, 32.238]], pitch: 55, bearing: -12,
-      show: ['jacobswell', 'gerizim', 'ebal'], kind: 'verse',
+      show: ['jacobswell', 'gerizim', 'ebal', 'sychar'], kind: 'verse',
       kicker: 'At Jacob’s well',
       verse: 'But whoever drinks the water I give him will never thirst. Indeed, the water I give him will become in him a fount of water springing up to eternal life.',
       ref: ['John 4:14 · BSB', 'john', 4] },
@@ -379,7 +385,7 @@ window.WAY = (function () {
     { id: 'synagogue', ch: 'III · In Galilee', chapter: 'III', pal: 'day', view: [[35.24, 32.65], [35.36, 32.73]], pitch: 58, bearing: 8,
       found: 'In 2009 a first-century synagogue was found at Magdala, on the lake. A carved stone inside shows the temple’s menorah. It is one of very few Galilean synagogues known from Jesus’ lifetime.',
       life: 'On the Sabbath the synagogue gathered the village to read and explain the Law and the Prophets. A visitor could be handed the scroll and invited to speak (Luke 4:16–17; Acts 13:15).',
-      show: ['nazareth', 'jezreel'],
+      show: ['nazareth', 'jezreel', 'sepphoris'],
       kicker: 'III · In Galilee · Nazareth', ref: ['Luke 4:16–30', 'luke', 4],
       title: 'Good news <em>to the poor.</em>',
       text: 'In Nazareth’s synagogue, Jesus reads from Isaiah and announces its fulfillment. His hearers drive Him out of town, but He passes through the crowd and goes on His way.',
@@ -449,7 +455,7 @@ window.WAY = (function () {
       chips: ['named'] },
 
     { id: 'parables', ch: 'III · In Galilee', pal: 'day', view: V.lake,
-      show: ['capernaum', 'lakeshore', 'sog'],
+      show: ['capernaum', 'lakeshore', 'sog', 'magdala'],
       kicker: 'Beside the sea', ref: ['Mark 4:1–34', 'mark', 4],
       title: 'Teaching <em>from a boat.</em>',
       text: 'The crowd is so large that Jesus teaches from a boat. A sower, a growing seed, a mustard seed: ordinary things become windows on the kingdom.',
@@ -488,7 +494,7 @@ window.WAY = (function () {
 
     { id: 'loaves', ch: 'III · In Galilee', pal: 'warm', view: V.lake,
       life: 'John says the boy’s five loaves were barley (John 6:9), the cheaper bread most poor families ate.',
-      show: ['lakeregion', 'bethsaida', 'capernaum', 'sog'],
+      show: ['lakeregion', 'bethsaida', 'capernaum', 'sog', 'tibcity', 'magdala'],
       kicker: 'A solitary place by the sea', ref: ['Mark 6:30–44', 'mark', 6],
       title: 'Bread for <em>the multitude.</em>',
       text: 'Five loaves and two fish. Jesus gives thanks, and five thousand men are fed, with twelve baskets left over.',
@@ -520,7 +526,7 @@ window.WAY = (function () {
       chips: ['region', 'route'] },
 
     { id: 'sight', ch: 'IV · Beyond Galilee', pal: 'day', view: [[35.56, 32.86], [35.68, 32.94]],
-      show: ['bethsaida', 'sog', 'z-galilee', 'z-philip', 'zl-galilee', 'zl-philip'],
+      show: ['bethsaida', 'sog', 'z-galilee', 'z-philip', 'zl-galilee', 'zl-philip', 'chorazin'],
       kicker: 'Bethsaida', ref: ['Mark 8:22–26', 'mark', 8],
       title: 'Sight <em>restored.</em>',
       text: 'People bring a blind man to Jesus. He leads him out of the village and heals him in two stages, until he sees everything clearly.',
@@ -675,7 +681,7 @@ window.WAY = (function () {
 
     { id: 'entry', ch: 'VI · Holy Week', pal: 'day', view: [[35.228, 31.766], [35.274, 31.786]], plan: 1,
       life: 'Tens of thousands of pilgrims, perhaps many more, crowded Jerusalem at Passover. The crowd’s words come from Psalm 118, sung at the festivals, and palm branches (John 12:13) had been a national symbol since the Maccabees.',
-      show: ['bethany', 'templelbl', 'kidron', 'entry'],
+      show: ['bethany', 'templelbl', 'kidron', 'entry', 'bethphage'],
       kicker: 'Mount of Olives → Jerusalem', ref: ['Luke 19:28–44', 'luke', 19],
       title: 'The king <em>enters Jerusalem.</em>',
       text: 'Jesus rides a colt down toward the city as the crowd praises God. When He sees the city, He weeps over it. No gate or road is named.',
@@ -836,7 +842,7 @@ window.WAY = (function () {
 
     { id: 'breakfast', ch: 'VII · Resurrection', pal: 'dawn', view: V.lake,
       life: 'Fishermen on the lake often worked through the night (compare Luke 5:5). A charcoal fire appears only twice in the Gospels: here, and in the courtyard where Peter denied Jesus (John 18:18).',
-      show: ['tiberias', 'lakeshore', 'capernaum'],
+      show: ['tiberias', 'lakeshore', 'capernaum', 'magdala', 'tibcity'],
       kicker: 'Sea of Tiberias · early morning', ref: ['John 21:1–14', 'john', 21],
       title: 'Breakfast <em>by the sea.</em>',
       text: 'After a night of catching nothing, seven disciples cast the net where Jesus tells them. On shore He has a charcoal fire with fish and bread, and invites them to eat.',
@@ -858,7 +864,7 @@ window.WAY = (function () {
       after: 'The eleven go to the mountain Jesus had designated, and He sends them to make disciples of all nations (Matthew 28:16–20).' },
 
     // ---------- VIII · Ascension ----------
-    { id: 'ascension', ch: 'VIII · Ascension', chapter: 'VIII', pal: 'bright', view: [[35.228, 31.764], [35.270, 31.788]], plan: 1,
+    { id: 'ascension', ch: 'VIII · The Spirit comes', chapter: 'VIII', pal: 'bright', view: [[35.228, 31.764], [35.270, 31.788]], plan: 1,
       show: ['ascend', 'olives', 'bethany', 'templelbl'],
       kicker: 'VIII · Mount of Olives · toward Bethany', ref: ['Luke 24:50–53', 'luke', 24],
       title: 'Taken up <em>while blessing them.</em>',
@@ -866,7 +872,16 @@ window.WAY = (function () {
       note: 'Acts says they returned from the Mount of Olives (Acts 1:12). Forty days of appearances lie between Easter and this day (Acts 1:3).',
       chips: ['route', 'named'] },
 
-    { id: 'close', ch: 'VIII · Ascension', pal: 'bright', view: [[31.9, 28.7], [38.6, 34.9]],
+    { id: 'pentecost', ch: 'VIII · The Spirit comes', pal: 'bright', view: V.city, plan: 1,
+      show: ['templelbl', 'citysites'],
+      kicker: 'Jerusalem · the day of Pentecost', ref: ['Acts 2:1–41', 'acts', 2],
+      title: 'The Spirit <em>is poured out.</em>',
+      text: 'On the day of Pentecost, the disciples are all together in one place. A sound like a mighty rushing wind fills the house, tongues like flames of fire rest on each of them, and they speak in other tongues. Peter preaches to the crowd, and about three thousand are baptized.',
+      note: 'Acts speaks of “the whole house where they were sitting” (Acts 2:2) but does not say where it stood, or where the crowd gathered. God-fearing Jews from every nation under heaven were staying in Jerusalem (Acts 2:5), and the crowd included converts to Judaism (Acts 2:10–11).',
+      life: 'Pentecost, Greek for “fiftieth”, was the Feast of Weeks, fifty days counted from the day the first sheaf of the harvest was waved (Leviticus 23:15–16). It came with the firstfruits of the wheat harvest (Exodus 34:22), one of three yearly feasts at which all Israelite men were to appear before the Lord (Exodus 34:23).',
+      chips: ['region'] },
+
+    { id: 'close', ch: 'VIII · The Spirit comes', pal: 'bright', view: [[31.9, 28.7], [38.6, 34.9]],
       show: ['ring1', 'ring2', 'ring3'], kind: 'close',
       kicker: 'Acts 1:8', ref: ['Acts 1:1–14', 'acts', 1],
       title: 'You will be <em>My witnesses.</em>',
@@ -880,7 +895,8 @@ window.WAY = (function () {
     recon: 'Simplified reconstruction',
     trad: 'Traditional or proposed site',
     region: 'Exact site unknown',
-    rule: 'Approximate territory'
+    rule: 'Approximate territory',
+    hist: 'Historical site, not named in the Gospels'
   };
 
   return { PALETTES, PLACES, AREAS, ZONES, ROUTES, STEPS, CHIPS };

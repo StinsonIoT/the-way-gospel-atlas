@@ -120,7 +120,7 @@ window.WAY_PLAN = [
   ['Death and burial', ['torn', 'burial', 'guard']],
   ['He has risen', ['risen', 'mary', 'emmaus']],
   ['Peace be with you', ['peace', 'thomas', 'breakfast', 'sheep']],
-  ['Sent into the world', ['commission', 'ascension', 'close']]
+  ['The Spirit and the mission', ['commission', 'ascension', 'pentecost', 'close']]
 ];
 
 // One open question per scene, for personal reflection or a small group.
@@ -207,5 +207,148 @@ window.WAY_ASK = {
   breakfast: 'After a night of catching nothing, they find breakfast waiting. When has Jesus met you after failure?',
   sheep: 'Peter had denied Him three times; now Jesus asks him three times, “Do you love Me?” What does this tell you about how Jesus restores people?',
   commission: '“I am with you always.” Where do you most need to remember that this week?',
-  ascension: 'He leaves blessing them, and they return with great joy. How could you carry that blessing into your day?'
+  ascension: 'He leaves blessing them, and they return with great joy. How could you carry that blessing into your day?',
+  pentecost: 'The Spirit came on a group of Galileans, and each listener heard them in his own language. Where do you need the Spirit’s help to speak or to listen?'
 };
+
+// Old Testament links: only where a Gospel writer, or Jesus, quotes or points
+// to an Old Testament passage. Each: [Old Testament reference, where the New
+// Testament cites it, a short note]. Later Christian readings are not included.
+window.WAY_OT = {
+  birth: [['Isaiah 7:14', 'Matthew 1:22–23', 'Matthew quotes it: the virgin will bear a son, and they will call Him Immanuel, “God with us”.']],
+  magi: [['Micah 5:2', 'Matthew 2:5–6', 'The chief priests and scribes quote it to Herod: a ruler will come from Bethlehem.']],
+  egypt: [
+    ['Hosea 11:1', 'Matthew 2:15', '“Out of Egypt I called My Son.” In Hosea the words refer to Israel; Matthew says Jesus’ stay in Egypt fulfilled them.'],
+    ['Jeremiah 31:15', 'Matthew 2:17–18', 'Rachel weeping for her children, recalled at the killing of Bethlehem’s boys.']
+  ],
+  nazareth: [['“the prophets”', 'Matthew 2:23', '“He will be called a Nazarene.” Matthew cites the prophets in general; no single passage matches these words.']],
+  present: [['Exodus 13:2 · Leviticus 12:8', 'Luke 2:22–24', 'Mary and Joseph do what the Law requires: the firstborn is consecrated, and a pair of turtledoves or young pigeons is offered.']],
+  baptism: [['Isaiah 40:3 · Malachi 3:1', 'Mark 1:2–3', 'Mark opens by quoting both for John the Baptist: a messenger sent ahead, a voice calling in the wilderness.']],
+  wilderness: [['Deuteronomy 8:3 · 6:16 · 6:13', 'Matthew 4:4–10', 'Jesus answers each temptation with Deuteronomy. The devil quotes Psalm 91:11–12.']],
+  zeal: [['Psalm 69:9', 'John 2:17', 'The disciples remember: “Zeal for Your house will consume Me.”']],
+  nicodemus: [['Numbers 21:8–9', 'John 3:14–15', 'As Moses lifted up the snake in the wilderness, so the Son of Man must be lifted up.']],
+  synagogue: [['Isaiah 61:1–2', 'Luke 4:18–21', 'Jesus reads it and says, “Today this Scripture is fulfilled in your hearing.”']],
+  fishers: [['Isaiah 9:1–2', 'Matthew 4:14–16', 'Matthew says Jesus’ move to Capernaum fulfilled it: “a light has dawned.”']],
+  firstday: [['Isaiah 53:4', 'Matthew 8:17', 'Matthew quotes it at the evening healings: “He took on our infirmities.”']],
+  sermon: [['Exodus 20:13 · Exodus 21:24 · Leviticus 19:18', 'Matthew 5:21–48', '“You have heard that it was said…” Jesus quotes the Law, then goes deeper: “But I tell you.”']],
+  levi: [['Hosea 6:6', 'Matthew 9:13', 'Jesus answers His critics: “I desire mercy, not sacrifice.”']],
+  parables: [
+    ['Isaiah 6:9–10', 'Mark 4:11–12', 'Jesus quotes it to explain why He teaches in parables.'],
+    ['Psalm 78:2', 'Matthew 13:34–35', 'Matthew quotes it: “I will open My mouth in parables.”']
+  ],
+  bread: [
+    ['Exodus 16:4 · Psalm 78:24', 'John 6:31–35', 'The crowd recalls the manna; Jesus answers that His Father gives the true bread from heaven, and says, “I am the bread of life.”'],
+    ['Isaiah 54:13', 'John 6:45', '“And they will all be taught by God.”']
+  ],
+  samaritan: [['Deuteronomy 6:5 · Leviticus 19:18', 'Luke 10:27', 'Asked “What is written in the Law?”, the expert in the law answers with these two commands.']],
+  booths: [['“the Scripture”', 'John 7:37–39', 'Jesus promises streams of living water, “as the Scripture has said”. No single passage matches; John explains He meant the Spirit.']],
+  dedication: [['Psalm 82:6', 'John 10:34–36', 'Jesus answers the charge of blasphemy by quoting “I have said you are gods.”']],
+  children: [['Genesis 1:27 · 2:24', 'Mark 10:6–8', 'Asked about divorce, Jesus goes back to creation: “the two will become one flesh.”']],
+  entry: [
+    ['Zechariah 9:9', 'Matthew 21:4–5 · John 12:14–15', 'Your king comes to you, gentle and riding on a donkey.'],
+    ['Psalm 118:25–26', 'Mark 11:9 · Luke 19:38', 'The crowd shouts: “Hosanna! Blessed is He who comes in the name of the Lord!” Luke has “Blessed is the King”.']
+  ],
+  temple: [['Isaiah 56:7 · Jeremiah 7:11', 'Mark 11:17', 'A house of prayer for all the nations, made a den of robbers.']],
+  greatest: [['Deuteronomy 6:4–5 · Leviticus 19:18', 'Mark 12:29–31', 'Jesus joins the two commands: love God, and love your neighbor.']],
+  upper: [
+    ['Psalm 41:9', 'John 13:18', 'Jesus says the betrayal fulfils it: “The one who shares My bread has lifted up his heel against Me.”'],
+    ['Isaiah 53:12', 'Luke 22:37', '“And He was numbered with the transgressors”, which Jesus says must be fulfilled in Him.']
+  ],
+  kidron: [['Zechariah 13:7', 'Mark 14:27', 'After they go out to the Mount of Olives, Jesus quotes it: strike the shepherd, and the sheep will be scattered.']],
+  trials: [['Psalm 110:1 · Daniel 7:13', 'Mark 14:62', 'Asked if He is the Christ, Jesus answers with these words: the Son of Man at the right hand of Power, coming with the clouds.']],
+  golgotha: [
+    ['Psalm 22:18', 'John 19:23–24', 'The soldiers divide His garments and cast lots for His tunic.'],
+    ['Hosea 10:8', 'Luke 23:30', 'On the way, Jesus warns the weeping women in Hosea’s words: “Fall on us!”']
+  ],
+  sayings: [
+    ['Psalm 22:1', 'Mark 15:34', '“My God, My God, why have You forsaken Me?”'],
+    ['Psalm 31:5', 'Luke 23:46', '“Into Your hands I commit My Spirit.”'],
+    ['“the Scripture”', 'John 19:28–29', '“I am thirsty”, which John says fulfilled Scripture without naming it. Psalm 22:15, and Psalm 69:21 for the sour wine, are often compared.']
+  ],
+  finished: [
+    ['Exodus 12:46 · Psalm 34:20', 'John 19:36', '“Not one of His bones will be broken.” John does not name the passage; the words match Psalm 34:20 and the Passover rule in Exodus 12:46.'],
+    ['Zechariah 12:10', 'John 19:37', '“They will look on the One they have pierced.”']
+  ],
+  risen: [['Jonah 1:17', 'Matthew 12:40', 'Earlier, Jesus had pointed to Jonah: “so the Son of Man will be three days and three nights in the heart of the earth.”']],
+  emmaus: [['“Moses and all the Prophets”', 'Luke 24:27', 'Jesus explains what all the Scriptures said about Himself. Luke does not list the passages; later, to the disciples, He adds the Psalms (Luke 24:44).']],
+  pentecost: [
+    ['Joel 2:28–32', 'Acts 2:16–21', 'Peter explains: this is what Joel foretold, the Spirit poured out on all people.'],
+    ['Psalm 16:8–11 · Psalm 110:1', 'Acts 2:25–35', 'Peter quotes David to proclaim the resurrection and the exaltation of Jesus.']
+  ]
+};
+
+// Browse by topic (Search tab). Each topic lists scenes in story order, with a
+// short line saying what to look for there.
+window.WAY_TOPICS = [
+  { id: 'miracles', label: 'Miracles', intro: 'Signs and healings, in story order.', items: [
+    ['cana', 'Water into wine, the first sign (John 2:11)'],
+    ['firstday', 'An unclean spirit, a fever, a town at the door'],
+    ['bethesda', 'A man disabled for 38 years walks'],
+    ['roof', 'A paralyzed man forgiven and healed'],
+    ['nain', 'A servant healed at a distance; a widow’s son raised'],
+    ['gerasenes', 'A storm calmed; a man set free'],
+    ['jairus', 'A woman healed; a girl raised'],
+    ['loaves', 'Five thousand fed'],
+    ['walking', 'Walking on the sea'],
+    ['tyre', 'A Gentile girl healed; a deaf man hears'],
+    ['sight', 'A blind man healed in two stages'],
+    ['siloam', 'A man born blind sees'],
+    ['ten', 'Ten men with leprosy cleansed'],
+    ['lazarus', 'Lazarus raised after four days'],
+    ['bartimaeus', 'Blind Bartimaeus sees'],
+    ['breakfast', 'A great catch of 153 fish']
+  ] },
+  { id: 'parables', label: 'Parables', intro: 'Stories Jesus told to teach about the kingdom.', items: [
+    ['parables', 'The sower, the growing seed, the mustard seed'],
+    ['samaritan', 'The good Samaritan'],
+    ['lost', 'The lost sheep, the lost coin, the lost son'],
+    ['watch', 'The fig tree, and the call to keep watch']
+  ] },
+  { id: 'teaching', label: 'Teaching', intro: 'Sermons, conversations and debates.', items: [
+    ['synagogue', 'His first sermon, at Nazareth'],
+    ['nicodemus', 'Born again, with Nicodemus'],
+    ['samaria', 'Living water, with the Samaritan woman'],
+    ['sermon', 'The Sermon on the Mount'],
+    ['bread', 'The bread of life'],
+    ['confession', 'Who do you say I am?'],
+    ['booths', 'At the Feast of Tabernacles'],
+    ['shepherd', 'The good shepherd'],
+    ['children', 'Children, marriage and riches'],
+    ['greatest', 'The greatest commandment'],
+    ['watch', 'The end of the age'],
+    ['upper', 'The Last Supper']
+  ] },
+  { id: 'iam', label: '“I am” sayings', intro: 'John records Jesus describing Himself with “I am”.', items: [
+    ['bread', '“I am the bread of life” (John 6:35)'],
+    ['siloam', '“I am the light of the world” (John 9:5)'],
+    ['shepherd', '“I am the gate”, “I am the good shepherd” (John 10:9, 11)'],
+    ['resurrection-life', '“I am the resurrection and the life” (John 11:25)'],
+    ['upper', 'The same night: “I am the way and the truth and the life” and “I am the true vine” (John 14:6; 15:1)']
+  ] },
+  { id: 'ot', label: 'Old Testament fulfilled', intro: 'Where the Gospels themselves quote or point to the Old Testament.', items: 'ot' },
+  { id: 'spirit', label: 'The Holy Spirit', intro: 'From the promise of His birth to Pentecost.', items: [
+    ['annunciation', '“The Holy Spirit will come upon you” (Luke 1:35)'],
+    ['visitation', 'Elizabeth is filled with the Holy Spirit (Luke 1:41)'],
+    ['present', 'The Holy Spirit was upon Simeon (Luke 2:25)'],
+    ['baptism', 'The Spirit descends like a dove'],
+    ['wilderness', 'Led by the Spirit into the wilderness (Luke 4:1)'],
+    ['synagogue', '“The Spirit of the Lord is on Me” (Luke 4:18)'],
+    ['nicodemus', 'Born of water and the Spirit (John 3:5)'],
+    ['booths', 'Living water: “He was speaking about the Spirit” (John 7:39)'],
+    ['upper', 'At the supper Jesus promises the Advocate, the Holy Spirit (John 14:16, 26; 16:7)'],
+    ['peace', '“Receive the Holy Spirit” (John 20:22)'],
+    ['close', '“You will receive power when the Holy Spirit comes upon you” (Acts 1:8)'],
+    ['pentecost', 'The Spirit is poured out (Acts 2)']
+  ] },
+  { id: 'risen', label: 'Resurrection', intro: 'The empty tomb and the appearances of the risen Jesus.', items: [
+    ['risen', 'The empty tomb'],
+    ['mary', 'Mary Magdalene'],
+    ['emmaus', 'Two on the road to Emmaus'],
+    ['peace', 'The disciples behind locked doors'],
+    ['thomas', 'Thomas'],
+    ['breakfast', 'Seven disciples by the sea'],
+    ['sheep', 'Peter restored'],
+    ['commission', 'The eleven on a mountain in Galilee'],
+    ['ascension', 'Taken up while blessing them']
+  ] }
+];

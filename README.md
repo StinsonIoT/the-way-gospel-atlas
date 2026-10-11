@@ -1,6 +1,6 @@
 # The Way — A Gospel Atlas
 
-A scroll-driven atlas of the whole Gospel story, in 87 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection and Ascension. It is built for iPhone first and also works on desktop.
+A scroll-driven atlas of the whole Gospel story, in 88 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection, and The Spirit comes (the ascension and Pentecost). It is built for iPhone first and also works on desktop.
 
 ## What it does
 
@@ -44,6 +44,14 @@ Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that open
 ## Study notes
 
 The Scripture reader has a **Study notes** tab: the Tyndale Open Study Notes (© 2022 Tyndale House Publishers, CC BY-SA 4.0) for the verses shown, loaded from the Free Use Bible API and shown unchanged with credit. Town locations have also been cross-checked against STEPBible's TIPNR data (Tyndale House, Cambridge; CC BY): all named towns agree within about 1 km, except Jericho, where the atlas deliberately marks the Herodian city of Jesus' day rather than the Old Testament mound.
+
+## Browse by topic
+
+The Search tab has **Browse by topic**: Miracles, Parables, Teaching, “I am” sayings, Old Testament fulfilled, The Holy Spirit and Resurrection. Each lists the scenes in story order with a line on what to look for (`WAY_TOPICS` in `js/study.js`).
+
+## Old Testament links
+
+Scenes where a Gospel writer, or Jesus, quotes or points to the Old Testament have an **Old Testament** button listing the passage and where it is cited (`WAY_OT` in `js/study.js`). Later Christian readings that the Gospels do not themselves make are left out. The story now ends with Pentecost (Acts 2) before the closing scene.
 
 ## Reflect
 
