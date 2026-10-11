@@ -223,6 +223,15 @@ dialog::backdrop { background: rgba(10, 14, 15, 0.5); }
 @media (min-width: 900px) { #passage { margin: auto; border-radius: 20px; } }
 #passage .dlg-head { margin-bottom: 6px; }
 #passage .dlg-head h2 { font-size: 24px; }
+.p-audio { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
+.p-audio[hidden] { display: none; }
+#p-play { flex: none; min-height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px 0 13px; border: 0; border-radius: 999px; background: var(--c-fg); color: var(--c-bg); font: 600 14px var(--sans); cursor: pointer; }
+#p-play svg { width: 14px; height: 14px; fill: currentColor; }
+#p-play .i-pause, .p-audio.playing #p-play .i-play { display: none; }
+.p-audio.playing #p-play .i-pause { display: block; }
+.p-prog { flex: 1; height: 4px; border-radius: 2px; background: var(--c-line); overflow: hidden; }
+.p-prog i { display: block; height: 100%; width: 0; background: var(--c-accent); }
+.p-reader { flex: none; font-size: 12px; color: var(--c-muted); }
 .p-body { overflow: auto; overscroll-behavior: contain; padding-right: 4px; }
 .p-text { margin: 0 0 12px; font: 400 19px/1.6 var(--serif); }
 .p-text sup { font: 600 10.5px var(--sans); color: var(--c-accent); margin-right: 3px; vertical-align: 0.5em; }

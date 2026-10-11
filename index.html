@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Instrument+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=20">
+<link rel="stylesheet" href="css/style.css?v=21">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -94,8 +94,14 @@
       <svg viewBox="0 0 18 18" aria-hidden="true"><line x1="3" y1="3" x2="15" y2="15"/><line x1="15" y1="3" x2="3" y2="15"/></svg>
     </button>
   </div>
+  <div id="p-audio-bar" class="p-audio" hidden>
+    <button id="p-play" type="button" aria-label="Listen to this passage"><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 L13 8 L4 13.5 Z"/></svg><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="0.8"/><rect x="9.5" y="2.5" width="3" height="11" rx="0.8"/></svg><span id="p-play-label">Listen</span></button>
+    <div class="p-prog" aria-hidden="true"><i id="p-prog-fill"></i></div>
+    <span id="p-reader" class="p-reader"></span>
+  </div>
+  <audio id="p-audio" preload="none"></audio>
   <div id="passage-body" class="p-body"></div>
-  <p class="p-foot">Berean Standard Bible · public domain · <a id="passage-hub" href="https://biblehub.com/bsb/" target="_blank" rel="noopener">Open on BibleHub</a></p>
+  <p class="p-foot">Berean Standard Bible · public domain · audio via the Free Use Bible API · <a id="passage-hub" href="https://biblehub.com/bsb/" target="_blank" rel="noopener">Open on BibleHub</a></p>
 </dialog>
 
 <dialog id="key" aria-labelledby="key-title">
@@ -109,8 +115,8 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=20"></script>
-<script src="js/scenes.js?v=20"></script>
-<script src="js/app.js?v=20"></script>
+<script src="vendor/maplibre-contour.min.js?v=21"></script>
+<script src="js/scenes.js?v=21"></script>
+<script src="js/app.js?v=21"></script>
 </body>
 </html>

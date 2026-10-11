@@ -201,7 +201,7 @@
         rivers: { type: 'geojson', data: 'data/rivers.geojson?v=8' },
         jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=8' },
         city3d: { type: 'geojson', data: 'data/jerusalem3d.geojson?v=8' },
-        village3d: { type: 'geojson', data: 'data/capernaum3d.geojson?v=10' },
+        village3d: { type: 'geojson', data: 'data/capernaum3d.geojson?v=11' },
         overlay: { type: 'geojson', data: overlay },
         zones: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         ...terrainSources
@@ -699,8 +699,10 @@
     passage.showModal();
     pBody.scrollTop = 0;
     const token = ++passageToken;
+    resetAudio();
     try {
       const parts = [];
+      const segs = [];
       for (const sp of spans.slice(0, 3)) {
         const last = Math.min(sp.c2, sp.c1 + 2);
         for (let c = sp.c1; c <= last; c++) {
@@ -709,18 +711,99 @@
           const to = c === sp.c2 ? sp.v2 : 999;
           const head = spans.length > 1 || sp.c1 !== sp.c2 ? `<h3 class="p-ch">${esc(json.book && json.book.commonName ? json.book.commonName : label.split(' ')[0])} ${c}</h3>` : '';
           parts.push(head + `<p class="p-text">${sectionHTML(json, from, to)}</p>`);
+          segs.push({ json, from, to });
         }
         if (sp.c2 > last) parts.push(`<p class="p-status">The passage continues to chapter ${sp.c2}. <a href="${pHub.href}" target="_blank" rel="noopener">Read on</a>.</p>`);
       }
-      if (token === passageToken) pBody.innerHTML = parts.join('');
+      if (token === passageToken) { pBody.innerHTML = parts.join(''); prepareAudio(segs, label, token); }
     } catch (err) {
       if (token === passageToken) pBody.innerHTML = `<p class="p-status">The passage couldn’t be loaded right now. You can read it on <a href="${pHub.href}" target="_blank" rel="noopener">BibleHub</a> instead.</p>`;
     }
     return true;
   }
+  // ---------- Listen: BSB audio, only the verses shown ----------
+  // Each chapter has a recording and the start time of every verse, so the
+  // player seeks to the first verse and stops after the last, chapter by chapter.
+  const audioEl = document.getElementById('p-audio');
+  const aBar = document.getElementById('p-audio-bar');
+  const aBtn = document.getElementById('p-play');
+  const aLabel = document.getElementById('p-play-label');
+  const aFill = document.getElementById('p-prog-fill');
+  const aReader = document.getElementById('p-reader');
+  const READERS = ['souer', 'hays', 'gilbert'];
+  let aSegs = [], aIdx = 0, aTitle = '', aDone = false;
+  function resetAudio() {
+    audioEl.pause(); audioEl.removeAttribute('src'); audioEl.load();
+    aSegs = []; aIdx = 0; aDone = false; aBar.hidden = true; aBar.classList.remove('playing'); aFill.style.width = '0%';
+    aLabel.textContent = 'Listen';
+  }
+  async function prepareAudio(segs, label, token) {
+    try {
+      const reader = (() => { const links = segs[0].json.thisChapterAudioLinks || {}; return READERS.find((r) => links[r]) || Object.keys(links)[0]; })();
+      if (!reader) return;
+      const out = [];
+      for (const sg of segs) {
+        const url = (sg.json.thisChapterAudioLinks || {})[reader];
+        if (!url) break;
+        let start = 0, end = null;
+        const tl = (sg.json.thisChapterAudioTimings || {})[reader];
+        if (tl) {
+          try {
+            const t = await fetch(new URL(tl, 'https://bible.helloao.org/').href).then((r) => (r.ok ? r.json() : null));
+            const v = t && t.verses;
+            if (v && v.length) {
+              start = sg.from > 1 && v[sg.from - 1] != null ? v[sg.from - 1] : 0;
+              end = v[sg.to] != null ? v[sg.to] : null; // the next verse's start
+            }
+          } catch (err) { /* play the whole chapter instead */ }
+        }
+        out.push({ url, start, end });
+      }
+      if (token !== passageToken || !out.length) return;
+      aSegs = out; aIdx = 0; aTitle = label;
+      aReader.textContent = 'Read by ' + reader.charAt(0).toUpperCase() + reader.slice(1);
+      aBar.hidden = false;
+    } catch (err) { /* no audio: the button stays hidden */ }
+  }
+  function loadSeg(i) {
+    const sg = aSegs[i];
+    if (audioEl.getAttribute('src') !== sg.url) audioEl.src = sg.url;
+    const seek = () => { try { audioEl.currentTime = sg.start; } catch (err) { /* ignore */ } };
+    if (audioEl.readyState >= 1) seek(); else audioEl.addEventListener('loadedmetadata', seek, { once: true });
+  }
+  aBtn.addEventListener('click', () => {
+    if (!aSegs.length) return;
+    if (!audioEl.paused) { audioEl.pause(); return; }
+    if (!audioEl.getAttribute('src')) loadSeg(aIdx);
+    const pr = audioEl.play();
+    if (pr && pr.catch) pr.catch(() => { aLabel.textContent = 'Couldn’t play'; });
+    if ('mediaSession' in navigator) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({ title: aTitle, artist: 'Berean Standard Bible', album: 'The Way',
+          artwork: [{ src: 'icon-512.png', sizes: '512x512', type: 'image/png' }] });
+      } catch (err) { /* optional */ }
+    }
+  });
+  audioEl.addEventListener('play', () => { aDone = false; aBar.classList.add('playing'); aLabel.textContent = 'Pause'; });
+  audioEl.addEventListener('pause', () => { aBar.classList.remove('playing'); aLabel.textContent = !aSegs.length ? 'Listen' : aDone ? 'Listen again' : 'Resume'; });
+  audioEl.addEventListener('timeupdate', () => {
+    const sg = aSegs[aIdx]; if (!sg) return;
+    const end = sg.end != null ? sg.end : audioEl.duration;
+    if (sg.end != null && audioEl.currentTime >= sg.end - 0.05) return nextSeg();
+    const span = Math.max(0.1, (end || sg.start + 1) - sg.start);
+    const f = (aIdx + Math.min(1, Math.max(0, (audioEl.currentTime - sg.start) / span))) / aSegs.length;
+    aFill.style.width = (100 * f).toFixed(1) + '%';
+  });
+  audioEl.addEventListener('ended', () => nextSeg());
+  function nextSeg() {
+    if (aIdx < aSegs.length - 1) { aIdx++; loadSeg(aIdx); audioEl.play().catch(() => {}); }
+    else { aDone = true; audioEl.pause(); aIdx = 0; aFill.style.width = '100%'; audioEl.removeAttribute('src'); aLabel.textContent = 'Listen again'; }
+  }
+
   document.getElementById('passage-close').addEventListener('click', () => passage.close());
   passage.addEventListener('click', (ev) => { if (ev.target === passage) passage.close(); });
   passage.addEventListener('close', () => {
+    resetAudio();
     if (passageOpener && passageOpener.focus) { try { passageOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
     passageOpener = null;
   });
