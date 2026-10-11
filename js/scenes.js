@@ -384,7 +384,7 @@ window.WAY = (function () {
 
     { id: 'samaria', ch: 'II · Beginnings', pal: 'noon', view: [[35.12, 31.82], [35.46, 32.30]],
       life: 'Jews and Samaritans shared the Law of Moses but disagreed over where God should be worshiped. The Jewish ruler John Hyrcanus had destroyed the Samaritan temple on Gerizim in the late second century BC, and the two peoples avoided each other (John 4:9).',
-      show: ['jacobswell', 'jud-sychar', 'samaria', 'judea', 'sychar'],
+      show: ['jacobswell', 'jud-sychar', 'samaria', 'judea'],
       kicker: 'Samaria · near Sychar', ref: ['John 4:1–42', 'john', 4],
       title: 'Living <em>water.</em>',
       text: 'On His way from Judea to Galilee, Jesus rests at Jacob’s well about the sixth hour and asks a Samaritan woman for a drink. Many in her town come to believe.',

@@ -530,3 +530,16 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
 .deep-btn { gap: 8px; white-space: nowrap; flex: 0 1 auto; min-width: 0; }
 .study .listen-btn, .study .share-btn, .study .save-btn { width: 36px; }
 @media (max-width: 360px) { .deep-btn .gos-dots { display: none; } }
+
+/* ---------- tablets in portrait (iPad, 700–899 px) ---------- */
+@media (min-width: 700px) and (max-width: 899px) {
+  .card { max-width: 600px; padding: 28px 30px; gap: 14px; }
+  .card h2 { font-size: 44px; }
+  .card .text { font-size: 20px; line-height: 1.55; }
+  .card .note { font-size: 15.5px; }
+  .kicker { font-size: 12px; }
+  .verse { max-width: 680px; padding: 28px 30px 24px; }
+  .after { font-size: 19px; }
+  .step { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+  dialog { width: min(520px, calc(100vw - 48px)); }
+}
