@@ -17,7 +17,7 @@ A scroll-driven atlas that follows Jesus through Holy Week, from the road up fro
 | Simplified shapes | Historical reconstruction (temple courts, first wall). |
 | Hollow diamond | Identified by later tradition, or a later proposal, not by the text. |
 
-The Jerusalem plan shows only the first wall, because the course of the second wall is debated.
+The Jerusalem plan is a simplified reconstruction drawn over real terrain (shaded relief and contour lines). It shows only the first wall: the second wall's course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate's praetorium is marked at both proposed sites, Herod's palace and the Antonia.
 
 ## Running it
 
@@ -36,10 +36,10 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type
 - `data/`: Natural Earth land, lakes and rivers clipped to the region, plus the simplified Jerusalem reconstruction
-- `vendor/`: MapLibre GL JS 4.7.1 (BSD-3-Clause, see `vendor/LICENSE.txt`)
+- `vendor/`: MapLibre GL JS 4.7.1 and maplibre-contour 0.1.0 (both BSD-3-Clause; licences included)
 
 To add or edit a scene, change `js/scenes.js` only.
 
 ## Credits
 
-Scripture quotations are from the Berean Standard Bible (public domain). Map data from Natural Earth (public domain). Built with MapLibre GL JS.
+Scripture quotations are from the Berean Standard Bible (public domain). Map data from Natural Earth (public domain). Terrain from Terrain Tiles on AWS (Mapzen; SRTM and other public sources), loaded in the browser. Built with MapLibre GL JS.

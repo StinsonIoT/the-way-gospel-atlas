@@ -119,6 +119,25 @@
 
   // ---------- map ----------
   const overlay = { type: 'FeatureCollection', features: [] };
+
+  // Real terrain: open elevation tiles (Terrain Tiles on AWS, terrarium encoding).
+  // Contours are computed in the browser by maplibre-contour. If either is
+  // unavailable the map still works without them.
+  const DEM_URL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+  const terrainSources = {};
+  let hasContours = false;
+  try {
+    if (window.mlcontour) {
+      const dem = new mlcontour.DemSource({ url: DEM_URL, encoding: 'terrarium', maxzoom: 13, worker: true, cacheSize: 100, timeoutMs: 10000 });
+      dem.setupMaplibre(maplibregl);
+      terrainSources.dem = { type: 'raster-dem', encoding: 'terrarium', tiles: [dem.sharedDemProtocolUrl], tileSize: 256, maxzoom: 13 };
+      terrainSources.contours = { type: 'vector', maxzoom: 15, tiles: [dem.contourProtocolUrl({
+        thresholds: { 10: [200, 1000], 11: [100, 500], 12: [50, 250], 13: [25, 100], 14: [10, 50], 15: [10, 50] },
+        contourLayer: 'contours', elevationKey: 'ele', levelKey: 'level' })] };
+      hasContours = true;
+    }
+  } catch (err) { hasContours = false; }
+  if (!terrainSources.dem) terrainSources.dem = { type: 'raster-dem', encoding: 'terrarium', tiles: [DEM_URL], tileSize: 256, maxzoom: 13 };
   const map = new maplibregl.Map({
     container: 'map',
     interactive: false,
@@ -133,11 +152,15 @@
         lakes: { type: 'geojson', data: 'data/lakes.geojson' },
         rivers: { type: 'geojson', data: 'data/rivers.geojson' },
         jeru: { type: 'geojson', data: 'data/jerusalem.geojson' },
-        overlay: { type: 'geojson', data: overlay }
+        overlay: { type: 'geojson', data: overlay },
+        ...terrainSources
       },
       layers: [
         { id: 'sea', type: 'background', paint: { 'background-color': '#0F1A1C' } },
         { id: 'land', type: 'fill', source: 'land', paint: { 'fill-color': '#1B2624' } },
+        { id: 'hillshade', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.45, 'hillshade-illumination-direction': 315 } },
+        ...(hasContours ? [{ id: 'contours', type: 'line', source: 'contours', 'source-layer': 'contours', minzoom: 10,
+          paint: { 'line-color': '#000', 'line-opacity': 0.5, 'line-width': ['match', ['get', 'level'], 1, 1, 0.5] } }] : []),
         { id: 'coast', type: 'line', source: 'land', paint: { 'line-color': '#3E504B', 'line-width': 1 } },
         { id: 'valley-band', type: 'line', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['valley', 'valley-minor']]],
           layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -147,8 +170,8 @@
         { id: 'lakes', type: 'fill', source: 'lakes', paint: { 'fill-color': '#132226' } },
         { id: 'lakes-line', type: 'line', source: 'lakes', paint: { 'line-color': '#3E504B', 'line-width': 0.8 } },
         { id: 'rivers', type: 'line', source: 'rivers', layout: { 'line-join': 'round' }, paint: { 'line-color': '#2E4A4B', 'line-width': 1.4 } },
-        { id: 'temple-fill', type: 'fill', source: 'jeru', filter: ['==', ['get', 'kind'], 'temple'], paint: { 'fill-color': '#000', 'fill-opacity': 0 } },
-        { id: 'temple-line', type: 'line', source: 'jeru', filter: ['==', ['get', 'kind'], 'temple'], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 1.2 } },
+        { id: 'temple-fill', type: 'fill', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['temple', 'fortress', 'palace']]], paint: { 'fill-color': '#000', 'fill-opacity': 0 } },
+        { id: 'temple-line', type: 'line', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['temple', 'fortress', 'palace']]], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 1.2 } },
         { id: 'wall', type: 'line', source: 'jeru', filter: ['==', ['get', 'kind'], 'wall'], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 1.4, 'line-dasharray': [1, 2] } },
         { id: 'area-fill', type: 'fill', source: 'overlay', filter: ['==', ['get', 'kind'], 'area'], paint: { 'fill-color': '#000', 'fill-opacity': ['*', 0.07, ['get', 'op']] } },
         { id: 'area-line', type: 'line', source: 'overlay', filter: ['==', ['get', 'kind'], 'area'], paint: { 'line-color': '#000', 'line-opacity': ['get', 'op'], 'line-width': 1.3, 'line-dasharray': [3, 3] } },
@@ -243,10 +266,20 @@
     const wallC = mixA(C.land, C.txt, 0.42);
     map.setPaintProperty('wall', 'line-color', rgb(wallC));
     map.setPaintProperty('wall', 'line-opacity', plan);
-    map.setPaintProperty('temple-fill', 'fill-color', rgb(mixA(mixA(C.land, C.txt, 0.08), C.accent, temple * 0.25)));
+    const isTemple = ['==', ['get', 'kind'], 'temple'];
+    const reconFill = mixA(C.land, C.txt, 0.08);
+    map.setPaintProperty('temple-fill', 'fill-color', ['case', isTemple, rgb(mixA(reconFill, C.accent, temple * 0.25)), rgb(reconFill)]);
     map.setPaintProperty('temple-fill', 'fill-opacity', plan);
-    map.setPaintProperty('temple-line', 'line-color', rgb(mixA(wallC, C.accent, temple)));
-    map.setPaintProperty('temple-line', 'line-width', 1.2 + temple * 1.4);
+    map.setPaintProperty('temple-line', 'line-color', ['case', isTemple, rgb(mixA(wallC, C.accent, temple)), rgb(wallC)]);
+    map.setPaintProperty('temple-line', 'line-width', ['case', isTemple, 1.2 + temple * 1.4, 1]);
+    const WHITE = [255, 255, 255];
+    map.setPaintProperty('hillshade', 'hillshade-shadow-color', rgb(mixA(C.land, BLACK, 0.45)));
+    map.setPaintProperty('hillshade', 'hillshade-highlight-color', rgb(mixA(C.land, WHITE, 0.3)));
+    map.setPaintProperty('hillshade', 'hillshade-accent-color', rgb(mixA(C.land, BLACK, 0.25)));
+    if (hasContours) {
+      map.setPaintProperty('contours', 'line-color', rgb(mixA(C.land, C.txt, 0.2)));
+      map.setPaintProperty('contours', 'line-opacity', 0.45 + 0.35 * plan);
+    }
     map.setPaintProperty('temple-line', 'line-opacity', plan);
     ['area-fill', 'ring-line', 'route'].forEach((id) => map.setPaintProperty(id, id === 'area-fill' ? 'fill-color' : 'line-color', rgb(C.accent)));
     map.setPaintProperty('area-line', 'line-color', rgb(C.accent));
@@ -304,16 +337,23 @@
     requestAnimationFrame(() => { queued = false; render(); });
   }
 
-  map.on('load', () => {
+  let started = false;
+  function start() {
+    if (started) return;
+    started = true;
     measure();
     computeCams();
     render();
     document.body.classList.add('ready');
-  });
+  }
+  // Start as soon as the style is ready; do not wait for terrain tiles.
+  map.on('style.load', start);
+  map.on('load', start);
+  if (map.isStyleLoaded()) start();
   window.addEventListener('scroll', queue, { passive: true });
   window.addEventListener('resize', () => {
     measure();
-    if (map.loaded()) { computeCams(); queue(); }
+    if (started) { computeCams(); queue(); }
   });
 
   // Key dialog
