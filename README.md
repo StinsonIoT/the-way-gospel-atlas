@@ -21,6 +21,10 @@ Jerusalem is a simplified 3D model over real 3D terrain, styled like a museum mo
 
 Capernaum is a second, illustrative model: dense blocks of one-storey basalt rooms around small courtyards, as in the excavated village, with the synagogue site and the traditional house of Peter. Individual houses and the village's extent are not surveyed. Landscape scenes (the wilderness, Jacob's well between Mount Gerizim and Mount Ebal, Nazareth's hill, the Sea of Galilee basin, Caesarea Philippi below Hermon, the Transfiguration with Tabor and Hermon, and the climb from Jericho) tilt the camera to show the real terrain.
 
+## Getting around
+
+The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu of every chapter and scene. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
+
 ## Running it
 
 It is a static site with no build step. Open it through any local web server, for example:

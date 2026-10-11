@@ -292,9 +292,101 @@
   }
 
   const root = document.documentElement.style;
-  const bar = document.getElementById('bar');
   const chapterEl = document.getElementById('chapter');
   let lastCh = '';
+
+  // ---------- chapters: timeline and menu ----------
+  const strip = (h) => String(h || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const groups = [];
+  STEPS.forEach((s, i) => {
+    const m = /^([IVX]+) · (.+)$/.exec(s.ch);
+    const key = m ? m[1] : 'Prologue';
+    let g = groups[groups.length - 1];
+    if (!g || g.key !== key) {
+      g = { key, num: m ? m[1] : '', title: m ? m[2] : 'Prologue', start: i, steps: [] };
+      groups.push(g);
+    }
+    g.steps.push(i);
+  });
+  const stepLabel = (s) => (s.kind === 'verse' ? strip(s.kicker) : strip(s.title) || strip(s.kicker));
+  const stepSub = (s) => (s.ref ? s.ref[0] : (s.kind === 'verse' ? '' : ''));
+  const timeline = document.getElementById('timeline');
+  timeline.innerHTML = groups.map((g, k) =>
+    `<button type="button" data-g="${k}" style="flex-grow:${g.steps.length}" aria-label="${esc((g.num ? g.num + ' · ' : '') + g.title)}" title="${esc((g.num ? g.num + ' · ' : '') + g.title)}"><span class="seg"><i></i></span></button>`).join('');
+  const segBtns = Array.from(timeline.querySelectorAll('button'));
+  const segFills = segBtns.map((b) => b.querySelector('i'));
+  let activeG = -1;
+  function updateTimeline(p) {
+    groups.forEach((g, k) => {
+      const n = g.steps.length - (k === groups.length - 1 ? 1 : 0);
+      const f = clamp((p - g.start) / Math.max(1, n), 0, 1);
+      const w = (100 * f).toFixed(1) + '%';
+      if (segFills[k]._w !== w) { segFills[k].style.width = w; segFills[k]._w = w; }
+    });
+    const r = Math.round(p);
+    const a = groups.findIndex((g) => g.steps.includes(r));
+    if (a !== activeG) {
+      if (segBtns[activeG]) segBtns[activeG].classList.remove('on');
+      if (segBtns[a]) segBtns[a].classList.add('on');
+      activeG = a;
+    }
+  }
+
+  // Keep the address on the current scene, so a link opens where you are.
+  let hashTimer = 0, lastHashStep = -1;
+  function noteStep(r) {
+    if (r === lastHashStep) return;
+    lastHashStep = r;
+    clearTimeout(hashTimer);
+    hashTimer = setTimeout(() => {
+      try { history.replaceState(null, '', r === 0 ? location.pathname + location.search : '#' + sections[r].id); } catch (err) { /* ignore */ }
+    }, 500);
+  }
+  function goTo(i) {
+    if (exploring) closeExplore();
+    if (toc.open) toc.close();
+    measure();
+    window.scrollTo({ top: tops[i] + 2, behavior: 'instant' });
+    queue();
+  }
+  segBtns.forEach((b) => b.addEventListener('click', () => goTo(groups[+b.dataset.g].start)));
+
+  const toc = document.getElementById('toc');
+  const tocBody = document.getElementById('toc-body');
+  tocBody.innerHTML = groups.map((g, k) => `
+    <section class="toc-ch" data-g="${k}">
+      <button class="toc-head" type="button" aria-expanded="false" aria-controls="toc-g${k}">
+        <span class="num">${esc(g.num)}</span><span>${esc(g.title)}</span><span class="cnt">${g.steps.length}</span>
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg>
+      </button>
+      <ol class="toc-scenes" id="toc-g${k}">${g.steps.map((i) => {
+        const st = STEPS[i]; const sub = stepSub(st);
+        return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}${sub ? `<small>${esc(sub)}</small>` : ''}</button></li>`;
+      }).join('')}</ol>
+    </section>`).join('');
+  tocBody.addEventListener('click', (ev) => {
+    const head = ev.target.closest('.toc-head');
+    if (head) { head.setAttribute('aria-expanded', head.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); return; }
+    const sb = ev.target.closest('[data-i]');
+    if (sb) goTo(+sb.dataset.i);
+  });
+  function openToc() {
+    const r = Math.round(progress());
+    tocBody.querySelectorAll('[aria-current]').forEach((b) => b.removeAttribute('aria-current'));
+    tocBody.querySelectorAll('.toc-ch').forEach((sec) => {
+      const g = groups[+sec.dataset.g];
+      const here = g.steps.includes(r);
+      sec.classList.toggle('now', here);
+      sec.querySelector('.toc-head').setAttribute('aria-expanded', here ? 'true' : 'false');
+    });
+    const cur = tocBody.querySelector(`[data-i="${r}"]`);
+    if (cur) cur.setAttribute('aria-current', 'step');
+    toc.showModal();
+    if (cur) cur.scrollIntoView({ block: 'center' });
+  }
+  document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); openToc(); });
+  document.getElementById('toc-close').addEventListener('click', () => toc.close());
+  toc.addEventListener('click', (ev) => { if (ev.target === toc) toc.close(); });
 
   let exploring = false;
   function render() {
@@ -309,7 +401,8 @@
     map.jumpTo({ center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: camPad });
     apply(STEPS[i], STEPS[i + 1], e, p);
     // header
-    bar.style.width = (100 * p / (N - 1)).toFixed(2) + '%';
+    updateTimeline(p);
+    noteStep(Math.round(p));
     const ch = STEPS[Math.round(p)].ch;
     if (ch !== lastCh) { chapterEl.textContent = ch; lastCh = ch; }
   }
@@ -444,6 +537,8 @@
     map.setLight({ anchor: 'viewport', color: '#ffffff', intensity: 0.38, position: [1.3, 210, 35] });
     measure();
     computeCams();
+    const hashIdx = sections.findIndex((sec) => '#' + sec.id === location.hash);
+    if (hashIdx > 0) window.scrollTo({ top: tops[hashIdx] + 2, behavior: 'instant' });
     render();
     document.body.classList.add('ready');
   }

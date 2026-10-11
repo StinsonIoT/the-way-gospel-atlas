@@ -44,12 +44,19 @@ body.ready #map { opacity: 1; }
 
 /* ---------- header ---------- */
 .top { position: fixed; top: 0; left: 0; right: 0; z-index: 10; padding-top: env(safe-area-inset-top); color: var(--m-txt); }
-.track { height: 2px; background: var(--m-track); }
-#bar { height: 100%; width: 0; background: var(--m-accent); }
+.timeline { display: flex; gap: 3px; height: 12px; padding: 0 2px; }
+.timeline button { flex: 1 1 0; min-width: 6px; height: 12px; padding: 0; border: 0; background: transparent; cursor: pointer; display: block; }
+.timeline .seg { display: block; height: 3px; background: var(--m-track); border-radius: 0 0 2px 2px; overflow: hidden; transition: height .2s ease; }
+.timeline .seg i { display: block; height: 100%; width: 0; background: var(--m-accent); }
+.timeline button.on .seg { height: 5px; }
+.timeline button:hover .seg { height: 5px; }
 .top-row { height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 10px 0 20px; }
 .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.22em; min-height: 44px; }
 .brand svg { width: 14px; height: 14px; fill: var(--m-accent); }
-.chapter { flex: 1; text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chapter { flex: 1; min-width: 0; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0 6px;
+  font: 600 11px var(--sans); letter-spacing: 0.14em; text-transform: uppercase; }
+.chapter span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chapter svg { flex: none; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .key-btn { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--m-track); background: transparent; color: inherit; font: 500 13px var(--sans); cursor: pointer; }
 
 /* ---------- story ---------- */
@@ -121,7 +128,7 @@ body.ready #map { opacity: 1; }
 
 /* ---------- Explore Jerusalem ---------- */
 #map { pointer-events: none; }
-.explore-open { position: fixed; z-index: 9; right: 12px; top: calc(66px + env(safe-area-inset-top)); min-height: 44px; display: inline-flex; align-items: center; gap: 8px;
+.explore-open { position: fixed; z-index: 9; right: 12px; top: calc(76px + env(safe-area-inset-top)); min-height: 44px; display: inline-flex; align-items: center; gap: 8px;
   padding: 0 14px; border-radius: 999px; border: 0; background: var(--m-txt); color: var(--m-land); font: 600 13px var(--sans); cursor: pointer;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); opacity: 0; visibility: hidden; transition: opacity 0.25s ease; }
 .explore-open svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
@@ -146,6 +153,24 @@ dialog::backdrop { background: rgba(10, 14, 15, 0.5); }
 .dlg-head h2 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 26px; }
 .dlg-head button { width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; color: inherit; }
 .dlg-head svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.6; }
+
+/* ---------- chapter menu ---------- */
+#toc { max-height: min(82vh, 760px); overflow: auto; overscroll-behavior: contain; padding-bottom: 12px; }
+#toc .dlg-head { position: sticky; top: -22px; z-index: 1; margin: -22px -22px 0; padding: 14px 14px 10px 22px; background: var(--c-bg); }
+.toc-ch { border-top: 1px solid var(--c-line); }
+.toc-head { width: 100%; min-height: 52px; display: grid; grid-template-columns: 34px 1fr auto 16px; align-items: center; gap: 8px; padding: 8px 2px; border: 0; background: transparent; color: inherit; cursor: pointer; text-align: left; font: 500 16px var(--sans); }
+.toc-head .num { font: 600 11px var(--sans); letter-spacing: .12em; color: var(--c-accent); }
+.toc-head .cnt { font-size: 12px; color: var(--c-muted); }
+.toc-head svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; transition: transform .2s ease; }
+.toc-head[aria-expanded="true"] svg { transform: rotate(180deg); }
+.toc-ch.now .toc-head { font-weight: 600; }
+.toc-scenes { list-style: none; margin: 0 0 10px; padding: 0 0 0 42px; display: none; }
+.toc-head[aria-expanded="true"] + .toc-scenes { display: block; }
+.toc-scenes button { width: 100%; min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 6px 10px; border: 0; border-radius: 10px; background: transparent; color: inherit; cursor: pointer; text-align: left; font: 400 15px var(--serif); }
+.toc-scenes button small { font: 400 11.5px var(--sans); color: var(--c-muted); }
+.toc-scenes button:hover { background: rgba(0,0,0,.04); }
+.toc-scenes button[aria-current="step"] { background: rgba(154,78,42,.1); }
+.toc-scenes button[aria-current="step"]::before { content: 'You are here'; font: 600 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--c-accent); }
 
 /* ---------- desktop ---------- */
 @media (min-width: 900px) {
