@@ -100,7 +100,9 @@ body.ready #map { opacity: 1; }
 .times li { display: flex; justify-content: space-between; gap: 10px; color: var(--c-muted); }
 .times li:first-child { color: var(--c-fg); box-shadow: -13px 0 0 -11px var(--c-accent); }
 .steps-list { list-style: none; margin: 0; padding: 0; font-size: 14px; }
-.step-list-tight .steps-list li { padding: 6px 0; }
+.step-list-tight { gap: 9px; }
+.step-list-tight .steps-list { font-size: 13.5px; }
+.step-list-tight .steps-list li { padding: 5px 0; }
 .steps-list li { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 8px 0; border-top: 1px solid var(--c-line); }
 .steps-list li:last-child { border-bottom: 1px solid var(--c-line); }
 .steps-list b { color: var(--c-accent); }

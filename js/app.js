@@ -127,7 +127,7 @@
     if (s.note) body += `<p class="note">${linkRefs(esc(s.note))}</p>`;
     if (s.kind === 'legend') body += legendHTML;
     if (s.kind === 'chapter') body += `<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>`;
-    if (s.kind === 'list') body = `<ol class="steps-list">${s.items.map((m, i) => `<li><b>${i + 1}</b><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>` + body;
+    if (s.kind === 'list') body = `<ol class="steps-list">${s.items.map((m, i) => `<li><b>${i + 1}</b><span>${esc(m[0])}</span><span>${linkRefs(esc(m[1]))}</span></li>`).join('')}</ol>` + body;
     body += extrasHTML(s);
     if (s.chips) body += `<div class="chips">${s.chips.map((c) => `<span class="chip">${SYM[c]}${esc(CHIPS[c])}</span>`).join('')}</div>`;
     if (s.kind === 'close') {
@@ -135,7 +135,8 @@
         <div class="actions">${refLink(s.ref, 'btn btn-solid')}<a class="btn" href="#top">Begin again</a></div>
         <p class="more">The story continues in the book of Acts.</p>`;
     }
-    return `<article class="card card-${pal.card}">${kick}<h2>${s.title}</h2>${body}</article>`;
+    const tight = s.kind === 'list' && s.items && s.items.length > 5 ? ' step-list-tight' : '';
+    return `<article class="card card-${pal.card}${tight}">${kick}<h2>${s.title}</h2>${body}</article>`;
   }
   STEPS.forEach((s, i) => {
     const sec = document.createElement('section');
