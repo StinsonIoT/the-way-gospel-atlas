@@ -1,13 +1,15 @@
-// The Way — scene data.
+// The Way — scene data: the whole story, from the birth to the ascension.
 // Every place carries a certainty type. Routes are schematic arcs between
 // endpoints the text names; they never follow modern roads. Narrative links
 // mark movement the text implies but does not describe.
+// Scripture quotations are from the Berean Standard Bible (public domain).
 
 window.WAY = (function () {
   // ---------- Light: one palette per moment of the story ----------
   const PALETTES = {
     night:   { sea: '#0F1A1C', land: '#1B2624', coast: '#3E504B', lake: '#132226', river: '#2E4A4B', txt: '#F1E9DA', muted: '#A9B2AA', accent: '#E0A458', trad: '#A9C3DA', card: 'dark' },
     day:     { sea: '#C9D8D3', land: '#E9DFCB', coast: '#8FA8A0', lake: '#BCD1CC', river: '#88AAB0', txt: '#1C2A25', muted: '#4C5A54', accent: '#9A4E2A', trad: '#2F4F6B', card: 'light' },
+    warm:    { sea: '#C9D6CF', land: '#E8D8BA', coast: '#8FA8A0', lake: '#BCD1CC', river: '#88AAB0', txt: '#1C2A25', muted: '#4C5A54', accent: '#9A4E2A', trad: '#2F4F6B', card: 'light' },
     dusk:    { sea: '#283338', land: '#2E302B', coast: '#45514E', lake: '#1E2A2D', river: '#3E5556', txt: '#F1E9DA', muted: '#C9C3B2', accent: '#E0A458', trad: '#A9C3DA', card: 'dusk' },
     evening: { sea: '#283338', land: '#2B2A25', coast: '#45514E', lake: '#1E2A2D', river: '#4D5654', txt: '#F1E9DA', muted: '#C9C3B2', accent: '#E0A458', trad: '#A9C3DA', card: 'dusk' },
     night2:  { sea: '#141B1E', land: '#1A2124', coast: '#2F3D3B', lake: '#141B1E', river: '#3E5257', txt: '#EAE6DC', muted: '#B9C0BE', accent: '#E0A458', trad: '#A9C3DA', card: 'dark' },
@@ -22,9 +24,10 @@ window.WAY = (function () {
   // ---------- Places ----------
   // type: named (the text names the town; dot is an approximate locator)
   //       trad (identified by later tradition, not the text)
-  //       proposal (a later proposal)
+  //       proposal (a later or debated proposal)
   //       area / region / water (map labels only)
   const PLACES = {
+    // towns
     nazareth:   { lng: 35.3035, lat: 32.6996, label: 'Nazareth', type: 'named', side: 'left' },
     capernaum:  { lng: 35.5751, lat: 32.8807, label: 'Capernaum', type: 'named', side: 'left' },
     jerusalem:  { lng: 35.2345, lat: 31.7767, label: 'Jerusalem', type: 'named', side: 'left' },
@@ -32,83 +35,137 @@ window.WAY = (function () {
     star:       { lng: 35.2007, lat: 31.7054, label: 'Bethlehem', type: 'star', side: 'right' },
     jericho:    { lng: 35.4440, lat: 31.8570, label: 'Jericho', type: 'named', side: 'right' },
     bethany:    { lng: 35.2614, lat: 31.7713, label: 'Bethany', type: 'named', side: 'right' },
+    nain:       { lng: 35.3478, lat: 32.6297, label: 'Nain', type: 'named', side: 'right' },
+    bethsaida:  { lng: 35.6305, lat: 32.9104, label: 'Bethsaida', note: 'site debated', type: 'named', side: 'right' },
+    tyre:       { lng: 35.1955, lat: 33.2705, label: 'Tyre', type: 'named', side: 'right' },
+    sidon:      { lng: 35.3700, lat: 33.5600, label: 'Sidon', type: 'named', side: 'right' },
+    cphilippi:  { lng: 35.6946, lat: 33.2484, label: 'Caesarea Philippi', type: 'named', side: 'right' },
+    // traditional and proposed sites
     baptism:    { lng: 35.5497, lat: 31.8389, label: 'Baptism site', note: 'traditional', type: 'trad', side: 'right' },
+    nativity:   { lng: 35.2075, lat: 31.7043, label: 'Church of the Nativity', note: 'traditional site', type: 'trad', side: 'right' },
+    cana1:      { lng: 35.3424, lat: 32.7466, label: 'Kafr Kanna', note: 'traditional Cana', type: 'trad', side: 'right' },
+    cana2:      { lng: 35.2826, lat: 32.7909, label: 'Khirbet Qana', note: 'proposed Cana', type: 'proposal', side: 'left' },
+    jacobswell: { lng: 35.2850, lat: 32.2097, label: 'Jacob’s well', note: 'traditional site', type: 'trad', side: 'right' },
+    beatitudes: { lng: 35.5560, lat: 32.8810, label: 'Mount of Beatitudes', note: 'traditional', type: 'trad', side: 'left' },
+    ephraim:    { lng: 35.3000, lat: 31.9500, label: 'Ephraim', note: 'possible site', type: 'proposal', side: 'right' },
     cenacle:    { lng: 35.2290, lat: 31.7718, label: 'Upper room', note: 'traditional', type: 'trad', side: 'right' },
     gethsemane: { lng: 35.2397, lat: 31.7794, label: 'Gethsemane', note: 'traditional', type: 'trad', side: 'right' },
     sepulchre:  { lng: 35.2296, lat: 31.7784, label: 'Holy Sepulchre', note: 'traditional', type: 'trad', side: 'right' },
     gardentomb: { lng: 35.2302, lat: 31.7838, label: 'Garden Tomb', note: 'later proposal', type: 'proposal', side: 'right' },
+    praetA:     { lng: 35.2336, lat: 31.7806, label: 'Antonia', note: 'praetorium? · debated', type: 'proposal', side: 'right' },
+    praetH:     { lng: 35.2283, lat: 31.7750, label: 'Herod’s palace', note: 'praetorium? · debated', type: 'proposal', side: 'right' },
+    // Jerusalem features named in John
+    bethesda:   { lng: 35.2358, lat: 31.7814, label: 'Pool of Bethesda', type: 'named', side: 'right' },
+    siloam:     { lng: 35.2340, lat: 31.7704, label: 'Pool of Siloam', type: 'named', side: 'right' },
+    // labels
     galilee:    { lng: 35.24, lat: 32.97, label: 'Galilee', type: 'region' },
     samaria:    { lng: 35.20, lat: 32.26, label: 'Samaria', type: 'region' },
     judea:      { lng: 35.02, lat: 31.55, label: 'Judea', type: 'region' },
+    decapolis:  { lng: 35.86, lat: 32.58, label: 'Decapolis', type: 'region' },
+    perea:      { lng: 35.68, lat: 31.95, label: 'Beyond the Jordan', type: 'region' },
+    phoenicia:  { lng: 35.42, lat: 33.38, label: 'Phoenicia', type: 'region' },
+    egypt:      { lng: 31.4, lat: 30.3, label: 'Egypt', type: 'region' },
+    syria:      { lng: 36.8, lat: 34.0, label: 'Province of Syria', type: 'region' },
     wildlabel:  { lng: 35.33, lat: 31.70, label: 'Wilderness', type: 'area' },
     antonia:    { lng: 35.2335, lat: 31.7814, label: 'Antonia', type: 'area' },
-    praetA:     { lng: 35.2336, lat: 31.7806, label: 'Antonia', note: 'praetorium? · debated', type: 'proposal', side: 'right' },
-    praetH:     { lng: 35.2283, lat: 31.7750, label: 'Herod’s palace', note: 'praetorium? · debated', type: 'proposal', side: 'right' },
-    syria:      { lng: 36.8, lat: 34.0, label: 'Province of Syria', type: 'region' },
+    colonnade:  { lng: 35.2373, lat: 31.7781, label: 'Solomon’s Colonnade', type: 'area' },
     bethlbl:    { lng: 35.2007, lat: 31.7072, label: 'Bethlehem', type: 'area' },
-    nativity:   { lng: 35.2075, lat: 31.7043, label: 'Church of the Nativity', note: 'traditional site', type: 'trad', side: 'right' },
     fieldslbl:  { lng: 35.2300, lat: 31.7040, label: 'Fields', type: 'area' },
     olives:     { lng: 35.2428, lat: 31.7754, label: 'Mount of Olives', type: 'area' },
     templelbl:  { lng: 35.2352, lat: 31.7784, label: 'Temple courts', type: 'area' },
     kidron:     { lng: 35.2376, lat: 31.7745, label: 'Kidron Valley', type: 'water' },
     sog:        { lng: 35.59, lat: 32.80, label: 'Sea of Galilee', type: 'water' },
+    tiberias:   { lng: 35.59, lat: 32.80, label: 'Sea of Tiberias', type: 'water' },
+    jordanlbl:  { lng: 35.57, lat: 32.30, label: 'Jordan River', type: 'water' },
     deadsea:    { lng: 35.50, lat: 31.50, label: 'Dead Sea', type: 'water' },
     ring1:      { lng: 35.2345, lat: 31.62, label: 'in Jerusalem', type: 'ring' },
     ring2:      { lng: 35.2345, lat: 32.42, label: 'in all Judea and Samaria', type: 'ring' },
     ring3:      { lng: 35.2345, lat: 34.45, label: 'and to the ends of the earth', type: 'ring' }
   };
 
-  // ---------- Geographic areas (drawn as dashed regions) ----------
-  // r in metres. These mark "the area is named; the exact site is unknown".
+  // ---------- Areas: the region is named; the exact site is unknown ----------
   const AREAS = {
-    wilderness: { lng: 35.33, lat: 31.70, r: 9000 },
-    fields:     { lng: 35.2300, lat: 31.7040, r: 900 },
-    citysites:  { lng: 35.2310, lat: 31.7745, r: 650 },
-    nearcity:   { lng: 35.2299, lat: 31.7811, r: 420 },
-    ring1:      { lng: 35.2345, lat: 31.7767, r: 9000, ring: true },
-    ring2:      { lng: 35.2345, lat: 31.7767, r: 72000, ring: true },
-    ring3:      { lng: 35.2345, lat: 31.7767, r: 330000, ring: true }
+    lowerjordan: { lng: 35.55, lat: 31.88, r: 11000 },
+    wilderness:  { lng: 35.33, lat: 31.70, r: 9000 },
+    beyondjord:  { lng: 35.59, lat: 31.86, r: 9000 },
+    fields:      { lng: 35.2300, lat: 31.7040, r: 900 },
+    easternshore:{ lng: 35.645, lat: 32.80, r: 4500 },
+    lakeregion:  { lng: 35.60, lat: 32.84, r: 9000 },
+    lakeshore:   { lng: 35.565, lat: 32.86, r: 5000 },
+    tyreregion:  { lng: 35.1955, lat: 33.2705, r: 12000 },
+    decaregion:  { lng: 35.78, lat: 32.62, r: 22000 },
+    cpvillages:  { lng: 35.6946, lat: 33.2484, r: 8000 },
+    border:      { lng: 35.42, lat: 32.52, r: 14000 },
+    galmount:    { lng: 35.42, lat: 32.80, r: 22000 },
+    judeabeyond: { lng: 35.48, lat: 31.88, r: 24000 },
+    citysites:   { lng: 35.2310, lat: 31.7745, r: 650 },
+    nearcity:    { lng: 35.2299, lat: 31.7811, r: 420 },
+    ring1:       { lng: 35.2345, lat: 31.7767, r: 9000, ring: true },
+    ring2:       { lng: 35.2345, lat: 31.7767, r: 72000, ring: true },
+    ring3:       { lng: 35.2345, lat: 31.7767, r: 330000, ring: true }
   };
 
   // ---------- Routes ----------
-  // kind 'route': schematic recorded movement (dashed, accent colour).
-  // kind 'link': narrative connection, travel not described (grey dots).
-  // Bezier control points only shape a smooth arc; they are not waypoints.
+  // kind 'route': recorded movement drawn as a schematic arc (accent colour).
+  // kind 'link': the story moves on, travel not described (grey dots).
+  // bez: smooth arc through four control points; pts: a few named stops in order.
   const ROUTES = {
-    'naz-beth': { kind: 'route', bez: [[35.3035, 32.6996], [35.42, 32.30], [35.35, 31.95], [35.2007, 31.7054]] },
-    'jer-bny':  { kind: 'route', bez: [[35.4440, 31.8570], [35.39, 31.83], [35.32, 31.79], [35.2614, 31.7713]] },
-    'entry':    { kind: 'route', bez: [[35.2605, 31.7716], [35.2530, 31.7770], [35.2450, 31.7800], [35.2392, 31.7791]] },
-    'olivet':   { kind: 'route', bez: [[35.2290, 31.7718], [35.2335, 31.7726], [35.2378, 31.7758], [35.2395, 31.7790]] },
-    'arrest':   { kind: 'link', bez: [[35.2360, 31.7784], [35.2372, 31.7788], [35.2382, 31.7791], [35.2393, 31.7793]] },
-    'led':      { kind: 'link', bez: [[35.2393, 31.7790], [35.2375, 31.7778], [35.2360, 31.7768], [35.2342, 31.7760]] },
-    'ledout':   { kind: 'link', bez: [[35.2306, 31.7752], [35.2304, 31.7760], [35.2302, 31.7768], [35.2300, 31.7778]] }
+    'naz-beth':  { kind: 'route', bez: [[35.3035, 32.6996], [35.42, 32.30], [35.35, 31.95], [35.2007, 31.7054]] },
+    'jer-beth':  { kind: 'route', bez: [[35.2345, 31.7767], [35.226, 31.756], [35.212, 31.726], [35.2007, 31.7054]] },
+    'to-egypt':  { kind: 'route', bez: [[35.2007, 31.7054], [34.6, 31.25], [33.4, 30.95], [32.3, 30.85]] },
+    'egypt-naz': { kind: 'link', bez: [[32.3, 30.85], [33.7, 31.55], [34.7, 32.35], [35.3035, 32.6996]] },
+    'naz-jord':  { kind: 'route', bez: [[35.3035, 32.6996], [35.46, 32.42], [35.56, 32.12], [35.55, 31.90]] },
+    'jud-sychar':{ kind: 'link', bez: [[35.30, 31.86], [35.29, 31.98], [35.287, 32.09], [35.2850, 32.2040]] },
+    'crossing':  { kind: 'route', bez: [[35.578, 32.875], [35.60, 32.86], [35.625, 32.835], [35.64, 32.812]] },
+    'tyre-loop': { kind: 'route', pts: [[35.1955, 33.2705], [35.37, 33.56], [35.60, 32.90], [35.74, 32.68]] },
+    'jer-bny':   { kind: 'route', bez: [[35.4440, 31.8570], [35.39, 31.83], [35.32, 31.79], [35.2614, 31.7713]] },
+    'entry':     { kind: 'route', bez: [[35.2605, 31.7716], [35.2530, 31.7770], [35.2450, 31.7800], [35.2392, 31.7791]] },
+    'olivet':    { kind: 'route', bez: [[35.2290, 31.7718], [35.2335, 31.7726], [35.2378, 31.7758], [35.2395, 31.7790]] },
+    'arrest':    { kind: 'link', bez: [[35.2360, 31.7784], [35.2372, 31.7788], [35.2382, 31.7791], [35.2393, 31.7793]] },
+    'led':       { kind: 'link', bez: [[35.2393, 31.7790], [35.2375, 31.7778], [35.2360, 31.7768], [35.2342, 31.7760]] },
+    'ledout':    { kind: 'link', bez: [[35.2306, 31.7752], [35.2304, 31.7760], [35.2302, 31.7768], [35.2300, 31.7778]] },
+    'ascend':    { kind: 'route', bez: [[35.2352, 31.7778], [35.2425, 31.7792], [35.2520, 31.7762], [35.2600, 31.7716]] }
   };
 
-  // ---------- Steps (one per screen of scroll) ----------
-  // view: [[west, south], [east, north]] the camera fits on screen.
-  // show: places/areas/routes visible; plan: 0..1 strength of the
-  // historical Jerusalem layer; temple: highlight the temple courts.
+  // ---------- Camera framings used by several scenes ----------
+  const V = {
+    region:   [[34.95, 31.62], [35.72, 32.95]],
+    galilee:  [[35.22, 32.60], [35.72, 32.98]],
+    lake:     [[35.48, 32.70], [35.72, 32.93]],
+    capern:   [[35.53, 32.85], [35.64, 32.92]],
+    north:    [[35.05, 32.62], [35.90, 33.62]],
+    judea:    [[35.14, 31.68], [35.66, 31.98]],
+    city:     [[35.2262, 31.7690], [35.2418, 31.7812]],
+    temple:   [[35.2318, 31.7746], [35.2390, 31.7822]],
+    golgotha: [[35.2262, 31.7742], [35.2345, 31.7858]]
+  };
+
+  const H = (book, ch) => ['', book, ch];
+
+  // ---------- The story, one screen per step ----------
   const STEPS = [
-    { id: 'title', ch: 'The Way', pal: 'night', view: [[34.75, 31.15], [35.85, 33.15]], plan: 0,
+    // ---------- Opening ----------
+    { id: 'title', ch: 'The Way', pal: 'night', view: [[34.75, 31.15], [35.85, 33.15]],
       show: ['star', 'galilee', 'samaria', 'judea', 'sog', 'deadsea'], kind: 'title' },
 
-    { id: 'land', ch: 'The land', pal: 'day', view: [[34.95, 31.62], [35.72, 32.95]], plan: 0,
+    { id: 'land', ch: 'The land', pal: 'day', view: V.region,
       show: ['nazareth', 'capernaum', 'jerusalem', 'bethlehem', 'galilee', 'samaria', 'judea', 'sog', 'deadsea'],
       kicker: 'The land', title: 'Galilee to Judea, <em>on foot.</em>',
       text: 'Most of the story unfolds between the Sea of Galilee and Jerusalem, about 100 km apart in a straight line.' },
 
-    { id: 'marks', ch: 'How to read the map', pal: 'day', view: [[35.08, 31.62], [35.70, 31.93]], plan: 0,
+    { id: 'marks', ch: 'How to read the map', pal: 'day', view: [[35.08, 31.62], [35.70, 31.93]],
       show: ['jericho', 'bethlehem', 'jerusalem', 'baptism', 'wilderness', 'wildlabel', 'deadsea'],
       kicker: 'Before you begin', title: 'Every mark says <em>how sure</em> we are.', kind: 'legend' },
 
-    { id: 'decree', ch: 'I · Origins', pal: 'day', view: [[31.6, 29.6], [38.4, 35.2]], plan: 0,
+    // ---------- I · Origins ----------
+    { id: 'decree', ch: 'I · Origins', chapter: 'I', pal: 'day', view: [[31.6, 29.6], [38.4, 35.2]],
       show: ['nazareth', 'bethlehem', 'syria', 'judea', 'galilee'],
       kicker: 'I · Origins · a decree', ref: ['Luke 2:1–3', 'luke', 2],
       title: 'A census of <em>the whole empire.</em>',
       text: 'Caesar Augustus orders a registration, and everyone goes to his own town to be registered. The decree comes from Rome, far to the west.',
       note: 'Luke ties this to a census taken while Quirinius governed Syria. How to date that census against other records is still debated.' },
 
-    { id: 's01', ch: 'I · Origins', pal: 'day', view: [[34.95, 31.62], [35.65, 32.78]], plan: 0,
+    { id: 'journey', ch: 'I · Origins', pal: 'day', view: [[34.95, 31.62], [35.65, 32.78]],
       show: ['nazareth', 'bethlehem', 'jerusalem', 'naz-beth', 'galilee', 'samaria', 'sog', 'deadsea'],
       kicker: 'Nazareth → Bethlehem', ref: ['Luke 2:4–5', 'luke', 2],
       title: 'To the city <em>of David.</em>',
@@ -116,7 +173,7 @@ window.WAY = (function () {
       note: 'About 110 km (70 miles) in a straight line. Luke gives no road and no travel time, so the line is schematic. Matthew later links Bethlehem with Micah’s promise of a ruler (Matthew 2:5–6; Micah 5:2).',
       chips: ['named', 'route'] },
 
-    { id: 'birth', ch: 'I · Origins', pal: 'day', view: [[35.188, 31.697], [35.222, 31.712]], plan: 0,
+    { id: 'birth', ch: 'I · Origins', pal: 'day', view: [[35.188, 31.697], [35.222, 31.712]],
       show: ['bethlbl', 'nativity'],
       kicker: 'Bethlehem', ref: ['Luke 2:6–7', 'luke', 2],
       title: 'Laid <em>in a manger.</em>',
@@ -124,14 +181,340 @@ window.WAY = (function () {
       note: 'Luke’s word (katalyma) can mean an inn or a guest room; he uses it again for the upper room (Luke 22:11). The Church of the Nativity marks a cave tradition recorded by the second century.',
       chips: ['trad'] },
 
-    { id: 'shepherds', ch: 'I · Origins', pal: 'night', view: [[35.196, 31.694], [35.245, 31.716]], plan: 0,
+    { id: 'shepherds', ch: 'I · Origins', pal: 'night', view: [[35.196, 31.694], [35.245, 31.716]],
       show: ['nativity', 'fields', 'fieldslbl'], kind: 'verse',
       kicker: 'Fields nearby · by night',
       verse: 'Today in the city of David a Savior has been born to you. He is Christ the Lord!',
       ref: ['Luke 2:11 · BSB', 'luke', 2],
       after: 'Shepherds keeping watch over their flocks hear the angel, go to Bethlehem, and find Mary, Joseph and the baby (Luke 2:8–20). The exact fields are unknown.' },
 
-    { id: 'hw', ch: 'VI · Holy Week', pal: 'dusk', view: [[35.14, 31.73], [35.49, 31.88]], plan: 0,
+    { id: 'present', ch: 'I · Origins', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      show: ['templelbl'],
+      kicker: 'Jerusalem · the temple', ref: ['Luke 2:22–38', 'luke', 2],
+      title: 'A light <em>for the nations.</em>',
+      text: 'Mary and Joseph bring Jesus to the temple to present Him to the Lord. Simeon calls Him a light for the Gentiles; the prophet Anna gives thanks and speaks about Him.',
+      chips: ['recon'] },
+
+    { id: 'magi', ch: 'I · Origins', pal: 'dusk', view: [[35.17, 31.69], [35.27, 31.79]],
+      show: ['jerusalem', 'bethlehem', 'jer-beth'],
+      kicker: 'Jerusalem → Bethlehem', ref: ['Matthew 2:1–12', 'matthew', 2],
+      title: 'Visitors <em>from the east.</em>',
+      text: 'Magi come to Jerusalem asking for the newborn king. Sent on to Bethlehem, they find the child with Mary, worship Him and offer gold, frankincense and myrrh, then return home another way.',
+      note: 'Matthew does not say how many Magi came; “three” comes from the three gifts. He places the visit in a house in Bethlehem.',
+      chips: ['named', 'route'] },
+
+    { id: 'egypt', ch: 'I · Origins', pal: 'night', view: [[30.6, 29.4], [36.2, 33.4]],
+      show: ['bethlehem', 'egypt', 'to-egypt', 'judea'],
+      kicker: 'Bethlehem → Egypt · by night', ref: ['Matthew 2:13–18', 'matthew', 2],
+      title: 'Taken <em>to safety.</em>',
+      text: 'An angel warns Joseph that Herod intends to kill the child. Joseph gets up, takes the child and His mother by night, and leaves for Egypt.',
+      note: 'Matthew names Egypt but no town and no road. Later traditions of the route are not drawn.',
+      chips: ['route', 'region'] },
+
+    { id: 'nazareth', ch: 'I · Origins', pal: 'day', view: [[33.6, 30.4], [36.0, 33.2]],
+      show: ['nazareth', 'egypt-naz', 'galilee', 'egypt'],
+      kicker: 'Egypt → Nazareth', ref: ['Luke 2:39–40', 'luke', 2],
+      title: 'Growing <em>in wisdom.</em>',
+      text: 'After Herod dies, the family returns and settles in Nazareth in Galilee. The child grows in wisdom and stature, and in favor with God and people.',
+      note: 'Matthew says they came back to the land of Israel and withdrew to Galilee (Matthew 2:19–23). The Gospels leave most of these years unrecorded.',
+      chips: ['named', 'link'] },
+
+    { id: 'twelve', ch: 'I · Origins', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      show: ['templelbl'],
+      kicker: 'Jerusalem · Passover', ref: ['Luke 2:41–52', 'luke', 2],
+      title: 'At twelve, <em>in the temple.</em>',
+      text: 'After the Passover, the boy Jesus stays behind. His parents find Him three days later in the temple courts, listening to the teachers and asking them questions.',
+      chips: ['recon'] },
+
+    // ---------- II · Beginnings ----------
+    { id: 'baptism', ch: 'II · Beginnings', chapter: 'II', pal: 'day', view: [[35.25, 31.78], [35.68, 32.74]],
+      show: ['nazareth', 'naz-jord', 'lowerjordan', 'baptism', 'jordanlbl', 'deadsea'],
+      kicker: 'II · Beginnings · the Jordan', ref: ['Mark 1:9–11', 'mark', 1],
+      title: 'Baptized <em>by John.</em>',
+      text: 'Jesus comes from Nazareth and is baptized by John in the Jordan. The Spirit descends on Him like a dove.',
+      note: 'Mark names the Jordan, not a crossing. The marked baptism site is a later tradition.',
+      chips: ['region', 'route', 'trad'] },
+
+    { id: 'voice', ch: 'II · Beginnings', pal: 'day', view: [[35.40, 31.76], [35.66, 31.98]],
+      show: ['lowerjordan', 'baptism'], kind: 'verse',
+      kicker: 'At the Jordan',
+      verse: 'And a voice came from heaven: “You are My beloved Son; in You I am well pleased.”',
+      ref: ['Mark 1:11 · BSB', 'mark', 1] },
+
+    { id: 'wilderness', ch: 'II · Beginnings', pal: 'noon', view: [[35.18, 31.56], [35.52, 31.86]],
+      show: ['wilderness', 'wildlabel', 'jericho', 'deadsea'],
+      kicker: 'The wilderness · forty days', ref: ['Matthew 4:1–11', 'matthew', 4],
+      title: 'Forty days <em>of testing.</em>',
+      text: 'The Spirit leads Jesus into the wilderness, where He is tempted by the devil. He answers each temptation with Scripture.',
+      note: 'The Gospels do not name the place. Matthew and Luke also set one temptation at the temple in Jerusalem.',
+      chips: ['region'] },
+
+    { id: 'followers', ch: 'II · Beginnings', pal: 'day', view: [[35.36, 31.74], [35.74, 31.98]],
+      show: ['beyondjord', 'perea', 'jericho', 'baptism'],
+      kicker: 'Bethany beyond the Jordan', ref: ['John 1:28–51', 'john', 1],
+      title: 'The first <em>followers.</em>',
+      text: 'John the Baptist points to Jesus as the Lamb of God. Andrew follows Him and brings his brother Simon; Philip and Nathanael soon join them.',
+      note: 'John names “Bethany beyond the Jordan”. Its exact location is unresolved, so the map marks a region, not a point.',
+      chips: ['region'] },
+
+    { id: 'cana', ch: 'II · Beginnings', pal: 'warm', view: [[35.22, 32.66], [35.42, 32.84]],
+      show: ['cana1', 'cana2', 'nazareth', 'galilee'],
+      kicker: 'Cana in Galilee', ref: ['John 2:1–11', 'john', 2],
+      title: 'Water <em>into wine.</em>',
+      text: 'At a wedding, the wine runs out. Jesus has servants fill six stone jars with water, and it becomes wine. John calls it the first of His signs.',
+      note: 'Two sites are proposed for Cana: Kafr Kanna, the traditional one, and Khirbet Qana to the north. The atlas shows both.',
+      chips: ['trad'] },
+
+    { id: 'zeal', ch: 'II · Beginnings', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      show: ['templelbl'],
+      kicker: 'Jerusalem · Passover', ref: ['John 2:13–22', 'john', 2],
+      title: 'My Father’s <em>house.</em>',
+      text: 'At Passover, Jesus drives the traders and money changers out of the temple courts and tells them not to make His Father’s house a marketplace.',
+      note: 'John places a temple cleansing at the start of the ministry; the other Gospels place one in the last week.',
+      chips: ['recon'] },
+
+    { id: 'samaria', ch: 'II · Beginnings', pal: 'noon', view: [[35.12, 31.82], [35.46, 32.30]],
+      show: ['jacobswell', 'jud-sychar', 'samaria', 'judea'],
+      kicker: 'Samaria · near Sychar', ref: ['John 4:1–42', 'john', 4],
+      title: 'Living <em>water.</em>',
+      text: 'On His way from Judea to Galilee, Jesus rests at Jacob’s well about the sixth hour and asks a Samaritan woman for a drink. Many in her town come to believe.',
+      chips: ['trad', 'link'] },
+
+    { id: 'water', ch: 'II · Beginnings', pal: 'noon', view: [[35.25, 32.18], [35.32, 32.24]],
+      show: ['jacobswell'], kind: 'verse',
+      kicker: 'At Jacob’s well',
+      verse: 'But whoever drinks the water I give him will never thirst. Indeed, the water I give him will become in him a fount of water springing up to eternal life.',
+      ref: ['John 4:14 · BSB', 'john', 4] },
+
+    // ---------- III · In Galilee ----------
+    { id: 'synagogue', ch: 'III · In Galilee', chapter: 'III', pal: 'day', view: [[35.24, 32.66], [35.36, 32.74]],
+      show: ['nazareth'],
+      kicker: 'III · In Galilee · Nazareth', ref: ['Luke 4:16–30', 'luke', 4],
+      title: 'Good news <em>to the poor.</em>',
+      text: 'In Nazareth’s synagogue, Jesus reads from Isaiah and announces its fulfillment. His hearers drive Him out of town, but He passes through the crowd and goes on His way.',
+      chips: ['named'] },
+
+    { id: 'fishers', ch: 'III · In Galilee', pal: 'day', view: V.lake,
+      show: ['capernaum', 'bethsaida', 'sog', 'nazareth'],
+      kicker: 'Capernaum · by the sea', ref: ['Mark 1:14–20', 'mark', 1],
+      title: 'Follow <em>Me.</em>',
+      text: 'Jesus makes His home in Capernaum and calls the fishermen Simon, Andrew, James and John. “The kingdom of God is near. Repent and believe in the gospel!”',
+      note: 'Matthew says Jesus left Nazareth and settled in Capernaum, by the sea (Matthew 4:13).',
+      chips: ['named'] },
+
+    { id: 'bethesda', ch: 'III · In Galilee', pal: 'day', view: [[35.2318, 31.7766], [35.2392, 31.7840]], plan: 1,
+      show: ['bethesda', 'templelbl', 'antonia'],
+      kicker: 'Jerusalem · a feast', ref: ['John 5:1–15', 'john', 5],
+      title: 'Get up, <em>and walk.</em>',
+      text: 'At the pool of Bethesda, by the Sheep Gate, Jesus heals a man who has been disabled for thirty-eight years. It is the Sabbath, and the controversy begins.',
+      note: 'John names the pool. Excavated pools north of the temple are widely identified with it.',
+      chips: ['named', 'recon'] },
+
+    { id: 'roof', ch: 'III · In Galilee', pal: 'day', view: V.capern,
+      show: ['capernaum', 'sog'],
+      kicker: 'Capernaum · a crowded house', ref: ['Mark 2:1–12', 'mark', 2],
+      title: 'Authority <em>to forgive.</em>',
+      text: 'Friends lower a paralyzed man through the roof. Jesus forgives his sins, then tells him to get up, take his mat and go home. He does.',
+      chips: ['named'] },
+
+    { id: 'levi', ch: 'III · In Galilee', pal: 'warm', view: V.capern,
+      show: ['capernaum', 'sog'],
+      kicker: 'By the sea · Levi’s house', ref: ['Mark 2:13–17', 'mark', 2],
+      title: 'Calling <em>sinners.</em>',
+      text: 'Jesus calls Levi from his tax booth. At a meal with tax collectors and sinners, He says He came to call not the righteous, but sinners.',
+      chips: ['named'] },
+
+    { id: 'sermon', ch: 'III · In Galilee', pal: 'day', view: [[35.50, 32.84], [35.62, 32.92]],
+      show: ['beatitudes', 'sog'],
+      kicker: 'A mountainside in Galilee', ref: ['Matthew 5–7', 'matthew', 5],
+      title: 'He begins <em>to teach.</em>',
+      text: 'Jesus goes up on a mountainside and teaches His disciples: the Beatitudes, salt and light, love for enemies, the Lord’s Prayer, and the house built on the rock.',
+      note: 'Matthew does not name the mountain. The Mount of Beatitudes marks a later tradition.',
+      chips: ['trad'] },
+
+    { id: 'nain', ch: 'III · In Galilee', pal: 'day', view: [[35.28, 32.58], [35.62, 32.92]],
+      show: ['capernaum', 'nain', 'nazareth', 'sog'],
+      kicker: 'Capernaum · Nain', ref: ['Luke 7:1–17', 'luke', 7],
+      title: 'Compassion <em>and faith.</em>',
+      text: 'A centurion trusts Jesus to heal his servant with a word. At the gate of Nain, Jesus raises a widow’s only son and gives him back to his mother.',
+      chips: ['named'] },
+
+    { id: 'parables', ch: 'III · In Galilee', pal: 'day', view: V.lake,
+      show: ['capernaum', 'lakeshore', 'sog'],
+      kicker: 'Beside the sea', ref: ['Mark 4:1–34', 'mark', 4],
+      title: 'Teaching <em>from a boat.</em>',
+      text: 'The crowd is so large that Jesus teaches from a boat. A sower, a growing seed, a mustard seed: ordinary things become windows on the kingdom.',
+      chips: ['region'] },
+
+    { id: 'gerasenes', ch: 'III · In Galilee', pal: 'day', view: [[35.54, 32.76], [35.70, 32.90]],
+      show: ['capernaum', 'crossing', 'easternshore', 'decapolis', 'sog'],
+      kicker: 'The other side of the sea', ref: ['Mark 5:1–20', 'mark', 5],
+      title: 'Restored, <em>and sent to tell.</em>',
+      text: 'Across the lake, Jesus frees a man from unclean spirits and sends him home to tell what the Lord has done. He proclaims it in the Decapolis.',
+      note: 'The crossing is recorded, but not where they landed. The eastern shore is marked as a region.',
+      chips: ['route', 'region'] },
+
+    { id: 'jairus', ch: 'III · In Galilee', pal: 'day', view: V.lake,
+      show: ['lakeregion', 'capernaum', 'sog'],
+      kicker: 'Lake region · an unnamed town', ref: ['Mark 5:21–43', 'mark', 5],
+      title: 'Do not be afraid; <em>only believe.</em>',
+      text: 'On the way to Jairus’s house, a woman touches Jesus’ cloak and is healed. Then He takes Jairus’s daughter by the hand and raises her.',
+      chips: ['region'] },
+
+    { id: 'twelve-sent', ch: 'III · In Galilee', pal: 'day', view: V.galilee,
+      show: ['galilee', 'nazareth', 'capernaum', 'sog'],
+      kicker: 'Through the villages of Galilee', ref: ['Mark 6:7–13', 'mark', 6],
+      title: 'The Twelve <em>are sent.</em>',
+      text: 'Jesus sends the Twelve out two by two. They preach repentance, drive out demons and heal the sick.',
+      chips: ['region'] },
+
+    { id: 'loaves', ch: 'III · In Galilee', pal: 'warm', view: V.lake,
+      show: ['lakeregion', 'bethsaida', 'capernaum', 'sog'],
+      kicker: 'A solitary place by the sea', ref: ['Mark 6:30–44', 'mark', 6],
+      title: 'Bread for <em>the multitude.</em>',
+      text: 'Five loaves and two fish. Jesus gives thanks, and about five thousand men are fed, with twelve baskets left over.',
+      note: 'Luke places it near Bethsaida (Luke 9:10). The exact spot is not given.',
+      chips: ['region', 'named'] },
+
+    { id: 'bread', ch: 'III · In Galilee', pal: 'day', view: V.capern,
+      show: ['capernaum'], kind: 'verse',
+      kicker: 'Capernaum · the synagogue',
+      verse: 'Jesus answered, “I am the bread of life. Whoever comes to Me will never hunger, and whoever believes in Me will never thirst.”',
+      ref: ['John 6:35 · BSB', 'john', 6] },
+
+    // ---------- IV · Beyond Galilee ----------
+    { id: 'tyre', ch: 'IV · Beyond Galilee', chapter: 'IV', pal: 'day', view: V.north,
+      show: ['tyreregion', 'tyre', 'sidon', 'tyre-loop', 'decaregion', 'phoenicia', 'sog'],
+      kicker: 'IV · Beyond Galilee · region of Tyre', ref: ['Mark 7:24–37', 'mark', 7],
+      title: 'Faith beyond <em>the border.</em>',
+      text: 'A Gentile mother pleads for her daughter, and Jesus answers her faith. Then He goes through Sidon to the Sea of Galilee and the Decapolis.',
+      note: 'Mark 7:31 gives the order of places, not the roads.',
+      chips: ['region', 'route'] },
+
+    { id: 'sight', ch: 'IV · Beyond Galilee', pal: 'day', view: [[35.56, 32.86], [35.68, 32.94]],
+      show: ['bethsaida', 'sog'],
+      kicker: 'Bethsaida', ref: ['Mark 8:22–26', 'mark', 8],
+      title: 'Sight <em>restored.</em>',
+      text: 'People bring a blind man to Jesus. He leads him out of the village and heals him in two stages, until he sees everything clearly.',
+      note: 'Bethsaida’s site is debated between et-Tell and el-Araj.',
+      chips: ['named'] },
+
+    { id: 'confession', ch: 'IV · Beyond Galilee', pal: 'day', view: [[35.50, 32.86], [35.82, 33.32]],
+      show: ['cpvillages', 'cphilippi', 'sog'],
+      kicker: 'Villages of Caesarea Philippi', ref: ['Mark 8:27–38', 'mark', 8],
+      title: 'Who do you <em>say I am?</em>',
+      text: 'On the road, Jesus asks His disciples who they say He is. Peter answers that He is the Christ. Jesus then begins to speak of His suffering, death and rising.',
+      chips: ['region'] },
+
+    { id: 'cross', ch: 'IV · Beyond Galilee', pal: 'day', view: [[35.60, 33.16], [35.78, 33.30]],
+      show: ['cpvillages', 'cphilippi'], kind: 'verse',
+      kicker: 'The cost of following',
+      verse: 'Then Jesus called the crowd to Him along with His disciples, and He told them, “If anyone wants to come after Me, he must deny himself and take up his cross and follow Me.”',
+      ref: ['Mark 8:34 · BSB', 'mark', 8] },
+
+    { id: 'transfig', ch: 'IV · Beyond Galilee', pal: 'bright', view: [[35.10, 32.50], [35.90, 33.40]],
+      show: ['galilee', 'sog'],
+      kicker: 'A high mountain · unnamed', ref: ['Mark 9:2–8', 'mark', 9],
+      title: 'The <em>transfiguration.</em>',
+      text: 'Jesus takes Peter, James and John up a high mountain. He is transfigured before them, Moses and Elijah appear, and a voice says, “This is My beloved Son. Listen to Him!”',
+      note: 'The Gospels do not name the mountain. Later tradition names Mount Tabor; others suggest Mount Hermon. No site is marked.' },
+
+    // ---------- V · Toward Jerusalem ----------
+    { id: 'samaritan', ch: 'V · Toward Jerusalem', chapter: 'V', pal: 'warm', view: V.region,
+      show: ['galilee', 'samaria', 'judea', 'jerusalem'],
+      kicker: 'V · Toward Jerusalem · on the journey', ref: ['Luke 10:25–37', 'luke', 10],
+      title: 'Who is <em>my neighbor?</em>',
+      text: 'Jesus sets out resolutely for Jerusalem. On the way, a lawyer asks who his neighbor is, and Jesus tells of a Samaritan who shows mercy.',
+      note: 'Luke 9:51 begins the journey. Many episodes on it have no named place.' },
+
+    { id: 'ten', ch: 'V · Toward Jerusalem', pal: 'warm', view: [[35.10, 32.30], [35.75, 32.80]],
+      show: ['border', 'galilee', 'samaria'],
+      kicker: 'Between Samaria and Galilee', ref: ['Luke 17:11–19', 'luke', 17],
+      title: 'Ten are cleansed. <em>One returns.</em>',
+      text: 'Ten men with leprosy call out to Jesus. All ten are healed on the way; one, a Samaritan, comes back to give thanks.',
+      chips: ['region'] },
+
+    { id: 'lost', ch: 'V · Toward Jerusalem', pal: 'warm', view: V.region,
+      show: ['galilee', 'samaria', 'judea'], kind: 'verse',
+      kicker: 'An unnamed place · the lost son',
+      verse: 'For this son of mine was dead and is alive again! He was lost and is found!’ So they began to celebrate.',
+      ref: ['Luke 15:24 · BSB', 'luke', 15],
+      after: 'Tax collectors and sinners draw near, and Jesus tells of a lost sheep, a lost coin and a lost son (Luke 15).' },
+
+    { id: 'booths', ch: 'V · Toward Jerusalem', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      show: ['templelbl'],
+      kicker: 'Jerusalem · Feast of Tabernacles', ref: ['John 7:1–39', 'john', 7],
+      title: 'Teaching <em>at the feast.</em>',
+      text: 'Halfway through the feast, Jesus teaches in the temple courts. On the last day He cries out: anyone who is thirsty, let him come to Me and drink.',
+      chips: ['recon'] },
+
+    { id: 'siloam', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.2300, 31.7680], [35.2385, 31.7790]], plan: 1,
+      show: ['siloam', 'templelbl', 'kidron'],
+      kicker: 'Jerusalem · the pool of Siloam', ref: ['John 9:1–41', 'john', 9],
+      title: 'Sent <em>to Siloam.</em>',
+      text: 'Jesus puts mud on the eyes of a man born blind and sends him to wash in the pool of Siloam. He comes back seeing.',
+      note: 'A Second Temple–era pool excavated in 2004 at the south end of the city is widely identified with it.',
+      chips: ['named', 'recon'] },
+
+    { id: 'dedication', ch: 'V · Toward Jerusalem', pal: 'evening', view: V.temple, plan: 1, temple: 1,
+      show: ['colonnade', 'templelbl'],
+      kicker: 'Feast of Dedication · winter', ref: ['John 10:22–39', 'john', 10],
+      title: 'In Solomon’s <em>Colonnade.</em>',
+      text: 'In winter, Jesus walks in Solomon’s Colonnade. Asked whether He is the Christ, He answers: “I and the Father are one.”',
+      note: 'Solomon’s Colonnade ran along the temple courts; its exact line is reconstructed.',
+      chips: ['recon'] },
+
+    { id: 'beyond', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.36, 31.74], [35.74, 31.98]],
+      show: ['beyondjord', 'perea', 'jericho'],
+      kicker: 'Beyond the Jordan', ref: ['John 10:40–42', 'john', 10],
+      title: 'Back <em>across the Jordan.</em>',
+      text: 'Jesus goes back across the Jordan to the place where John first baptized, and many there believe in Him.',
+      chips: ['region'] },
+
+    { id: 'lazarus', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.235, 31.760], [35.280, 31.782]],
+      show: ['bethany', 'olives'],
+      kicker: 'Bethany, near Jerusalem', ref: ['John 11:1–44', 'john', 11],
+      title: 'Lazarus <em>is raised.</em>',
+      text: 'Lazarus has died. Jesus meets Martha and Mary, and He weeps. Then He calls Lazarus out of the tomb, and he comes out.',
+      chips: ['named'] },
+
+    { id: 'resurrection-life', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.25, 31.765], [35.272, 31.778]],
+      show: ['bethany'], kind: 'verse',
+      kicker: 'Bethany · to Martha',
+      verse: 'Jesus said to her, “I am the resurrection and the life. Whoever believes in Me will live, even though he dies.”',
+      ref: ['John 11:25 · BSB', 'john', 11] },
+
+    { id: 'ephraim', ch: 'V · Toward Jerusalem', pal: 'warm', view: [[35.18, 31.72], [35.48, 32.02]],
+      show: ['ephraim', 'jerusalem', 'wildlabel'],
+      kicker: 'Ephraim · near the wilderness', ref: ['John 11:45–57', 'john', 11],
+      title: 'A withdrawal <em>to Ephraim.</em>',
+      text: 'The council plans to put Jesus to death, so He no longer moves about openly. He withdraws with His disciples to a town called Ephraim.',
+      note: 'Ephraim is often identified with et-Taiyibeh, north-east of Jerusalem. The identification is uncertain.',
+      chips: ['trad'] },
+
+    { id: 'children', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.18, 31.66], [35.82, 32.10]],
+      show: ['judeabeyond', 'perea', 'judea', 'jericho'],
+      kicker: 'Judea and beyond the Jordan', ref: ['Mark 10:1–31', 'mark', 10],
+      title: 'Receiving the kingdom <em>like a child.</em>',
+      text: 'Crowds gather again. Jesus welcomes the little children, and a rich man walks away sad when told to give up his wealth and follow.',
+      chips: ['region'] },
+
+    { id: 'zacchaeus', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.40, 31.83], [35.49, 31.88]],
+      show: ['jericho'],
+      kicker: 'Jericho', ref: ['Luke 19:1–10', 'luke', 19],
+      title: 'To seek <em>and to save.</em>',
+      text: 'Passing through Jericho, Jesus calls Zacchaeus down from a sycamore tree and stays at his house. The tax collector gives half his goods to the poor.',
+      chips: ['named'] },
+
+    { id: 'bartimaeus', ch: 'V · Toward Jerusalem', pal: 'warm', view: [[35.38, 31.82], [35.49, 31.88]],
+      show: ['jericho'],
+      kicker: 'Leaving Jericho', ref: ['Mark 10:46–52', 'mark', 10],
+      title: 'Bartimaeus follows <em>on the way.</em>',
+      text: 'A blind beggar calls out to Jesus as He leaves Jericho. Healed, he follows Jesus along the road up to Jerusalem.',
+      chips: ['named'] },
+
+    // ---------- VI · Holy Week ----------
+    { id: 'hw', ch: 'VI · Holy Week', chapter: 'VI', pal: 'dusk', view: [[35.14, 31.73], [35.49, 31.88]],
       show: ['jericho', 'bethany', 'jerusalem', 'jer-bny', 'wildlabel', 'deadsea'],
       kicker: 'VI · Holy Week', title: 'Holy <em>Week.</em>', kind: 'chapter',
       text: 'From Jericho the road goes up toward Bethany and Jerusalem. Mark gives six of his sixteen chapters to these last days.',
@@ -151,18 +534,32 @@ window.WAY = (function () {
       text: 'Jesus rides a colt down toward the city as the crowd praises God. When He sees the city, He weeps over it. No gate or road is named.',
       chips: ['route', 'recon'] },
 
-    { id: 'temple', ch: 'VI · Holy Week', pal: 'day', view: [[35.2322, 31.7748], [35.2382, 31.7816]], plan: 1, temple: 1,
+    { id: 'temple', ch: 'VI · Holy Week', pal: 'day', view: V.temple, plan: 1, temple: 1,
       show: ['templelbl', 'kidron', 'antonia'],
       kicker: 'The next day · temple courts', ref: ['Mark 11:15–18', 'mark', 11],
       title: 'A house <em>of prayer.</em>',
       text: 'Jesus overturns the money changers’ tables and teaches that the temple is to be a house of prayer for all nations.',
       chips: ['recon'] },
 
-    { id: 'upper', ch: 'VI · Holy Week', pal: 'evening', view: [[35.2262, 31.7690], [35.2418, 31.7812]], plan: 1,
+    { id: 'greatest', ch: 'VI · Holy Week', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      show: ['templelbl'], kind: 'verse',
+      kicker: 'Temple courts · the first commandment',
+      verse: 'Love the Lord your God with all your heart and with all your soul and with all your mind and with all your strength.',
+      ref: ['Mark 12:30 · BSB', 'mark', 12],
+      after: 'Asked which commandment is first, Jesus joins it with love for one’s neighbor (Mark 12:28–34).' },
+
+    { id: 'watch', ch: 'VI · Holy Week', pal: 'warm', view: [[35.2318, 31.7720], [35.2470, 31.7830]], plan: 1,
+      show: ['olives', 'templelbl', 'kidron'],
+      kicker: 'Mount of Olives · opposite the temple', ref: ['Mark 13', 'mark', 13],
+      title: 'Watch <em>and stay faithful.</em>',
+      text: 'Sitting opposite the temple, Jesus warns Peter, James, John and Andrew of deception and coming distress, and tells them again and again to keep watch.',
+      chips: ['recon'] },
+
+    { id: 'upper', ch: 'VI · Holy Week', pal: 'evening', view: V.city, plan: 1,
       show: ['cenacle', 'templelbl', 'kidron', 'olives'],
       kicker: 'Unleavened Bread · evening', ref: ['Mark 14:12–26', 'mark', 14],
       title: 'Bread and <em>the cup.</em>',
-      text: 'In a furnished upper room, Jesus shares the Passover meal with the Twelve and gives them bread and the cup.',
+      text: 'In a furnished upper room, Jesus shares the Passover meal with the Twelve and gives them bread and the cup. In John’s account, He washes their feet.',
       chips: ['trad'] },
 
     { id: 'kidron', ch: 'VI · Holy Week', pal: 'night2', view: [[35.2262, 31.7690], [35.2455, 31.7815]], plan: 1,
@@ -189,40 +586,100 @@ window.WAY = (function () {
       show: ['gethsemane', 'citysites', 'led', 'praetA', 'praetH'],
       kicker: 'Night into early morning', ref: ['Four Gospels', 'mark', 15],
       title: 'Before the <em>authorities.</em>', kind: 'list',
-      items: [['Annas', 'John 18:13'], ['Caiaphas and the council', 'Mark 14:53'], ['Pilate, early morning · praetorium debated', 'Mark 15:1'], ['Herod, then Pilate again', 'Luke 23:7–11']],
+      items: [['Annas', 'John 18:13'], ['Caiaphas and the council', 'Mark 14:53'], ['Peter denies Him', 'Mark 14:66–72'], ['Pilate, early morning', 'Mark 15:1'], ['Herod, then Pilate again', 'Luke 23:7–11']],
       text: 'The high priest’s house is unlocated. Pilate’s praetorium is argued for both Herod’s palace and the Antonia, so the atlas marks both and picks neither.' },
 
-    { id: 'golgotha', ch: 'VI · Holy Week', pal: 'noon', view: [[35.2262, 31.7742], [35.2345, 31.7858]], plan: 1,
+    { id: 'golgotha', ch: 'VI · Holy Week', pal: 'noon', view: V.golgotha, plan: 1,
       show: ['sepulchre', 'gardentomb', 'nearcity', 'ledout'],
       kicker: 'Day of Preparation · third hour', ref: ['Mark 15:20–25', 'mark', 15],
       title: 'The Place <em>of the Skull.</em>',
       text: 'Jesus is led out to Golgotha. Mark names Simon of Cyrene carrying the cross; John says Jesus went out carrying it. The Via Dolorosa is a later devotional route and is not drawn.',
       chips: ['trad', 'link'] },
 
-    { id: 'finished', ch: 'VI · Holy Week', pal: 'dark', view: [[35.2262, 31.7742], [35.2345, 31.7858]], plan: 0.5,
+    { id: 'finished', ch: 'VI · Holy Week', pal: 'dark', view: V.golgotha, plan: 0.5,
       show: ['sepulchre', 'gardentomb', 'nearcity'], kind: 'verse',
       kicker: 'Sixth to ninth hour · darkness',
       verse: 'When Jesus had received the sour wine, He said, “It is finished.” And bowing His head, He yielded up His spirit.',
       ref: ['John 19:30 · BSB', 'john', 19],
       after: 'Darkness covers the land from the sixth hour to the ninth (Mark 15:33).' },
 
-    { id: 'burial', ch: 'VI · Holy Week', pal: 'evening', view: [[35.2262, 31.7742], [35.2345, 31.7858]], plan: 1,
+    { id: 'burial', ch: 'VI · Holy Week', pal: 'evening', view: V.golgotha, plan: 1,
       show: ['sepulchre', 'gardentomb', 'nearcity'],
       kicker: 'Day of Preparation · evening', ref: ['John 19:38–42', 'john', 19],
       title: 'Laid <em>in a tomb.</em>',
       text: 'Joseph of Arimathea and Nicodemus lay Jesus’ body in a new tomb in a garden near the place of crucifixion. Two traditional sites are shown; the atlas chooses neither.',
       chips: ['trad'] },
 
-    { id: 'risen', ch: 'VII · Resurrection', pal: 'dawn', view: [[35.2262, 31.7742], [35.2345, 31.7858]], plan: 1,
+    // ---------- VII · Resurrection ----------
+    { id: 'risen', ch: 'VII · Resurrection', chapter: 'VII', pal: 'dawn', view: V.golgotha, plan: 1,
       show: ['sepulchre', 'gardentomb', 'nearcity'],
-      kicker: 'First day of the week · early', ref: ['Luke 24:1–8', 'luke', 24],
+      kicker: 'VII · First day of the week · early', ref: ['Luke 24:1–8', 'luke', 24],
       title: 'He is not here; <em>He has risen!</em>',
-      text: 'Women come to the tomb at dawn and find it open. In John’s account, Jesus calls Mary Magdalene by name.',
+      text: 'Women come to the tomb at dawn with spices and find the stone rolled away. Two men in dazzling clothes tell them He has risen.',
       chips: ['trad'] },
 
-    { id: 'close', ch: 'VIII · Ascension', pal: 'bright', view: [[31.9, 28.7], [38.6, 34.9]], plan: 0,
+    { id: 'mary', ch: 'VII · Resurrection', pal: 'dawn', view: [[35.2275, 31.7768], [35.2322, 31.7852]], plan: 1,
+      show: ['sepulchre', 'gardentomb', 'nearcity'], kind: 'verse',
+      kicker: 'Near the tomb',
+      verse: 'Jesus said to her, “Mary.” She turned and said to Him in Hebrew, “Rabboni!” (which means “Teacher”).',
+      ref: ['John 20:16 · BSB', 'john', 20] },
+
+    { id: 'emmaus', ch: 'VII · Resurrection', pal: 'dusk', view: [[35.02, 31.68], [35.36, 31.90]],
+      show: ['jerusalem', 'judea'],
+      kicker: 'The road to Emmaus · toward evening', ref: ['Luke 24:13–35', 'luke', 24],
+      title: 'Known in the <em>breaking of bread.</em>',
+      text: 'Two followers walk to Emmaus, about seven miles from Jerusalem. A stranger explains the Scriptures; at supper He breaks the bread, and they recognize Jesus.',
+      note: 'Several sites have been proposed for Emmaus. None is certain, so no place or route is drawn.' },
+
+    { id: 'peace', ch: 'VII · Resurrection', pal: 'evening', view: V.city, plan: 1,
+      show: ['templelbl', 'citysites'],
+      kicker: 'Jerusalem · that evening', ref: ['John 20:19–23', 'john', 20],
+      title: 'Peace <em>be with you.</em>',
+      text: 'The disciples are behind locked doors. Jesus stands among them, shows them His hands and side, and sends them as the Father sent Him.',
+      note: 'John does not name the house. The circle marks the city, not a building.',
+      chips: ['region'] },
+
+    { id: 'thomas', ch: 'VII · Resurrection', pal: 'evening', view: V.city, plan: 1,
+      show: ['templelbl', 'citysites'],
+      kicker: 'Eight days later', ref: ['John 20:24–29', 'john', 20],
+      title: 'Thomas sees <em>and believes.</em>',
+      text: 'Thomas is with them now. Jesus invites him to see and touch. Thomas answers, “My Lord and my God!”',
+      chips: ['region'] },
+
+    { id: 'breakfast', ch: 'VII · Resurrection', pal: 'dawn', view: V.lake,
+      show: ['tiberias', 'lakeshore', 'capernaum'],
+      kicker: 'Sea of Tiberias · early morning', ref: ['John 21:1–14', 'john', 21],
+      title: 'Breakfast <em>by the sea.</em>',
+      text: 'After a night of catching nothing, seven disciples cast the net where Jesus tells them. On shore He has a charcoal fire with fish and bread, and invites them to eat.',
+      note: 'John names the lake, not the beach. The shoreline is marked as a region.',
+      chips: ['region'] },
+
+    { id: 'sheep', ch: 'VII · Resurrection', pal: 'day', view: [[35.52, 32.82], [35.62, 32.90]],
+      show: ['lakeshore', 'tiberias'],
+      kicker: 'On the shore', ref: ['John 21:15–19', 'john', 21],
+      title: 'Feed <em>My sheep.</em>',
+      text: 'Three times Jesus asks Peter, “Do you love Me?” Three times He gives him a charge: feed and care for My sheep. Then: “Follow Me.”',
+      chips: ['region'] },
+
+    { id: 'commission', ch: 'VII · Resurrection', pal: 'bright', view: V.galilee,
+      show: ['galmount', 'galilee', 'sog'], kind: 'verse',
+      kicker: 'A mountain in Galilee · unnamed',
+      verse: '…and teaching them to obey all that I have commanded you. And surely I am with you always, even to the end of the age.”',
+      ref: ['Matthew 28:20 · BSB', 'matthew', 28],
+      after: 'The eleven go to the mountain Jesus had designated, and He sends them to make disciples of all nations (Matthew 28:16–20).' },
+
+    // ---------- VIII · Ascension ----------
+    { id: 'ascension', ch: 'VIII · Ascension', chapter: 'VIII', pal: 'bright', view: [[35.228, 31.764], [35.270, 31.788]], plan: 1,
+      show: ['ascend', 'olives', 'bethany', 'templelbl'],
+      kicker: 'VIII · Mount of Olives · toward Bethany', ref: ['Luke 24:50–53', 'luke', 24],
+      title: 'Taken up <em>while blessing them.</em>',
+      text: 'Jesus leads His followers out as far as Bethany, lifts up His hands and blesses them, and is carried up into heaven. They return to Jerusalem with great joy.',
+      note: 'Acts says they returned from the Mount of Olives (Acts 1:12). Forty days of appearances lie between Easter and this day (Acts 1:3).',
+      chips: ['route', 'named'] },
+
+    { id: 'close', ch: 'VIII · Ascension', pal: 'bright', view: [[31.9, 28.7], [38.6, 34.9]],
       show: ['ring1', 'ring2', 'ring3'], kind: 'close',
-      kicker: 'VIII · Ascension · Acts 1:8', ref: ['Acts 1:1–14', 'acts', 1],
+      kicker: 'Acts 1:8', ref: ['Acts 1:1–14', 'acts', 1],
       title: 'You will be <em>My witnesses.</em>',
       verse: '“But you will receive power when the Holy Spirit comes upon you, and you will be My witnesses in Jerusalem, and in all Judea and Samaria, and to the ends of the earth.”' }
   ];
@@ -232,7 +689,7 @@ window.WAY = (function () {
     route: 'Schematic route',
     link: 'Narrative link',
     recon: 'Simplified reconstruction',
-    trad: 'Traditional site',
+    trad: 'Traditional or proposed site',
     region: 'Exact site unknown'
   };
 

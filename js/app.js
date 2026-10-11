@@ -47,7 +47,18 @@
     return ring;
   }
   const routePts = {};
-  Object.keys(ROUTES).forEach((id) => { routePts[id] = bezier(ROUTES[id].bez, 80); });
+  function polyline(P, per) {
+    const out = [];
+    for (let i = 0; i < P.length - 1; i++) {
+      for (let k = 0; k < per; k++) {
+        const t = k / per;
+        out.push([lerp(P[i][0], P[i + 1][0], t), lerp(P[i][1], P[i + 1][1], t)]);
+      }
+    }
+    out.push(P[P.length - 1]);
+    return out;
+  }
+  Object.keys(ROUTES).forEach((id) => { routePts[id] = ROUTES[id].pts ? polyline(ROUTES[id].pts, 30) : bezier(ROUTES[id].bez, 80); });
   // Step where each route first appears: it draws while scrolling into that step.
   const routeStart = {};
   Object.keys(ROUTES).forEach((id) => { routeStart[id] = STEPS.findIndex((s) => s.show.includes(id)); });
@@ -82,7 +93,7 @@
       return `<div class="hero">
         <p class="eyebrow">A journey through the Gospels</p>
         <h1>Follow<br>the <em>Way.</em></h1>
-        <p class="lede">From a manger in Bethlehem to the Mount of Olives, through the last week in Jerusalem. Read in the Berean Standard Bible.</p>
+        <p class="lede">From a manger in Bethlehem to the Mount of Olives: the life, death and resurrection of Jesus, read in the Berean Standard Bible.</p>
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;
     }
@@ -104,7 +115,7 @@
     if (s.kind === 'close') {
       body += `<blockquote class="close-verse">${esc(s.verse)}</blockquote>
         <div class="actions">${refLink(s.ref, 'btn btn-solid')}<a class="btn" href="#top">Begin again</a></div>
-        <p class="more">More chapters to come: Galilee, beyond Galilee and the road to Jerusalem.</p>`;
+        <p class="more">The story continues in the book of Acts.</p>`;
     }
     return `<article class="card card-${pal.card}">${kick}<h2>${s.title}</h2>${body}</article>`;
   }
@@ -149,10 +160,10 @@
     style: {
       version: 8,
       sources: {
-        land: { type: 'geojson', data: 'data/land.geojson?v=5' },
-        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=5' },
-        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=5' },
-        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=5' },
+        land: { type: 'geojson', data: 'data/land.geojson?v=7' },
+        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=7' },
+        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=7' },
+        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=7' },
         overlay: { type: 'geojson', data: overlay },
         ...terrainSources
       },
