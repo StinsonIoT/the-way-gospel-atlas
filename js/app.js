@@ -6,6 +6,9 @@
   'use strict';
   const { PALETTES, PLACES, AREAS, ZONES, ROUTES, STEPS, CHIPS } = window.WAY;
   const N = STEPS.length;
+  // ?og renders a clean scene for the share previews (tools/make-share.py).
+  const OG = /[?&]og\b/.test(location.search);
+  if (OG) document.documentElement.classList.add('og');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HOLD = 0.35;
 
@@ -94,6 +97,7 @@
   const HARM = window.WAY_HARMONY || {};
   const GOSPELS = [['mt', 'Matthew', 'Mt'], ['mk', 'Mark', 'Mk'], ['lk', 'Luke', 'Lk'], ['jn', 'John', 'Jn']];
   const BOOKMARK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.2 H12 V14 L8 10.9 L4 14 Z"/></svg>';
+  const SHARE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10 V2.2 M5.2 4.8 L8 2 L10.8 4.8 M5 7 H3.5 V14 H12.5 V7 H11"/></svg>';
   const HEADPHONES = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 10 V8.5 a5.5 5.5 0 0 1 11 0 V10"/><rect x="2" y="9.5" width="3" height="4.5" rx="1.2"/><rect x="11" y="9.5" width="3" height="4.5" rx="1.2"/></svg>';
   function studyRow(s) {
     const h = HARM[s.id];
@@ -103,6 +107,7 @@
     return `<div class="study"><button type="button" class="gos-btn" data-gos="${s.id}" aria-haspopup="dialog" aria-label="${esc(say)}: ${esc(told.join(', '))}. Compare the accounts">`
       + `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span><span class="gos-say" aria-hidden="true">${esc(say)}</span></button>`
       + `<span class="study-acts"><button type="button" class="listen-btn" data-tour-from="${s.id}" aria-label="Listen from this scene">${HEADPHONES}</button>`
+      + `<button type="button" class="share-btn" data-share="${s.id}" aria-label="Share this scene">${SHARE}</button>`
       + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></span></div>`;
   }
   const LEGEND = [
@@ -832,6 +837,28 @@
 
   applyFilter();
 
+  // ---------- Share a scene ----------
+  // Each scene has a small page (s/<id>.html) with its own preview card; it
+  // forwards to the scene in the atlas.
+  const toast = document.getElementById('toast');
+  let toastTimer = 0;
+  function showToast(msg) {
+    toast.textContent = msg; toast.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('on'), 2200);
+  }
+  story.addEventListener('click', async (ev) => {
+    const b = ev.target.closest('[data-share]');
+    if (!b) return;
+    const st = STEPS.find((x) => x.id === b.dataset.share);
+    const url = new URL('s/' + st.id + '.html', location.origin + location.pathname).href;
+    const title = stepLabel(st);
+    if (navigator.share) {
+      try { await navigator.share({ title: title + ' · The Way', text: title + (st.ref ? ' (' + st.ref[0].replace(/\s*·\s*BSB$/, '') + ')' : ''), url }); } catch (err) { /* cancelled */ }
+      return;
+    }
+    try { await navigator.clipboard.writeText(url); showToast('Link copied'); } catch (err) { showToast(url); }
+  });
+
   // ---------- Reading plan and saved scenes (kept on this device) ----------
   const PLAN = (window.WAY_PLAN || []).map(([title, ids]) => ({ title, steps: ids.map((id) => STEPS.findIndex((st) => st.id === id)).filter((i) => i >= 0) }));
   const loadSet = (key) => { try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); } catch (err) { return new Set(); } };
@@ -1489,7 +1516,7 @@
     computeCams();
     const hashIdx = sections.findIndex((sec) => '#' + sec.id === location.hash);
     if (hashIdx > 0) window.scrollTo({ top: tops[hashIdx] + 2, behavior: 'instant' });
-    else offerResume();
+    else if (!OG) offerResume();
     render();
     document.body.classList.add('ready');
   }

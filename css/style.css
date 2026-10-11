@@ -420,3 +420,24 @@ html.touring .explore-open { top: calc(126px + env(safe-area-inset-top)); }
 .t-sub { font: 500 11.5px var(--sans); color: var(--m-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .t-prog { height: 3px; border-radius: 2px; background: var(--m-track); overflow: hidden; }
 .t-prog i { display: block; height: 100%; width: 0; background: var(--m-accent); }
+
+/* ---------- share ---------- */
+.share-btn { flex: none; width: 38px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; background: transparent; color: var(--c-muted, var(--m-muted)); cursor: pointer; }
+.share-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.listen-btn, .save-btn { width: 38px; }
+.gos-btn { flex: 1; min-width: 0; }
+.gos-say { line-height: 1.25; }
+.toast { position: fixed; z-index: 40; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 999px;
+  background: #1C2A25; color: #F4EEE2; font: 500 14px var(--sans); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; overflow-wrap: anywhere; }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* preview-image mode (?og): just the map and the scene's title */
+html.og .top, html.og .explore-open, html.og .credits, html.og .toast, html.og .resume, html.og .hero-acts, html.og .cue { display: none !important; }
+html.og .card > :not(.kicker):not(h2) { display: none; }
+html.og .card .kicker a, html.og .verse .study, html.og .verse .after, html.og .verse .more, html.og .verse .extra { display: none; }
+html.og .card { max-width: 500px; padding: 30px 32px; gap: 14px; }
+html.og .card h2 { font-size: 56px; }
+html.og .kicker { font-size: 15px; }
+html.og .verse blockquote { font-size: 40px; }
+html.og body::after { content: 'THE WAY · A GOSPEL ATLAS'; position: fixed; z-index: 30; left: 48px; top: 36px; font: 600 15px var(--sans); letter-spacing: .24em; color: var(--m-accent);
+  padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--m-land) 80%, transparent); }

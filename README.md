@@ -48,7 +48,7 @@ Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that open
 ## Sharing and installing
 
 - **About** (`about.html`) and **Sources** (`sources.html`) pages explain how the atlas was made and list every source the notes cite.
-- Shared links show a preview card (`og.png`).
+- Shared links show a preview card (`og.png`). Each scene also has a share button: it sends a link to `s/<scene>.html`, a small page with that scene's own preview card (`s/<scene>.jpg`) that forwards to the scene. `tools/make-share.py` regenerates these pages and images after scene changes.
 - On iPhone, Share → Add to Home Screen installs it as an app (`manifest.webmanifest`, icons). A small offline cache (`sw.js`) makes it reopen quickly; terrain tiles still need a connection.
 - The atlas remembers the last scene you reached and offers to continue from there.
 
