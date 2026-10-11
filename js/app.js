@@ -4,7 +4,7 @@
 
 (function () {
   'use strict';
-  const { PALETTES, PLACES, AREAS, ROUTES, STEPS, CHIPS } = window.WAY;
+  const { PALETTES, PLACES, AREAS, ZONES, ROUTES, STEPS, CHIPS } = window.WAY;
   const N = STEPS.length;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HOLD = 0.35;
@@ -73,15 +73,28 @@
     route: '<svg viewBox="0 0 30 20" aria-hidden="true"><line x1="2" y1="10" x2="28" y2="10" class="s-route"/></svg>',
     link: '<svg viewBox="0 0 30 20" aria-hidden="true"><line x1="3" y1="10" x2="28" y2="10" class="s-link"/></svg>',
     recon: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="6" y="4" width="18" height="12" class="s-recon"/></svg>',
-    trad: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="10" y="5" width="10" height="10" transform="rotate(45 15 10)" class="s-trad"/></svg>'
+    trad: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="10" y="5" width="10" height="10" transform="rotate(45 15 10)" class="s-trad"/></svg>',
+    rule: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="4" y="4" width="22" height="12" rx="2" class="s-rule"/></svg>'
   };
+  const ICON = {
+    life: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8 L8 3.5 L13.5 8 M4.5 6.5 V13 H11.5 V6.5 M7 13 V10 H9 V13"/></svg>',
+    found: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5 H14 M2 8.5 H14 M2 12 H14"/><circle cx="10" cy="10.2" r="1.1"/></svg>'
+  };
+  const EXTRA_LABEL = { life: 'Life in Jesus’ day', found: 'Found by archaeologists' };
+  function extrasHTML(s) {
+    const ks = ['life', 'found'].filter((k) => s[k]);
+    if (!ks.length) return '';
+    return `<div class="more">${ks.map((k) => `<button type="button" class="more-btn more-${k}" aria-expanded="false" aria-controls="x-${s.id}-${k}">${ICON[k]}<span>${EXTRA_LABEL[k]}</span></button>`).join('')}</div>`
+      + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${esc(s[k])}</div>`).join('');
+  }
   const LEGEND = [
     ['named', 'Named place.', 'The text names the town; the dot is approximate.'],
     ['region', 'Regional setting.', 'An area is named; the exact site is unknown.'],
     ['route', 'Schematic route.', 'The journey is recorded; the road is not.'],
     ['link', 'Narrative link.', 'The story moves on; travel is not described.'],
     ['recon', 'Reconstruction.', 'Simplified historical features, such as the temple courts.'],
-    ['trad', 'Traditional site.', 'Identified by later tradition, not by the text.']
+    ['trad', 'Traditional site.', 'Identified by later tradition, not by the text.'],
+    ['rule', 'Territory.', 'Who ruled where. Boundaries are approximate.']
   ];
   const legendHTML = '<ul class="legend">' + LEGEND.map((l) => `<li>${SYM[l[0]]}<span><b>${l[1]}</b> ${l[2]}</span></li>`).join('') + '</ul>';
   document.getElementById('key-body').innerHTML = legendHTML;
@@ -103,6 +116,7 @@
         <blockquote>${esc(s.verse)}</blockquote>
         <div class="verse-foot">${refLink(s.ref, 'ref')}</div>
         ${s.after ? `<p class="after">${esc(s.after)}</p>` : ''}
+        ${extrasHTML(s)}
       </div>`;
     }
     let body = '';
@@ -111,6 +125,7 @@
     if (s.kind === 'legend') body += legendHTML;
     if (s.kind === 'chapter') body += `<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>`;
     if (s.kind === 'list') body = `<ol class="steps-list">${s.items.map((m, i) => `<li><b>${i + 1}</b><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>` + body;
+    body += extrasHTML(s);
     if (s.chips) body += `<div class="chips">${s.chips.map((c) => `<span class="chip">${SYM[c]}${esc(CHIPS[c])}</span>`).join('')}</div>`;
     if (s.kind === 'close') {
       body += `<blockquote class="close-verse">${esc(s.verse)}</blockquote>
@@ -128,6 +143,18 @@
     story.appendChild(sec);
   });
   const sections = Array.from(story.querySelectorAll('.step'));
+  // "Life in Jesus' day" and "Found by archaeologists": tap to open; the scene
+  // grows to fit, and scroll positions are re-measured.
+  story.addEventListener('click', (ev) => {
+    const b = ev.target.closest('.more-btn');
+    if (!b) return;
+    const open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.getElementById(b.getAttribute('aria-controls')).hidden = !open;
+    const sec = b.closest('.step');
+    sec.classList.toggle('grown', !!sec.querySelector('.more-btn[aria-expanded="true"]'));
+    if (typeof measure === 'function' && started) { measure(); queue(); }
+  });
   const exploreBtn = document.getElementById('explore-open');
   const exploreClose = document.getElementById('explore-close');
 
@@ -171,6 +198,7 @@
         city3d: { type: 'geojson', data: 'data/jerusalem3d.geojson?v=8' },
         village3d: { type: 'geojson', data: 'data/capernaum3d.geojson?v=10' },
         overlay: { type: 'geojson', data: overlay },
+        zones: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         ...terrainSources
       },
       layers: [
@@ -179,15 +207,18 @@
         { id: 'hillshade', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.45, 'hillshade-illumination-direction': 315 } },
         ...(hasContours ? [{ id: 'contours', type: 'line', source: 'contours', 'source-layer': 'contours', minzoom: 10,
           paint: { 'line-color': '#000', 'line-opacity': 0.5, 'line-width': ['match', ['get', 'level'], 1, 1, 0.5] } }] : []),
+        { id: 'zone-fill', type: 'fill', source: 'zones', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['*', 0.24, ['get', 'op']] } },
+        { id: 'zone-line', type: 'line', source: 'zones', layout: { 'line-join': 'round' },
+          paint: { 'line-color': ['get', 'color'], 'line-opacity': ['*', 0.75, ['get', 'op']], 'line-width': 1.2, 'line-dasharray': [5, 3] } },
         { id: 'coast', type: 'line', source: 'land', paint: { 'line-color': '#3E504B', 'line-width': 1 } },
         { id: 'valley-band', type: 'line', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['valley', 'valley-minor']]],
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: { 'line-color': '#000', 'line-opacity': 0, 'line-blur': 4, 'line-width': ['interpolate', ['exponential', 2], ['zoom'], 12, 3, 17, 30] } },
         { id: 'valley-line', type: 'line', source: 'jeru', filter: ['==', ['get', 'kind'], 'valley'],
           paint: { 'line-color': '#88AAB0', 'line-opacity': 0, 'line-width': 1 } },
+        { id: 'rivers', type: 'line', source: 'rivers', maxzoom: 10.8, layout: { 'line-join': 'round' }, paint: { 'line-color': '#2E4A4B', 'line-width': 1.4 } },
         { id: 'lakes', type: 'fill', source: 'lakes', paint: { 'fill-color': '#132226' } },
         { id: 'lakes-line', type: 'line', source: 'lakes', paint: { 'line-color': '#3E504B', 'line-width': 0.8 } },
-        { id: 'rivers', type: 'line', source: 'rivers', layout: { 'line-join': 'round' }, paint: { 'line-color': '#2E4A4B', 'line-width': 1.4 } },
         { id: 'temple-fill', type: 'fill', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['temple', 'fortress', 'palace']]], paint: { 'fill-color': '#000', 'fill-opacity': 0 } },
         { id: 'temple-line', type: 'line', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['temple', 'fortress', 'palace']]], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 1.2 } },
         { id: 'wall', type: 'line', source: 'jeru', filter: ['==', ['get', 'kind'], 'wall'], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 1.4, 'line-dasharray': [1, 2] } },
@@ -229,13 +260,14 @@
   // ---------- label collisions ----------
   // After every frame, hide any label that overlaps a more important one.
   // Named places and sites outrank area and water labels; the symbol stays.
-  const RANK = { star: 0, named: 1, trad: 2, proposal: 2, area: 3, water: 4 };
+  const RANK = { star: 0, named: 1, trad: 2, proposal: 2, rule: 3, area: 3, water: 4 };
   const markerOrder = Object.keys(PLACES).map((id, i) => ({ id, i, r: RANK[PLACES[id].type] ?? 3 }))
     .sort((x, y) => x.r - y.r || x.i - y.i).map((o) => o.id);
   let clashQueued = false;
   function declutter() {
     clashQueued = false;
-    const placed = [];
+    const top = document.querySelector('.top').getBoundingClientRect();
+    const placed = [{ left: -1e4, right: 1e4, top: -1e4, bottom: top.bottom }];
     const pad = 3;
     markerOrder.forEach((id) => {
       const el = markerEls[id];
@@ -407,6 +439,9 @@
     if (ch !== lastCh) { chapterEl.textContent = ch; lastCh = ch; }
   }
 
+  // Territory colours, one per ruler.
+  const RULER = { antipas: '#B8863B', philip: '#4F8A5F', rome: '#9C3D52', archelaus: '#8A5A8E', deca: '#4E7C99' };
+  let lastZoneKey = '';
   function apply(a, b, e, p) {
     const A = PALETTES[a.pal], B = PALETTES[b.pal];
     const C = {};
@@ -509,6 +544,15 @@
       if (reduceMotion) d = p >= k - 0.5 ? 1 : 0;
       feats.push({ type: 'Feature', properties: { kind: ROUTES[id].kind, op }, geometry: { type: 'LineString', coordinates: slicePts(routePts[id], d) } });
     });
+    const zf = [];
+    Object.keys(ZONES).forEach((id) => {
+      const op = vis(id);
+      if (op < 0.01) return;
+      zf.push({ type: 'Feature', properties: { op, color: rgb(mixA(hx(RULER[ZONES[id].ruler]), C.land, 0.15)) },
+        geometry: { type: 'Polygon', coordinates: [ZONES[id].ring] } });
+    });
+    const zkey = zf.map((f) => f.properties.op.toFixed(2) + f.properties.color).join('|');
+    if (zkey !== lastZoneKey) { lastZoneKey = zkey; map.getSource('zones').setData({ type: 'FeatureCollection', features: zf }); }
     overlay.features = feats;
     map.getSource('overlay').setData(overlay);
 

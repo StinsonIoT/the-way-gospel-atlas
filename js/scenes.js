@@ -84,6 +84,14 @@ window.WAY = (function () {
     templelbl:  { lng: 35.2356, lat: 31.7770, label: 'Temple', type: 'area' },
     kidron:     { lng: 35.2376, lat: 31.7745, label: 'Kidron Valley', type: 'water' },
     moab:       { lng: 35.7000, lat: 31.6600, label: 'Perea', type: 'region' },
+    'r-antipas-g': { lng: 35.42, lat: 32.86, label: 'Herod Antipas', note: 'Galilee', type: 'rule' },
+    'r-antipas-p': { lng: 35.69, lat: 31.98, label: 'Herod Antipas', note: 'Perea', type: 'rule' },
+    'r-philip':    { lng: 36.22, lat: 33.14, label: 'Philip', note: 'the north-east', type: 'rule' },
+    'r-pilate':    { lng: 35.02, lat: 32.34, label: 'Pontius Pilate', note: 'Judea and Samaria', type: 'rule' },
+    'r-arch':      { lng: 35.02, lat: 32.34, label: 'Archelaus', note: 'Judea and Samaria', type: 'rule' },
+    'r-deca':      { lng: 36.02, lat: 32.38, label: 'Decapolis', note: 'Greek cities', type: 'rule' },
+    'zl-galilee':  { lng: 35.552, lat: 32.905, label: 'Herod Antipas', note: 'Galilee', type: 'rule' },
+    'zl-philip':   { lng: 35.636, lat: 32.912, label: 'Philip', type: 'rule' },
     gerizim:    { lng: 35.2725, lat: 32.1995, label: 'Mount Gerizim', type: 'area' },
     ebal:       { lng: 35.2757, lat: 32.2337, label: 'Mount Ebal', type: 'area' },
     hermonlbl:  { lng: 35.8571, lat: 33.4163, label: 'Mount Hermon', type: 'area' },
@@ -119,6 +127,17 @@ window.WAY = (function () {
     ring2:       { lng: 35.2345, lat: 31.7767, r: 72000, ring: true },
     ring3:       { lng: 35.2345, lat: 31.7767, r: 330000, ring: true }
   };
+
+  // ---------- Territories (approximate boundaries, c. AD 6–34) ----------
+  // Drawn as soft shaded zones. Boundaries are approximate; lakes draw on top.
+  const ZONES = {
+    'z-galilee': { ruler: 'antipas', ring: [[35.12, 32.62], [35.30, 32.56], [35.48, 32.56], [35.56, 32.62], [35.58, 32.70], [35.60, 32.80], [35.618, 32.893], [35.622, 32.93], [35.615, 33.00], [35.58, 33.10], [35.40, 33.12], [35.22, 33.08], [35.17, 32.95], [35.15, 32.80], [35.12, 32.62]] },
+    'z-perea':   { ruler: 'antipas', ring: [[35.55, 32.36], [35.70, 32.30], [35.78, 32.05], [35.80, 31.85], [35.75, 31.60], [35.68, 31.42], [35.57, 31.42], [35.55, 31.60], [35.53, 31.80], [35.55, 32.10], [35.55, 32.36]] },
+    'z-philip':  { ruler: 'philip', ring: [[35.618, 32.893], [35.622, 32.93], [35.615, 33.00], [35.58, 33.10], [35.62, 33.30], [35.80, 33.38], [36.10, 33.32], [36.60, 33.10], [36.75, 32.75], [36.30, 32.62], [35.95, 32.72], [35.70, 32.78], [35.64, 32.82], [35.63, 32.89]] },
+    'z-deca':    { ruler: 'deca', ring: [[35.45, 32.42], [35.50, 32.55], [35.58, 32.70], [35.64, 32.82], [35.70, 32.78], [35.95, 32.72], [36.30, 32.62], [36.25, 32.30], [36.05, 31.95], [35.90, 31.90], [35.78, 32.05], [35.70, 32.30], [35.55, 32.36], [35.45, 32.42]] },
+    'z-judea':   { ruler: 'rome', ring: [[34.88, 32.55], [35.12, 32.62], [35.30, 32.56], [35.42, 32.48], [35.45, 32.42], [35.55, 32.36], [35.55, 32.10], [35.53, 31.80], [35.55, 31.60], [35.50, 31.20], [35.40, 31.00], [35.10, 30.95], [34.75, 31.20], [34.60, 31.40], [34.70, 31.75], [34.80, 32.10], [34.88, 32.55]] }
+  };
+  ZONES['z-arch'] = { ruler: 'archelaus', ring: ZONES['z-judea'].ring };
 
   // ---------- Routes ----------
   // kind 'route': recorded movement drawn as a schematic arc (accent colour).
@@ -175,6 +194,8 @@ window.WAY = (function () {
 
     // ---------- I · Origins ----------
     { id: 'annunciation', ch: 'I · Origins', chapter: 'I', pal: 'dawn', view: [[35.25, 32.66], [35.35, 32.73]], pitch: 52, bearing: 8,
+      found: 'In 2009 archaeologists uncovered remains of a house from Jesus’ time in Nazareth, near the Church of the Annunciation: a rare look at the small village.',
+      life: 'A betrothal was legally binding: Matthew says Joseph planned to end it quietly, which needed a divorce (Matthew 1:19). The couple usually lived apart for a time, often about a year, before the wedding.',
       show: ['nazareth', 'jezreel'],
       kicker: 'I · Origins · Nazareth', ref: ['Luke 1:26–38', 'luke', 1],
       title: 'Do not be afraid, <em>Mary.</em>',
@@ -198,6 +219,7 @@ window.WAY = (function () {
       chips: ['named', 'route'] },
 
     { id: 'birth', ch: 'I · Origins', pal: 'day', view: [[35.188, 31.697], [35.222, 31.712]],
+      life: 'Village houses often had a family room raised a little above a lower area where animals were brought in at night, with mangers set in the floor or wall. A manger could be inside the home, not only in a stable.',
       show: ['bethlbl', 'nativity'],
       kicker: 'Bethlehem', ref: ['Luke 2:6–7', 'luke', 2],
       title: 'Laid <em>in a manger.</em>',
@@ -213,6 +235,7 @@ window.WAY = (function () {
       after: 'Shepherds keeping watch over their flocks hear the angel, go to Bethlehem, and find Mary, Joseph and the baby (Luke 2:8–20). The exact fields are unknown.' },
 
     { id: 'present', ch: 'I · Origins', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      life: 'Mary and Joseph offer two birds, the offering the law allowed when a family could not afford a lamb (Luke 2:24; Leviticus 12:8).',
       show: ['templelbl'],
       kicker: 'Jerusalem · the temple', ref: ['Luke 2:22–38', 'luke', 2],
       title: 'A light <em>for the nations.</em>',
@@ -220,6 +243,7 @@ window.WAY = (function () {
       chips: ['recon'] },
 
     { id: 'magi', ch: 'I · Origins', pal: 'dusk', view: [[35.17, 31.69], [35.27, 31.79]],
+      life: 'Magi were a learned priestly class from Persia and Babylon, known for interpreting dreams and the stars. Frankincense and myrrh came from southern Arabia by caravan, and both were costly.',
       show: ['jerusalem', 'bethlehem', 'jer-beth'],
       kicker: 'Jerusalem → Bethlehem', ref: ['Matthew 2:1–12', 'matthew', 2],
       title: 'Visitors <em>from the east.</em>',
@@ -236,14 +260,16 @@ window.WAY = (function () {
       chips: ['route', 'region'] },
 
     { id: 'nazareth', ch: 'I · Origins', pal: 'day', view: [[33.6, 30.4], [36.0, 33.2]],
-      show: ['nazareth', 'egypt-naz', 'galilee', 'egypt'],
+      life: 'Joseph was a tektōn, a builder who worked in wood and stone, and Mark calls Jesus one too (Matthew 13:55; Mark 6:3). Sepphoris, the city Herod Antipas rebuilt as his capital, lay about 6 km from Nazareth.',
+      show: ['nazareth', 'egypt-naz', 'galilee', 'egypt', 'z-galilee', 'z-perea', 'z-arch', 'r-arch'],
       kicker: 'Egypt → Nazareth', ref: ['Luke 2:39–40', 'luke', 2],
       title: 'Growing <em>in wisdom.</em>',
       text: 'After Herod dies, the family returns and settles in Nazareth in Galilee. The child grows and becomes strong, filled with wisdom, and the grace of God is upon Him.',
       note: 'Matthew says Joseph avoided Judea because Herod’s son Archelaus ruled there, and withdrew to Galilee (Matthew 2:19–23). Rome removed Archelaus in AD 6. The Gospels leave most of these years unrecorded.',
-      chips: ['named', 'link'] },
+      chips: ['named', 'link', 'rule'] },
 
     { id: 'twelve', ch: 'I · Origins', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      life: 'Families went up to Jerusalem for Passover in large groups of relatives and neighbors, which is how a boy could be missed for a day (Luke 2:44).',
       show: ['templelbl'],
       kicker: 'Jerusalem · Passover', ref: ['Luke 2:41–52', 'luke', 2],
       title: 'At twelve, <em>in the temple.</em>',
@@ -251,9 +277,18 @@ window.WAY = (function () {
       chips: ['recon'] },
 
     // ---------- II · Beginnings ----------
-    { id: 'baptism', ch: 'II · Beginnings', chapter: 'II', pal: 'day', view: [[35.25, 31.78], [35.68, 32.74]],
+    { id: 'rulers', ch: 'II · Beginnings', chapter: 'II', pal: 'day', view: [[34.55, 31.25], [36.55, 33.45]], kind: 'list',
+      show: ['z-galilee', 'z-perea', 'z-philip', 'z-judea', 'z-deca', 'r-antipas-g', 'r-antipas-p', 'r-philip', 'r-pilate', 'r-deca', 'jerusalem', 'sog', 'deadsea'],
+      kicker: 'II · Beginnings · who ruled where', ref: ['Luke 3:1–2', 'luke', 3],
+      title: 'The fifteenth year <em>of Tiberius.</em>',
+      items: [['Tiberius, emperor', 'AD 14–37'], ['Pilate, Judea', 'AD 26–36'], ['Antipas, Galilee · Perea', '4 BC–AD 39'], ['Philip, the north-east', '4 BC–AD 34'], ['Lysanias, Abilene', 'farther north'], ['Annas and Caiaphas', 'high priests']],
+      text: 'Luke dates John’s preaching by the rulers of the day, usually placed around AD 28–29. Jesus was about thirty (Luke 3:23).',
+      chips: ['rule'] },
+
+    { id: 'baptism', ch: 'II · Beginnings', pal: 'day', view: [[35.25, 31.78], [35.68, 32.74]],
+      found: 'The Jewish historian Josephus, writing around AD 93, describes John the Baptist as a good man who urged the Jews to live righteously and to be baptized (Antiquities 18.116–119).',
       show: ['nazareth', 'naz-jord', 'lowerjordan', 'baptism', 'jordanlbl', 'deadsea'],
-      kicker: 'II · Beginnings · the Jordan', ref: ['Mark 1:9–11', 'mark', 1],
+      kicker: 'The Jordan', ref: ['Mark 1:9–11', 'mark', 1],
       title: 'Baptized <em>by John.</em>',
       text: 'Jesus comes from Nazareth and is baptized by John in the Jordan. The Spirit descends on Him like a dove.',
       note: 'Mark names the Jordan, not a crossing. The marked baptism site is a later tradition.',
@@ -282,6 +317,8 @@ window.WAY = (function () {
       chips: ['region'] },
 
     { id: 'cana', ch: 'II · Beginnings', pal: 'warm', view: [[35.22, 32.66], [35.42, 32.84]],
+      found: 'Workshops that carved stone vessels in the early Roman period have been excavated in Galilee, including one at Reina, beside Kafr Kanna. They show how common purity jars like Cana’s were.',
+      life: 'John says the jars were for Jewish purification (John 2:6). Stone was used because, under purity rules, it could not become unclean. A village wedding could last several days, and running out of wine shamed the hosts.',
       show: ['cana1', 'cana2', 'nazareth', 'galilee'],
       kicker: 'Cana in Galilee', ref: ['John 2:1–11', 'john', 2],
       title: 'Water <em>into wine.</em>',
@@ -298,6 +335,7 @@ window.WAY = (function () {
       chips: ['recon'] },
 
     { id: 'samaria', ch: 'II · Beginnings', pal: 'noon', view: [[35.12, 31.82], [35.46, 32.30]],
+      life: 'Jews and Samaritans shared the Law of Moses but disagreed over where God should be worshiped. The Jewish ruler John Hyrcanus had destroyed the Samaritan temple on Gerizim in the late second century BC, and the two peoples avoided each other (John 4:9).',
       show: ['jacobswell', 'jud-sychar', 'samaria', 'judea'],
       kicker: 'Samaria · near Sychar', ref: ['John 4:1–42', 'john', 4],
       title: 'Living <em>water.</em>',
@@ -313,6 +351,8 @@ window.WAY = (function () {
 
     // ---------- III · In Galilee ----------
     { id: 'synagogue', ch: 'III · In Galilee', chapter: 'III', pal: 'day', view: [[35.24, 32.65], [35.36, 32.73]], pitch: 58, bearing: 8,
+      found: 'In 2009 a first-century synagogue was found at Magdala, on the lake. A carved stone inside shows the temple’s menorah. It is one of very few Galilean synagogues known from Jesus’ lifetime.',
+      life: 'On the Sabbath the synagogue gathered the village to read and explain the Law and the Prophets. A visitor could be handed the scroll and invited to speak (Luke 4:16–17; Acts 13:15).',
       show: ['nazareth', 'jezreel'],
       kicker: 'III · In Galilee · Nazareth', ref: ['Luke 4:16–30', 'luke', 4],
       title: 'Good news <em>to the poor.</em>',
@@ -321,6 +361,8 @@ window.WAY = (function () {
       chips: ['named'] },
 
     { id: 'fishers', ch: 'III · In Galilee', pal: 'day', view: V.lake,
+      found: 'In 1986, when drought lowered the lake, two brothers found a wooden fishing boat in the mud near Magdala. It dates to around the first century and is about 8 m long: the kind of boat the disciples would have used.',
+      life: 'Fishing on the lake was a family business: Zebedee had hired men (Mark 1:20). Fish were salted and traded around the region; Magdala, a few kilometers south, was probably the town the Greeks called Taricheae, “salted fish”.',
       show: ['capernaum', 'bethsaida', 'sog', 'nazareth'],
       kicker: 'Capernaum · by the sea', ref: ['Mark 1:14–20', 'mark', 1],
       title: 'Follow <em>Me.</em>',
@@ -329,6 +371,7 @@ window.WAY = (function () {
       chips: ['named'] },
 
     { id: 'bethesda', ch: 'III · In Galilee', pal: 'day', view: [[35.2318, 31.7766], [35.2392, 31.7840]], plan: 1,
+      found: 'Excavations north of the temple uncovered two large pools with remains of colonnades, which fits John’s description of a pool with five covered colonnades (John 5:2).',
       show: ['bethesda', 'templelbl', 'antonia'],
       kicker: 'Jerusalem · a feast', ref: ['John 5:1–15', 'john', 5],
       title: 'Get up, <em>and walk.</em>',
@@ -337,6 +380,8 @@ window.WAY = (function () {
       chips: ['named', 'recon'] },
 
     { id: 'roof', ch: 'III · In Galilee', pal: 'day', view: V.village, village: 1, pitch: 58, bearing: 14,
+      found: 'Excavations at Capernaum uncovered basalt houses from Jesus’ time. One, beneath a later octagonal church, was honored as Peter’s house from early on; its plastered walls carry graffiti left by Christian pilgrims.',
+      life: 'Roofs were flat, made of beams covered with branches and packed earth, and reached by an outside stair. People worked, dried produce and slept on them.',
       show: ['peterhouse', 'capsyn', 'capvillage'],
       kicker: 'Capernaum · a crowded house', ref: ['Mark 2:1–12', 'mark', 2],
       title: 'Authority <em>to forgive.</em>',
@@ -345,11 +390,12 @@ window.WAY = (function () {
       chips: ['recon', 'trad'] },
 
     { id: 'levi', ch: 'III · In Galilee', pal: 'warm', view: V.capern,
-      show: ['capernaum', 'sog'],
+      life: 'Tolls were collected by locals who bought the right and kept the surplus, so tax collectors were widely despised. Capernaum sat near the border between Herod Antipas’s Galilee and his brother Philip’s territory, and goods crossing it paid toll.',
+      show: ['capernaum', 'sog', 'z-galilee', 'z-philip', 'zl-galilee', 'zl-philip'],
       kicker: 'By the sea · Levi’s house', ref: ['Mark 2:13–17', 'mark', 2],
       title: 'Calling <em>sinners.</em>',
       text: 'Jesus calls Levi from his tax booth. At a meal with tax collectors and sinners, He says He came to call not the righteous, but sinners.',
-      chips: ['named'] },
+      chips: ['named', 'rule'] },
 
     { id: 'sermon', ch: 'III · In Galilee', pal: 'day', view: [[35.50, 32.84], [35.62, 32.92]],
       show: ['beatitudes', 'sog'],
@@ -360,6 +406,7 @@ window.WAY = (function () {
       chips: ['trad'] },
 
     { id: 'nain', ch: 'III · In Galilee', pal: 'day', view: [[35.28, 32.58], [35.62, 32.92]],
+      life: 'Burial took place the same day as death. A widow who lost her only son also lost her support and her family’s future.',
       show: ['capernaum', 'nain', 'nazareth', 'sog'],
       kicker: 'Capernaum · Nain', ref: ['Luke 7:1–17', 'luke', 7],
       title: 'Compassion <em>and faith.</em>',
@@ -374,7 +421,7 @@ window.WAY = (function () {
       chips: ['region'] },
 
     { id: 'gerasenes', ch: 'III · In Galilee', pal: 'day', view: [[35.54, 32.76], [35.70, 32.90]], pitch: 55, bearing: 92,
-      show: ['capernaum', 'crossing', 'easternshore', 'decapolis', 'sog'],
+      show: ['capernaum', 'crossing', 'easternshore', 'decapolis', 'sog', 'z-galilee', 'z-philip', 'z-deca'],
       kicker: 'The other side of the sea', ref: ['Mark 4:35–5:20', 'mark', 4],
       title: 'Restored, <em>and sent to tell.</em>',
       text: 'On the crossing, Jesus calms a storm with a word. On the far shore He frees a man from unclean spirits and sends him home to tell what the Lord has done, and the man proclaims it in the Decapolis.',
@@ -382,6 +429,7 @@ window.WAY = (function () {
       chips: ['route', 'region'] },
 
     { id: 'jairus', ch: 'III · In Galilee', pal: 'day', view: V.lake,
+      life: 'Families hired mourners and flute players at a death (Matthew 9:23). A later Jewish rule says even the poorest husband should provide at least two flutes and one wailing woman for his wife’s funeral.',
       show: ['lakeregion', 'capernaum', 'sog'],
       kicker: 'Lake region · an unnamed town', ref: ['Mark 5:21–43', 'mark', 5],
       title: 'Do not be afraid; <em>only believe.</em>',
@@ -396,14 +444,15 @@ window.WAY = (function () {
       chips: ['region'] },
 
     { id: 'john', ch: 'III · In Galilee', pal: 'dusk', view: [[35.36, 31.42], [35.80, 31.80]], pitch: 55, bearing: 82,
-      show: ['machaerus', 'deadsea', 'moab'],
+      show: ['machaerus', 'deadsea', 'moab', 'z-perea', 'r-antipas-p'],
       kicker: 'Herod’s fortress · east of the Dead Sea', ref: ['Mark 6:14–29', 'mark', 6],
       title: 'John <em>is killed.</em>',
       text: 'Herod Antipas has imprisoned John the Baptist for condemning his marriage to Herodias. At a birthday banquet, bound by an oath, he has John beheaded. John’s disciples bury his body.',
       note: 'Mark does not name the place. Josephus, the first-century Jewish historian, says John was held and killed at Herod’s fortress of Machaerus, and that many saw Herod’s later military defeat as God’s judgment for it (Antiquities 18.116–119).',
-      chips: ['trad'] },
+      chips: ['trad', 'rule'] },
 
     { id: 'loaves', ch: 'III · In Galilee', pal: 'warm', view: V.lake,
+      life: 'John says the boy’s five loaves were barley (John 6:9), the cheaper bread most poor families ate.',
       show: ['lakeregion', 'bethsaida', 'capernaum', 'sog'],
       kicker: 'A solitary place by the sea', ref: ['Mark 6:30–44', 'mark', 6],
       title: 'Bread for <em>the multitude.</em>',
@@ -427,15 +476,16 @@ window.WAY = (function () {
       chips: ['region', 'route'] },
 
     { id: 'sight', ch: 'IV · Beyond Galilee', pal: 'day', view: [[35.56, 32.86], [35.68, 32.94]],
-      show: ['bethsaida', 'sog'],
+      show: ['bethsaida', 'sog', 'z-galilee', 'z-philip', 'zl-galilee', 'zl-philip'],
       kicker: 'Bethsaida', ref: ['Mark 8:22–26', 'mark', 8],
       title: 'Sight <em>restored.</em>',
       text: 'People bring a blind man to Jesus. He leads him out of the village and heals him in two stages, until he sees everything clearly.',
       note: 'Bethsaida’s site is debated between et-Tell and el-Araj.',
-      chips: ['named'] },
+      chips: ['named', 'rule'] },
 
     { id: 'confession', ch: 'IV · Beyond Galilee', pal: 'day', view: [[35.50, 32.86], [35.82, 33.32]],
-      show: ['cpvillages', 'cphilippi', 'sog'],
+      found: 'At Banias, the site of Caesarea Philippi, the cave and rock-cut niches of a shrine to the god Pan can still be seen. Philip rebuilt the town and named it for Caesar.',
+      show: ['cpvillages', 'cphilippi', 'sog', 'z-philip'],
       kicker: 'Villages of Caesarea Philippi', ref: ['Mark 8:27–38', 'mark', 8],
       title: 'Who do you <em>say I am?</em>',
       text: 'On the road, Jesus asks His disciples who they say He is. Peter answers that He is the Christ. Jesus then begins to speak of His suffering, death and rising.',
@@ -464,11 +514,12 @@ window.WAY = (function () {
       note: 'Luke 9:51 begins the journey. Many episodes on it have no named place. The parable itself is set on the road down from Jerusalem to Jericho (Luke 10:30), the same climb Jesus later makes in the other direction.' },
 
     { id: 'ten', ch: 'V · Toward Jerusalem', pal: 'warm', view: [[35.10, 32.30], [35.75, 32.80]],
-      show: ['border', 'galilee', 'samaria'],
+      life: 'People with skin diseases had to live apart and warn others by calling out “Unclean!” (Leviticus 13:45–46). Only a priest could declare them clean, which is why Jesus sends them to the priests (Luke 17:14).',
+      show: ['border', 'galilee', 'samaria', 'z-galilee', 'z-judea', 'r-antipas-g', 'r-pilate'],
       kicker: 'Between Samaria and Galilee', ref: ['Luke 17:11–19', 'luke', 17],
       title: 'Ten are cleansed. <em>One returns.</em>',
       text: 'Ten men with leprosy call out to Jesus. All ten are healed on the way; one, a Samaritan, comes back to give thanks.',
-      chips: ['region'] },
+      chips: ['region', 'rule'] },
 
     { id: 'lost', ch: 'V · Toward Jerusalem', pal: 'warm', view: V.region,
       show: ['galilee', 'samaria', 'judea'], kind: 'verse',
@@ -478,6 +529,7 @@ window.WAY = (function () {
       after: 'Tax collectors and sinners draw near, and Jesus tells of a lost sheep, a lost coin and a lost son (Luke 15).' },
 
     { id: 'booths', ch: 'V · Toward Jerusalem', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      life: 'During this feast, priests carried water each morning from the Pool of Siloam to pour out at the altar, and great lamps lit the temple courts at night (Mishnah, Sukkah 4–5). Jesus spoke of living water and of being the light of the world against that background (John 7:37–38; 8:12).',
       show: ['templelbl'],
       kicker: 'Jerusalem · Feast of Tabernacles', ref: ['John 7:1–39', 'john', 7],
       title: 'Teaching <em>at the feast.</em>',
@@ -493,6 +545,7 @@ window.WAY = (function () {
       chips: ['named', 'recon'] },
 
     { id: 'dedication', ch: 'V · Toward Jerusalem', pal: 'evening', view: V.temple, plan: 1, temple: 1,
+      life: 'The Feast of Dedication, Hanukkah, remembers how the Maccabees cleansed and rededicated the temple in 164 BC after a Greek king had defiled it (1 Maccabees 4).',
       show: ['colonnade', 'templelbl'],
       kicker: 'Feast of Dedication · winter', ref: ['John 10:22–39', 'john', 10],
       title: 'In Solomon’s <em>Colonnade.</em>',
@@ -508,6 +561,7 @@ window.WAY = (function () {
       chips: ['region'] },
 
     { id: 'lazarus', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.235, 31.760], [35.280, 31.782]],
+      life: 'Tombs were caves cut into rock and closed with a stone (John 11:38). Mourning lasted seven days, and friends came from Jerusalem to comfort the sisters (John 11:19).',
       show: ['bethany', 'olives'],
       kicker: 'Bethany, near Jerusalem', ref: ['John 11:1–44', 'john', 11],
       title: 'Lazarus <em>is raised.</em>',
@@ -529,13 +583,15 @@ window.WAY = (function () {
       chips: ['trad'] },
 
     { id: 'children', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.18, 31.66], [35.82, 32.10]],
-      show: ['judeabeyond', 'perea', 'judea', 'jericho'],
+      show: ['judeabeyond', 'perea', 'judea', 'jericho', 'z-judea', 'z-perea', 'r-pilate', 'r-antipas-p'],
       kicker: 'Judea and beyond the Jordan', ref: ['Mark 10:1–31', 'mark', 10],
       title: 'Receiving the kingdom <em>like a child.</em>',
       text: 'Crowds gather again. Jesus welcomes the little children, and a rich man walks away sad when told to give up his wealth and follow.',
-      chips: ['region'] },
+      chips: ['region', 'rule'] },
 
     { id: 'zacchaeus', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.40, 31.83], [35.49, 31.88]],
+      found: 'Herod’s winter palaces, with pools and gardens, have been excavated at New Testament Jericho. Herod the Great died there in 4 BC.',
+      life: 'Jericho was a rich oasis on the trade road, famed for its date palms and balsam, so its chief tax collector could grow wealthy. Sycamore-figs have short trunks and low, spreading branches that are easy to climb.',
       show: ['jericho'],
       kicker: 'Jericho', ref: ['Luke 19:1–10', 'luke', 19],
       title: 'To seek <em>and to save.</em>',
@@ -565,6 +621,7 @@ window.WAY = (function () {
       chips: ['named'] },
 
     { id: 'entry', ch: 'VI · Holy Week', pal: 'day', view: [[35.228, 31.766], [35.274, 31.786]], plan: 1,
+      life: 'Tens of thousands of pilgrims, perhaps many more, crowded Jerusalem at Passover. The crowd’s words come from Psalm 118, sung at the festivals, and palm branches (John 12:13) had been a national symbol since the Maccabees.',
       show: ['bethany', 'templelbl', 'kidron', 'entry'],
       kicker: 'Mount of Olives → Jerusalem', ref: ['Luke 19:28–44', 'luke', 19],
       title: 'The king <em>enters Jerusalem.</em>',
@@ -572,6 +629,8 @@ window.WAY = (function () {
       chips: ['route', 'recon'] },
 
     { id: 'temple', ch: 'VI · Holy Week', pal: 'day', view: V.temple, plan: 1, temple: 1,
+      found: 'Two stone notices from the temple have been found, the first in 1871. In Greek they warn foreigners not to pass the barrier into the inner courts, on pain of death. Gentiles could pray only in the outer court, which gives weight to Jesus’ words about “all the nations”.',
+      life: 'The temple tax had to be paid in silver shekels from Tyre, prized for their purity, so money changers swapped other coins for them. Sellers provided animals that met the requirements for sacrifice.',
       show: ['templelbl', 'kidron', 'antonia'],
       kicker: 'The next day · temple courts', ref: ['Mark 11:15–18', 'mark', 11],
       title: 'A house <em>of prayer.</em>',
@@ -586,6 +645,7 @@ window.WAY = (function () {
       after: 'Asked which commandment is first, Jesus joins it with love for one’s neighbor (Mark 12:28–34).' },
 
     { id: 'watch', ch: 'VI · Holy Week', pal: 'warm', view: [[35.2318, 31.7720], [35.2470, 31.7830]], plan: 1,
+      found: 'Excavations beside the Western Wall uncovered huge stones thrown down from the temple mount when the Romans destroyed the temple in AD 70, as Jesus had said would happen (Mark 13:2).',
       show: ['olives', 'templelbl', 'kidron'],
       kicker: 'Mount of Olives · opposite the temple', ref: ['Mark 13', 'mark', 13],
       title: 'Watch <em>and stay faithful.</em>',
@@ -593,6 +653,7 @@ window.WAY = (function () {
       chips: ['recon'] },
 
     { id: 'upper', ch: 'VI · Holy Week', pal: 'evening', view: V.city, plan: 1,
+      life: 'At festive meals guests reclined on couches around a low table, leaning on the left elbow. That is how the disciple Jesus loved could lean back against Him (John 13:23–25).',
       show: ['cenacle', 'templelbl', 'kidron', 'olives'],
       kicker: 'Unleavened Bread · evening', ref: ['Mark 14:12–26', 'mark', 14],
       title: 'Bread and <em>the cup.</em>',
@@ -601,6 +662,7 @@ window.WAY = (function () {
       chips: ['trad'] },
 
     { id: 'kidron', ch: 'VI · Holy Week', pal: 'night2', view: [[35.2262, 31.7690], [35.2455, 31.7815]], plan: 1,
+      life: 'Gethsemane means “oil press”. Olive groves covered the Mount of Olives, across the Kidron Valley from the temple.',
       show: ['cenacle', 'gethsemane', 'kidron', 'olives', 'templelbl', 'olivet'],
       kicker: 'That night', ref: ['Mark 14:26 · John 18:1', 'john', 18],
       title: 'Out to the <em>Mount of Olives.</em>',
@@ -621,6 +683,8 @@ window.WAY = (function () {
       chips: ['link', 'trad'] },
 
     { id: 'trials', ch: 'VI · Holy Week', pal: 'predawn', view: [[35.2255, 31.7680], [35.2450, 31.7815]], plan: 1,
+      found: 'In 1961 a stone at Caesarea was found inscribed with the name of Pontius Pilate, prefect of Judea. In 1990 a decorated burial box inscribed “Joseph son of Caiaphas” was found in Jerusalem, very likely the high priest’s.',
+      life: 'Only the Roman governor could order an execution (John 18:31). Pilate normally lived at Caesarea on the coast and came up to Jerusalem with troops at festival time, when crowds and tension were greatest.',
       show: ['gethsemane', 'citysites', 'led', 'praetA', 'praetH'],
       kicker: 'Night into early morning', ref: ['Four Gospels', 'mark', 15],
       title: 'Before the <em>authorities.</em>', kind: 'list',
@@ -628,6 +692,8 @@ window.WAY = (function () {
       text: 'The high priest’s house is unlocated. Pilate’s praetorium is argued for both Herod’s palace and the Antonia, so the atlas marks both and picks neither.' },
 
     { id: 'golgotha', ch: 'VI · Holy Week', pal: 'noon', view: V.golgotha, plan: 1,
+      found: 'The Roman historian Tacitus, writing around AD 116, records that Christ suffered the death penalty under Pontius Pilate in the reign of Tiberius (Annals 15.44). Josephus also mentions Jesus, and the death of His brother James.',
+      life: 'Crucifixion was Rome’s punishment for slaves and rebels, carried out in public as a warning. The charge was posted above the cross, here in Hebrew, Latin and Greek (John 19:20). Hours were counted from sunrise: the third hour is about 9 a.m., the sixth about noon and the ninth about 3 p.m.',
       show: ['sepulchre', 'gardentomb', 'nearcity', 'ledout'],
       kicker: 'Day of Preparation · third hour', ref: ['Mark 15:20–25', 'mark', 15],
       title: 'The Place <em>of the Skull.</em>',
@@ -642,6 +708,8 @@ window.WAY = (function () {
       after: 'Darkness covers the land from the sixth hour to the ninth (Mark 15:33).' },
 
     { id: 'burial', ch: 'VI · Holy Week', pal: 'evening', view: V.golgotha, plan: 1,
+      found: 'In 1968 the heel bone of a crucified man, still pierced by an iron nail, was found in a Jerusalem family tomb. It confirms the practice described in the Gospels and shows that a crucified man could receive a proper burial.',
+      life: 'The body was wrapped in linen with spices (John 19:40) and laid on a bench in a rock-cut tomb. The burial had to be finished before the Sabbath began at sunset.',
       show: ['sepulchre', 'gardentomb', 'nearcity'],
       kicker: 'Day of Preparation · evening', ref: ['John 19:38–42', 'john', 19],
       title: 'Laid <em>in a tomb.</em>',
@@ -651,6 +719,7 @@ window.WAY = (function () {
 
     // ---------- VII · Resurrection ----------
     { id: 'risen', ch: 'VII · Resurrection', chapter: 'VII', pal: 'dawn', view: V.golgotha, plan: 1,
+      life: 'The women came after the Sabbath to finish anointing the body (Mark 16:1). In that culture a woman’s testimony carried less legal weight (Josephus, Antiquities 4.219), yet all four Gospels name women as the first witnesses.',
       show: ['sepulchre', 'gardentomb', 'nearcity'],
       kicker: 'VII · First day of the week · early', ref: ['Luke 24:1–8', 'luke', 24],
       title: 'He is not here; <em>He has risen!</em>',
@@ -686,6 +755,7 @@ window.WAY = (function () {
       chips: ['region'] },
 
     { id: 'breakfast', ch: 'VII · Resurrection', pal: 'dawn', view: V.lake,
+      life: 'Fishermen on the lake often worked through the night (compare Luke 5:5). A charcoal fire appears only twice in the Gospels: here, and in the courtyard where Peter denied Jesus (John 18:18).',
       show: ['tiberias', 'lakeshore', 'capernaum'],
       kicker: 'Sea of Tiberias · early morning', ref: ['John 21:1–14', 'john', 21],
       title: 'Breakfast <em>by the sea.</em>',
@@ -729,8 +799,9 @@ window.WAY = (function () {
     link: 'Narrative link',
     recon: 'Simplified reconstruction',
     trad: 'Traditional or proposed site',
-    region: 'Exact site unknown'
+    region: 'Exact site unknown',
+    rule: 'Approximate territory'
   };
 
-  return { PALETTES, PLACES, AREAS, ROUTES, STEPS, CHIPS };
+  return { PALETTES, PLACES, AREAS, ZONES, ROUTES, STEPS, CHIPS };
 })();

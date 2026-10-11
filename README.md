@@ -1,6 +1,6 @@
 # The Way — A Gospel Atlas
 
-A scroll-driven atlas of the whole Gospel story, in 77 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection and Ascension. It is built for iPhone first and also works on desktop.
+A scroll-driven atlas of the whole Gospel story, in 78 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection and Ascension. It is built for iPhone first and also works on desktop.
 
 ## What it does
 
@@ -20,6 +20,10 @@ A scroll-driven atlas of the whole Gospel story, in 77 scenes and eight chapters
 Jerusalem is a simplified 3D model over real 3D terrain, styled like a museum model: the temple platform with its porticoes, the Royal Stoa, the inner courts and the sanctuary (about 50 m high, after Josephus), the Antonia with its four towers, Herod's palace with its three towers, the first wall with towers, and the pools of Bethesda and Siloam. Houses in the Upper and Lower City are illustrative only. Jerusalem scenes tilt the camera and circle the city; an "Explore Jerusalem in 3D" button lets you rotate and zoom freely. It shows only the first wall: the second wall's course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate's praetorium is marked at both proposed sites, Herod's palace and the Antonia.
 
 Capernaum is a second, illustrative model: dense blocks of one-storey basalt rooms around small courtyards, as in the excavated village, with the synagogue site and the traditional house of Peter. Individual houses and the village's extent are not surveyed. Landscape scenes (the wilderness, Jacob's well between Mount Gerizim and Mount Ebal, Nazareth's hill, the Sea of Galilee basin, Caesarea Philippi below Hermon, the Transfiguration with Tabor and Hermon, and the climb from Jericho) tilt the camera to show the real terrain.
+
+## Background and evidence
+
+Many scenes carry two optional notes, opened with a tap: **Life in Jesus' day** (customs, money, meals, burial, the hours of the day) and **Found by archaeologists** (inscriptions, excavations and writers outside the Bible, such as Josephus and Tacitus). Both cite their sources. A **Who ruled where** layer shades the territories of Herod Antipas, Philip, the Roman governor and the Decapolis, with approximate boundaries, starting from Luke 3:1–2.
 
 ## Getting around
 

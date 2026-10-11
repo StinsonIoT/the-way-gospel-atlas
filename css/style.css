@@ -36,8 +36,11 @@ body.ready #map { opacity: 1; }
 .mk .star { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; fill: var(--m-accent); }
 .mk .halo { position: absolute; left: -18px; top: -18px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--m-accent); opacity: 0.45; }
 .mk .halo::after { content: ''; position: absolute; inset: -16px; border-radius: 50%; border: 1px solid var(--m-accent); opacity: 0.5; }
-.mk-region .lbl, .mk-area .lbl, .mk-water .lbl, .mk-ring .lbl, .mk-center .lbl { left: 0; transform: translate(-50%, -50%); text-align: center; }
+.mk-region .lbl, .mk-area .lbl, .mk-water .lbl, .mk-ring .lbl, .mk-rule .lbl, .mk-center .lbl { left: 0; transform: translate(-50%, -50%); text-align: center; }
 .mk-region .nm { font-size: 11px; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: var(--m-label); }
+.mk-rule .lbl { align-items: center; }
+.mk-rule .nm { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 14px; }
+.mk-rule .nt { color: var(--m-muted); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
 .mk-area .nm { font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--m-label); }
 .mk-water .nm { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 13.5px; color: var(--m-water); }
 .mk-ring .nm { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 15px; color: var(--m-accent); }
@@ -95,6 +98,7 @@ body.ready #map { opacity: 1; }
 .times li { display: flex; justify-content: space-between; gap: 10px; color: var(--c-muted); }
 .times li:first-child { color: var(--c-fg); box-shadow: -13px 0 0 -11px var(--c-accent); }
 .steps-list { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.step-list-tight .steps-list li { padding: 6px 0; }
 .steps-list li { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 8px 0; border-top: 1px solid var(--c-line); }
 .steps-list li:last-child { border-bottom: 1px solid var(--c-line); }
 .steps-list b { color: var(--c-accent); }
@@ -112,6 +116,7 @@ body.ready #map { opacity: 1; }
 .s-route { stroke: var(--c-accent, #9A4E2A); stroke-width: 2.2; stroke-dasharray: 5 4; stroke-linecap: round; }
 .s-link { stroke: var(--c-muted, #3E4C46); stroke-width: 2.8; stroke-dasharray: 0.1 5.5; stroke-linecap: round; }
 .s-recon { fill: var(--c-line, #DDD2BC); stroke: var(--c-muted, #3E4C46); stroke-width: 1; stroke-dasharray: 2 1.5; }
+.s-rule { fill: color-mix(in srgb, #B8863B 22%, transparent); stroke: #B8863B; stroke-width: 1.4; stroke-dasharray: 4 2.5; }
 .s-trad { fill: var(--c-bg, #F4EEE2); stroke: var(--c-trad, #2F4F6B); stroke-width: 1.8; }
 .close-verse { margin: 0; font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.45; color: var(--c-muted); }
 .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -153,6 +158,25 @@ dialog::backdrop { background: rgba(10, 14, 15, 0.5); }
 .dlg-head h2 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 26px; }
 .dlg-head button { width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; color: inherit; }
 .dlg-head svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.6; }
+
+/* ---------- life in Jesus' day / found by archaeologists ---------- */
+.more { display: flex; flex-wrap: wrap; gap: 8px; }
+.more-btn { min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 0 13px 0 11px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--c-line, rgba(255,255,255,.2)); background: transparent; color: var(--c-fg, var(--m-txt)); font: 500 13px var(--sans); }
+.more-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.more-btn[aria-expanded="true"] { background: var(--c-fg, var(--m-txt)); color: var(--c-bg, var(--m-land)); border-color: transparent; }
+.extra { margin: 0; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; border-left: 3px solid; }
+.extra b { display: block; margin-bottom: 3px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+.extra-life { background: color-mix(in srgb, #B8863B 13%, transparent); border-color: #B8863B; }
+.extra-life b { color: #A0722C; }
+.extra-found { background: color-mix(in srgb, #4E7C99 13%, transparent); border-color: #4E7C99; }
+.extra-found b { color: #3F6A86; }
+.card-dark .extra-life b, .card-dusk .extra-life b, .card-slate .extra-life b, .card-ember .extra-life b { color: #D9A85E; }
+.card-dark .extra-found b, .card-dusk .extra-found b, .card-slate .extra-found b, .card-ember .extra-found b { color: #8FB6D0; }
+.verse .more-btn { color: var(--m-txt); border-color: color-mix(in srgb, var(--m-txt) 30%, transparent); }
+.verse .more-btn[aria-expanded="true"] { background: var(--m-txt); color: var(--m-land); }
+.verse .extra { color: var(--m-txt); }
+.step.grown { height: auto; min-height: 100vh; min-height: 100svh; padding-top: calc(132px + env(safe-area-inset-top)); }
 
 /* ---------- chapter menu ---------- */
 #toc { max-height: min(82vh, 760px); overflow: auto; overscroll-behavior: contain; padding-bottom: 12px; }
