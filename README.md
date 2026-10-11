@@ -45,6 +45,10 @@ Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that open
 
 The Scripture reader has a **Study notes** tab: the Tyndale Open Study Notes (© 2022 Tyndale House Publishers, CC BY-SA 4.0) for the verses shown, loaded from the Free Use Bible API and shown unchanged with credit. Town locations have also been cross-checked against STEPBible's TIPNR data (Tyndale House, Cambridge; CC BY): all named towns agree within about 1 km, except Jericho, where the atlas deliberately marks the Herodian city of Jesus' day rather than the Old Testament mound.
 
+## Holy Week guide
+
+`holyweek.html` goes deeper into the last week: day by day (with a note on the dating debate), sixteen people, the temple, the cross and the seven sayings, the tomb, the women at the tomb, what Roman and Jewish writers recorded, what the Old Testament said (only passages the New Testament quotes or points to) and, in the New Testament's own words, the victory over death. It is linked from the Holy Week chapter card, the menu and the footer, and built by `tools/make-holyweek.py`. All of it was independently fact-checked.
+
 ## Browse by topic
 
 The Search tab has **Browse by topic**: Miracles, Parables, Teaching, “I am” sayings, Old Testament fulfilled, The Holy Spirit and Resurrection. Each lists the scenes in story order with a line on what to look for (`WAY_TOPICS` in `js/study.js`).
@@ -88,6 +92,7 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `about.html`, `sources.html`, `css/page.css`: the About and Sources pages
 - `manifest.webmanifest`, `sw.js`, `og.png`, icons: install, offline cache and link previews
 - `fonts/`: Newsreader and Instrument Sans (SIL Open Font License), served from the site
+- `holyweek.html`, `tools/make-holyweek.py`: the Holy Week guide and the script that builds it
 - `tools/make-share.py`: rebuilds the per-scene share pages and images in `s/`
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
 - `js/places.js`: the place profiles (in Jesus' day, today, how sure) and three or four “Good to know” facts for each place, independently fact-checked

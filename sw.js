@@ -5,11 +5,11 @@
 //   URLs carry a version number, so a new version is a new file.
 // - Bible passages and terrain tiles: kept in their own caches, which survive
 //   app updates. Terrain keeps the most recent tiles only.
-const APP = 'the-way-v19';
+const APP = 'the-way-v20';
 const BIBLE = 'the-way-bible';
 const TILES = 'the-way-tiles';
 const TILE_LIMIT = 900;
-const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
+const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html', 'css/page.css?v=4', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
   'vendor/maplibre-gl.js', 'vendor/maplibre-gl.css',
   'fonts/newsreader.woff2', 'fonts/newsreader-italic.woff2', 'fonts/instrument-sans-400.woff2', 'fonts/instrument-sans-500.woff2', 'fonts/instrument-sans-600.woff2'];
 

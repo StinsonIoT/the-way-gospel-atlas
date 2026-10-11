@@ -668,6 +668,7 @@ window.WAY = (function () {
     { id: 'hw', ch: 'VI · Holy Week', chapter: 'VI', pal: 'dusk', view: [[35.14, 31.73], [35.49, 31.88]],
       show: ['jericho', 'bethany', 'jerusalem', 'jer-bny', 'wildlabel', 'deadsea'],
       kicker: 'VI · Holy Week', title: 'Holy <em>Week.</em>', kind: 'chapter',
+      guide: ['holyweek.html', 'Open the Holy Week guide: people, the cross, the tomb, history'],
       text: 'From Jericho the road goes up toward Bethany and Jerusalem. Mark gives six of his sixteen chapters to these last days.',
       markers: [['Six days before the Passover', 'John 12:1'], ['The next day', 'John 12:12'], ['Two days before the Passover', 'Mark 14:1'], ['First day of Unleavened Bread', 'Mark 14:12'], ['The day of Preparation', 'Mark 15:42'], ['First day of the week', 'Mark 16:2']] },
 
