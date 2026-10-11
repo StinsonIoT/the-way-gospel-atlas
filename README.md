@@ -19,6 +19,8 @@ A scroll-driven atlas of the whole Gospel story, in 75 scenes and eight chapters
 
 Jerusalem is a simplified 3D model over real 3D terrain, styled like a museum model: the temple platform with its porticoes, the Royal Stoa, the inner courts and the sanctuary (about 50 m high, after Josephus), the Antonia with its four towers, Herod's palace with its three towers, the first wall with towers, and the pools of Bethesda and Siloam. Houses in the Upper and Lower City are illustrative only. Jerusalem scenes tilt the camera and circle the city; an "Explore Jerusalem in 3D" button lets you rotate and zoom freely. It shows only the first wall: the second wall's course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate's praetorium is marked at both proposed sites, Herod's palace and the Antonia.
 
+Capernaum is a second, illustrative model: dense blocks of one-storey basalt rooms around small courtyards, as in the excavated village, with the synagogue site and the traditional house of Peter. Individual houses and the village's extent are not surveyed. Landscape scenes (the wilderness, Jacob's well between Mount Gerizim and Mount Ebal, Nazareth's hill, the Sea of Galilee basin, Caesarea Philippi below Hermon, the Transfiguration with Tabor and Hermon, and the climb from Jericho) tilt the camera to show the real terrain.
+
 ## Running it
 
 It is a static site with no build step. Open it through any local web server, for example:
@@ -35,11 +37,11 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type
-- `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, and `jerusalem3d.geojson` (the 3D model: heights in metres, `illustrative: true` on houses)
+- `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, `jerusalem3d.geojson` and `capernaum3d.geojson` (the 3D models: heights in metres, `illustrative: true` on houses)
 - `vendor/`: MapLibre GL JS 4.7.1 and maplibre-contour 0.1.0 (both BSD-3-Clause; licences included)
 
 To add or edit a scene, change `js/scenes.js` only.
 
 ## Credits
 
-Scripture quotations are from the Berean Standard Bible (public domain). Map data from Natural Earth (public domain). Terrain from Terrain Tiles on AWS (Mapzen; SRTM and other public sources), loaded in the browser. Built with MapLibre GL JS.
+Scripture quotations are from the Berean Standard Bible (public domain). Map data from Natural Earth (public domain). Sea of Galilee shoreline from Who's On First. Terrain from Terrain Tiles on AWS (Mapzen; SRTM and other public sources), loaded in the browser. Built with MapLibre GL JS.

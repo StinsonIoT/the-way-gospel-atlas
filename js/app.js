@@ -165,10 +165,11 @@
       version: 8,
       sources: {
         land: { type: 'geojson', data: 'data/land.geojson?v=8' },
-        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=8' },
+        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=10' },
         rivers: { type: 'geojson', data: 'data/rivers.geojson?v=8' },
         jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=8' },
         city3d: { type: 'geojson', data: 'data/jerusalem3d.geojson?v=8' },
+        village3d: { type: 'geojson', data: 'data/capernaum3d.geojson?v=10' },
         overlay: { type: 'geojson', data: overlay },
         ...terrainSources
       },
@@ -193,6 +194,9 @@
         { id: 'pools', type: 'fill', source: 'city3d', filter: ['==', ['get', 'kind'], 'pool'], paint: { 'fill-color': '#88AAB0', 'fill-opacity': 0 } },
         { id: 'city3d', type: 'fill-extrusion', source: 'city3d', filter: ['!=', ['get', 'kind'], 'pool'], layout: { visibility: 'none' },
           paint: { 'fill-extrusion-color': '#ccc', 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-base': ['get', 'base'],
+            'fill-extrusion-opacity': 0, 'fill-extrusion-vertical-gradient': true } },
+        { id: 'village3d', type: 'fill-extrusion', source: 'village3d', layout: { visibility: 'none' },
+          paint: { 'fill-extrusion-color': '#888', 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-base': ['get', 'base'],
             'fill-extrusion-opacity': 0, 'fill-extrusion-vertical-gradient': true } },
         { id: 'area-fill', type: 'fill', source: 'overlay', filter: ['==', ['get', 'kind'], 'area'], paint: { 'fill-color': '#000', 'fill-opacity': ['*', 0.07, ['get', 'op']] } },
         { id: 'area-line', type: 'line', source: 'overlay', filter: ['==', ['get', 'kind'], 'area'], paint: { 'line-color': '#000', 'line-opacity': ['get', 'op'], 'line-width': 1.3, 'line-dasharray': [3, 3] } },
@@ -346,6 +350,15 @@
       'platform', rgb(mixA(stone, C.accent, temple * 0.18)),
       'wall', rgb(shadowStone), 'tower', rgb(mixA(shadowStone, stone, 0.5)),
       rgb(stone)]);
+    // 3D Capernaum: dark basalt houses, a paler synagogue
+    const village = lerp(a.village || 0, b.village || 0, e);
+    const basalt = mixA(mixA(C.land, BLACK, 0.28), C.txt, 0.06);
+    map.setLayoutProperty('village3d', 'visibility', village > 0.01 ? 'visible' : 'none');
+    map.setPaintProperty('village3d', 'fill-extrusion-opacity', Math.min(1, village) * 0.96);
+    map.setPaintProperty('village3d', 'fill-extrusion-color', ['match', ['get', 'kind'],
+      'synagogue', rgb(mixA(stone, hx('#C9A45C'), 0.25)),
+      'podium', rgb(mixA(basalt, stone, 0.4)),
+      rgb(basalt)]);
     map.setPaintProperty('pools', 'fill-color', rgb(C.lake));
     map.setPaintProperty('pools', 'fill-opacity', plan);
     const isTemple = ['==', ['get', 'kind'], 'temple'];
