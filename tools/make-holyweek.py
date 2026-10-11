@@ -17,13 +17,13 @@ BOOKS = {
     'Romans': 'romans', '1 Corinthians': '1_corinthians', 'Galatians': 'galatians', '2 Timothy': '2_timothy',
     'Hebrews': 'hebrews', '1 Peter': '1_peter', 'Revelation': 'revelation',
 }
-REF = re.compile(r'\b(' + '|'.join(sorted((re.escape(b) for b in BOOKS), key=len, reverse=True)) + r')\s+(\d+)(?::\d+(?:[–-]\d+)?(?:,\s*\d+(?:[–-]\d+)?)*)?')
+REF = re.compile(r'\b(' + '|'.join(sorted((re.escape(b) for b in BOOKS), key=len, reverse=True)) + r')\s+(\d+)(?::\d+(?:[–-]\d+(?::\d+)?)?(?:,\s*\d+(?:[–-]\d+)?)*|[–-]\d+)?(?![\d:])')
 
 
 def fmt(text):
     """Escape, then link references and scenes; *x* becomes <em>."""
     t = html.escape(text, quote=False)
-    t = REF.sub(lambda m: f'<a class="ref" href="https://biblehub.com/bsb/{BOOKS[m.group(1)]}/{m.group(2)}.htm" target="_blank" rel="noopener">{m.group(0)}</a>', t)
+    t = REF.sub(lambda m: f'<a class="ref" data-ref="{m.group(0)}" href="https://biblehub.com/bsb/{BOOKS[m.group(1)]}/{m.group(2)}.htm" target="_blank" rel="noopener">{m.group(0)}</a>', t)
     t = re.sub(r'\[\[([\w-]+)\|([^\]]+)\]\]', lambda m: f'<a class="scene" href="./#s-{m.group(1)}">{m.group(2)}</a>', t)
     t = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', t)
     return t
@@ -288,7 +288,7 @@ page = f'''<!doctype html>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="css/fonts.css?v=1">
-<link rel="stylesheet" href="css/page.css?v=4">
+<link rel="stylesheet" href="css/page.css?v=5">
 </head>
 <body class="guide">
 <header class="bar">
@@ -300,11 +300,12 @@ page = f'''<!doctype html>
 <p class="eyebrow">A guide</p>
 <h1>Holy <em>Week.</em></h1>
 <p class="lede">The last week of Jesus’ life fills a third of the Gospels. This guide gathers what the text says, what history and archaeology add, and what the New Testament found foretold in the Old, so the story can be read more deeply.</p>
-<p class="small">Quotations are from the Berean Standard Bible. Scripture links open the passage; <span class="scene-key">place links</span> open the scene on the map. Where the evidence is debated, the guide says so.</p>
+<p class="small">Quotations are from the Berean Standard Bible. Scripture links open the passage here, with study notes; <span class="scene-key">place links</span> open the scene on the map. Where the evidence is debated, the guide says so.</p>
 {body}
 <a class="btn" href="./#s-hw">Walk through Holy Week on the map</a>
 <footer>Scripture quotations: Berean Standard Bible (public domain). Josephus is quoted from William Whiston’s translation; Tacitus from Church and Brodribb. Corrections are welcome on <a href="https://github.com/StinsonIoT/the-way-gospel-atlas/issues">GitHub</a>.</footer>
 </main>
+<script src="js/reader-lite.js?v=1"></script>
 </body>
 </html>
 '''

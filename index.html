@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin>
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=43">
+<link rel="stylesheet" href="css/style.css?v=45">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -130,17 +130,15 @@
   <p class="p-foot">Berean Standard Bible · public domain · audio via the Free Use Bible API · <a id="passage-hub" href="https://biblehub.com/bsb/" target="_blank" rel="noopener">Open on BibleHub</a></p>
 </dialog>
 
-<dialog id="gospels" aria-labelledby="gos-title">
+<dialog id="deeper" aria-labelledby="dp-title">
   <div class="dlg-head">
-    <h2 id="gos-title">In the Gospels</h2>
-    <button id="gos-close" type="button" aria-label="Close">
+    <div class="dp-head"><p id="dp-kicker" class="dp-kicker"></p><h2 id="dp-title">Go deeper</h2></div>
+    <button id="dp-close" type="button" aria-label="Close">
       <svg viewBox="0 0 18 18" aria-hidden="true"><line x1="3" y1="3" x2="15" y2="15"/><line x1="15" y1="3" x2="3" y2="15"/></svg>
     </button>
   </div>
-  <p id="gos-scene" class="gos-scene"></p>
-  <ul id="gos-list" class="gos-list"></ul>
-  <p id="gos-note" class="gos-note" hidden></p>
-  <p class="gos-foot">Tap a passage to read it. <b>Follow</b> steps through the story one Gospel at a time.</p>
+  <div id="dp-tabs" class="dp-tabs" role="tablist" aria-label="Go deeper"></div>
+  <div id="dp-body" class="dp-body" role="tabpanel"></div>
 </dialog>
 
 <dialog id="key" aria-labelledby="key-title">
@@ -154,10 +152,10 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=43"></script>
-<script src="js/scenes.js?v=43"></script>
+<script src="vendor/maplibre-contour.min.js?v=45"></script>
+<script src="js/scenes.js?v=45"></script>
 <script src="js/places.js?v=6"></script>
-<script src="js/study.js?v=8"></script>
-<script src="js/app.js?v=43"></script>
+<script src="js/study.js?v=9"></script>
+<script src="js/app.js?v=45"></script>
 </body>
 </html>

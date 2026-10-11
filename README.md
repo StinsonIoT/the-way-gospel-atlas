@@ -39,7 +39,7 @@ The line at the top is a timeline split into the eight chapters (plus a short pr
 
 ## The four Gospels
 
-Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that opens the parallel passages, each readable in place, with a note where the accounts differ. **Follow** steps through the story one Gospel at a time, from a bar under the header. Parallels follow the standard Gospel synopses; the longer ending of Mark (16:9–20) is not used. Reading progress and saved scenes are kept on the device only.
+Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn) beside its Go deeper button; the Gospels tab lists the parallel passages, each readable in place, with a note where the accounts differ. **Follow** steps through the story one Gospel at a time, from a bar under the header. Parallels follow the standard Gospel synopses; the longer ending of Mark (16:9–20) is not used. Reading progress and saved scenes are kept on the device only.
 
 ## Study notes
 
@@ -47,7 +47,7 @@ The Scripture reader has a **Study notes** tab: the Tyndale Open Study Notes (©
 
 ## Holy Week guide
 
-`holyweek.html` goes deeper into the last week: day by day (with a note on the dating debate), sixteen people, the temple, the cross and the seven sayings, the tomb, the women at the tomb, what Roman and Jewish writers recorded, what the Old Testament said (only passages the New Testament quotes or points to) and, in the New Testament's own words, the victory over death. It is linked from the Holy Week chapter card, the menu and the footer, and built by `tools/make-holyweek.py`. All of it was independently fact-checked.
+`holyweek.html` goes deeper into the last week: day by day (with a note on the dating debate), sixteen people, the temple, the cross and the seven sayings, the tomb, the women at the tomb, what Roman and Jewish writers recorded, what the Old Testament said (only passages the New Testament quotes or points to) and, in the New Testament's own words, the victory over death. It is linked from the Holy Week chapter card, the menu and the footer, and built by `tools/make-holyweek.py`. Scripture references on it open in a small reader (`js/reader-lite.js`) with the text and Tyndale study notes, like the atlas. All of it was independently fact-checked.
 
 ## Topics
 
@@ -57,9 +57,13 @@ The menu's **Topics** tab gathers scenes by theme. What He did: Miracles, Resurr
 
 Scenes where a Gospel writer, or Jesus, quotes or points to the Old Testament have an **Old Testament** button listing the passage and where it is cited (`WAY_OT` in `js/study.js`). Later Christian readings that the Gospels do not themselves make are left out. The story now ends with Pentecost (Acts 2) before the closing scene.
 
+## Go deeper
+
+Each scene card keeps to the story: title, summary and a note. One **Go deeper** button opens a sheet with tabs for whatever the scene has: **Gospels** (the parallel passages, with Follow), **Old Testament**, **Daily life**, **Archaeology** and **Reflect**.
+
 ## Reflect
 
-Each scene has a **Reflect** button with one open question for personal reflection or a small group (`WAY_ASK` in `js/study.js`). The questions stay with what the passage says and do not presume an answer.
+Each scene has a **Reflect** tab with one open question for personal reflection or a small group (`WAY_ASK` in `js/study.js`). The questions stay with what the passage says and do not presume an answer.
 
 ## Accessibility
 

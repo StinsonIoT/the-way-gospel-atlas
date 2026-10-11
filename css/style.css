@@ -502,3 +502,31 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
 #topic-results:empty { display: none; }
 #topic-results { margin-top: 14px; }
 .tabs button { padding: 0 2px; font-size: 12.5px; }
+
+/* ---------- Go deeper ---------- */
+.deep-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 0; border: 0; background: transparent; color: var(--c-fg, var(--m-txt)); font: 600 13.5px var(--sans); cursor: pointer; }
+.deep-btn svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-left: -4px; }
+.deep-say { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+#deeper { width: min(640px, 100vw); max-height: min(80vh, 760px); margin: auto auto 0; border-radius: 20px 20px 0 0; padding: 18px 22px calc(14px + env(safe-area-inset-bottom)); display: none; flex-direction: column; }
+#deeper[open] { display: flex; }
+@media (min-width: 900px) { #deeper { margin: auto; border-radius: 20px; } }
+#deeper .dlg-head { align-items: flex-start; margin-bottom: 10px; }
+.dp-kicker { margin: 4px 0 2px; font: 600 11px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--c-accent); }
+#dp-title { font-size: 24px; line-height: 1.15; }
+.dp-tabs { display: flex; gap: 6px; overflow-x: auto; margin: 0 -22px 12px; padding: 0 22px 2px; scrollbar-width: none; flex: none; }
+.dp-tabs::-webkit-scrollbar { display: none; }
+.dp-tabs button { flex: none; min-height: 36px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--c-line); background: transparent; color: var(--c-fg); font: 500 13px var(--sans); cursor: pointer; }
+.dp-tabs button[aria-selected="true"] { background: var(--c-fg); color: var(--c-bg); border-color: transparent; }
+.dp-body { overflow: auto; overscroll-behavior: contain; padding-right: 4px; }
+.dp-lede { margin: 0 0 8px; font-size: 13.5px; color: var(--c-muted); }
+.dp-text { margin: 0; font: 400 18px/1.6 var(--serif); }
+.dp-ask { margin: 0 0 10px; font: italic 400 21px/1.45 var(--serif); }
+.dp-ot .ot-list li { padding: 10px 0; border-top: 1px solid var(--c-line); margin: 0; font-size: 15.5px; line-height: 1.5; }
+.dp-ot .ot-refs { color: var(--c-accent); }
+/* calmer cards: smaller map-mark chips */
+.chips { gap: 6px; }
+.chip { padding: 3px 9px 3px 4px; font-size: 11.5px; }
+.chip svg { width: 22px; height: 15px; }
+.deep-btn { gap: 8px; white-space: nowrap; flex: 0 1 auto; min-width: 0; }
+.study .listen-btn, .study .share-btn, .study .save-btn { width: 36px; }
+@media (max-width: 360px) { .deep-btn .gos-dots { display: none; } }

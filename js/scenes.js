@@ -191,6 +191,13 @@ window.WAY = (function () {
     { id: 'title', ch: 'The Way', pal: 'night', view: [[34.75, 31.15], [35.85, 33.15]],
       show: ['star', 'galilee', 'samaria', 'judea', 'sog', 'deadsea'], kind: 'title' },
 
+    { id: 'word', ch: 'In the beginning', pal: 'night', view: V.region,
+      show: ['galilee', 'samaria', 'judea'], kind: 'verse',
+      kicker: 'In the beginning',
+      verse: 'In the beginning was the Word, and the Word was with God, and the Word was God.',
+      ref: ['John 1:1 · BSB', 'john', 1],
+      after: 'John begins before Bethlehem, before creation itself: “The Word became flesh and made His dwelling among us” (John 1:14). The story that follows happens on this map.' },
+
     { id: 'land', ch: 'The land', pal: 'day', view: V.region,
       show: ['nazareth', 'capernaum', 'jerusalem', 'bethlehem', 'galilee', 'samaria', 'judea', 'sog', 'deadsea'],
       kicker: 'The land', title: 'Galilee to Judea, <em>on foot.</em>',
@@ -201,17 +208,10 @@ window.WAY = (function () {
       kicker: 'Before you begin', title: 'Every mark says <em>how sure</em> we are.', kind: 'legend' },
 
     // ---------- I · Origins ----------
-    { id: 'word', ch: 'I · Origins', chapter: 'I', pal: 'night', view: V.region,
-      show: ['galilee', 'samaria', 'judea'], kind: 'verse',
-      kicker: 'I · Origins · In the beginning',
-      verse: 'In the beginning was the Word, and the Word was with God, and the Word was God.',
-      ref: ['John 1:1 · BSB', 'john', 1],
-      after: 'John begins before Bethlehem, before creation itself: “The Word became flesh and made His dwelling among us” (John 1:14). The story that follows happens on this map.' },
-
-    { id: 'zechariah', ch: 'I · Origins', pal: 'day', view: V.temple, plan: 1, temple: 1,
+    { id: 'zechariah', ch: 'I · Origins', chapter: 'I', pal: 'day', view: V.temple, plan: 1, temple: 1,
       life: 'Priests served in 24 divisions, each taking its turn on duty in the temple (1 Chronicles 24); Abijah was the eighth (1 Chronicles 24:10). There were so many priests that the honor of burning incense was given by lot (Luke 1:9).',
       show: ['templelbl'],
-      kicker: 'Jerusalem · the hour of incense', ref: ['Luke 1:5–25', 'luke', 1],
+      kicker: 'I · Origins · Jerusalem', ref: ['Luke 1:5–25', 'luke', 1],
       title: 'Your prayer <em>has been heard.</em>',
       text: 'In the time of Herod king of Judea, the priest Zechariah is chosen by lot to burn incense in the temple. An angel tells him that his wife Elizabeth, old and childless, will bear a son, John, who will go before the Lord in the spirit and power of Elijah. Because he does not believe, he cannot speak until the child is born.',
       note: 'The king is Herod the Great, who died about 4 BC. The angel is Gabriel (Luke 1:19), who comes to Mary six months later (Luke 1:26). Zechariah and Elizabeth lived in “a town in the hill country of Judah” (Luke 1:39), which Luke does not name.',

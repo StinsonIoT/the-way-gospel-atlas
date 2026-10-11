@@ -83,42 +83,36 @@
     rule: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="4" y="4" width="22" height="12" rx="2" class="s-rule"/></svg>',
     hist: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="4.2" class="s-hist"/></svg>'
   };
-  const ICON = {
-    life: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8 L8 3.5 L13.5 8 M4.5 6.5 V13 H11.5 V6.5 M7 13 V10 H9 V13"/></svg>',
-    ot: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 H11.5 A1.5 1.5 0 0 1 13 4 V13.5 H5.5 A1.5 1.5 0 0 1 4 12 Z M4 12 A1.5 1.5 0 0 1 5.5 10.5 H13 M6.5 5.5 H10.5 M6.5 7.5 H10.5"/></svg>',
-    ask: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5 H13 V10.5 H7.5 L4.5 13 V10.5 H3 Z"/></svg>',
-    found: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5 H14 M2 8.5 H14 M2 12 H14"/><circle cx="10" cy="10.2" r="1.1"/></svg>'
-  };
-  const EXTRA_LABEL = { life: 'Life in Jesus’ day', found: 'Found by archaeologists', ask: 'Reflect', ot: 'Old Testament' };
   const ASK = window.WAY_ASK || {};
   const OT = window.WAY_OT || {};
   STEPS.forEach((s) => { if (ASK[s.id]) s.ask = ASK[s.id]; if (OT[s.id]) s.ot = OT[s.id]; });
   const otHTML = (items) => `<ul class="ot-list">${items.map(([ot, nt, note]) => `<li><span class="ot-refs">${linkRefs(esc(ot))} <span class="ot-in">in ${linkRefs(esc(nt))}</span></span>${linkRefs(esc(note))}</li>`).join('')}</ul>`;
-  function extrasHTML(s) {
-    const ks = ['life', 'found', 'ot', 'ask'].filter((k) => s[k]);
-    if (!ks.length) return '';
-    return `<div class="more">${ks.map((k) => `<button type="button" class="more-btn more-${k}" aria-expanded="false" aria-controls="x-${s.id}-${k}">${ICON[k]}<span>${EXTRA_LABEL[k]}</span></button>`).join('')}</div>`
-      + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${k === 'ot' ? otHTML(s.ot) : linkRefs(esc(s[k]))}</div>`).join('');
-  }
+
   // Which Gospels tell each scene (js/study.js), and the bookmark button.
   const HARM = window.WAY_HARMONY || {};
   const GOSPELS = [['mt', 'Matthew', 'Mt'], ['mk', 'Mark', 'Mk'], ['lk', 'Luke', 'Lk'], ['jn', 'John', 'Jn']];
   const BOOKMARK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.2 H12 V14 L8 10.9 L4 14 Z"/></svg>';
   const SHARE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10 V2.2 M5.2 4.8 L8 2 L10.8 4.8 M5 7 H3.5 V14 H12.5 V7 H11"/></svg>';
   const HEADPHONES = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 10 V8.5 a5.5 5.5 0 0 1 11 0 V10"/><rect x="2" y="9.5" width="3" height="4.5" rx="1.2"/><rect x="11" y="9.5" width="3" height="4.5" rx="1.2"/></svg>';
+  // Layers behind "Go deeper", in the order the sheet shows them.
+  const DEEP = [['gospels', 'Gospels'], ['ot', 'Old Testament'], ['life', 'Daily life'], ['found', 'Archaeology'], ['ask', 'Reflect']];
+  const deepLayers = (s) => DEEP.filter(([k]) => (k === 'gospels' ? HARM[s.id] : s[k]));
   function studyRow(s) {
+    if (s.kind === 'title' || s.kind === 'close' || s.kind === 'legend' || s.kind === 'chapter' || !s.ref) return '';
     const h = HARM[s.id];
+    const layers = deepLayers(s);
     const acts = `<span class="study-acts"><button type="button" class="listen-btn" data-tour-from="${s.id}" aria-label="Listen from this scene">${HEADPHONES}</button>`
       + `<button type="button" class="share-btn" data-share="${s.id}" aria-label="Share this scene">${SHARE}</button>`
       + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></span>`;
-    // Scenes outside the Gospels (Acts) keep listen, share and save.
-    if (!h) return s.ref && s.kind !== 'title' && s.kind !== 'close' && /^Acts/.test(s.ref[0]) ? `<div class="study study-acts-only"><span class="study-src">Acts</span>${acts}</div>` : '';
-    const told = GOSPELS.filter((g, k) => h[k]).map((g) => g[1]);
-    const say = told.length === 1 ? 'Only in ' + told[0] : told.length === 4 ? 'In all four Gospels' : 'Told in ' + told.length + ' Gospels';
-    return `<div class="study"><button type="button" class="gos-btn" data-gos="${s.id}" aria-haspopup="dialog">`
-      + `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span><span class="gos-say">${esc(say)}</span><span class="vh">: ${esc(told.join(', '))}. Compare the accounts</span></button>`
-      + acts + '</div>';
+    const told = h ? GOSPELS.filter((g, k) => h[k]).map((g) => g[1]) : [];
+    const dots = h ? `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span>` : '';
+    const what = layers.map((l) => l[1]).join(', ');
+    const deeper = layers.length
+      ? `<button type="button" class="deep-btn" data-deep="${s.id}" aria-haspopup="dialog">${dots}<span class="deep-say">Go deeper</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 L8 6 L4.5 9.5"/></svg><span class="vh">: ${esc(what)}${told.length ? '. Told in ' + esc(told.join(', ')) : ''}</span></button>`
+      : '<span></span>';
+    return `<div class="study">${deeper}${acts}</div>`;
   }
+
   const LEGEND = [
     ['named', 'Named place.', 'The text names the town; the dot is approximate.'],
     ['region', 'Regional setting.', 'An area is named; the exact site is unknown.'],
@@ -151,7 +145,6 @@
         <blockquote>${esc(s.verse)}</blockquote>
         <div class="verse-foot">${refLink(s.ref, 'ref')}</div>
         ${s.after ? `<p class="after">${linkRefs(esc(s.after))}</p>` : ''}
-        ${extrasHTML(s)}
         ${studyRow(s)}
       </div>`;
     }
@@ -162,7 +155,6 @@
     if (s.kind === 'chapter') body += `<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>`;
     if (s.guide) body += `<a class="guide-link" href="${esc(s.guide[0])}">${esc(s.guide[1])}<span aria-hidden="true">→</span></a>`;
     if (s.kind === 'list') body = `<ol class="steps-list">${s.items.map((m, i) => `<li><b>${i + 1}</b><span>${esc(m[0])}</span><span>${linkRefs(esc(m[1]))}</span></li>`).join('')}</ol>` + body;
-    body += extrasHTML(s);
     if (s.chips) body += `<div class="chips">${s.chips.map((c) => `<span class="chip">${SYM[c]}${esc(CHIPS[c])}</span>`).join('')}</div>`;
     if (s.kind === 'close') {
       body += `<blockquote class="close-verse">${esc(s.verse)}</blockquote>
@@ -181,18 +173,6 @@
     story.appendChild(sec);
   });
   const sections = Array.from(story.querySelectorAll('.step'));
-  // "Life in Jesus' day" and "Found by archaeologists": tap to open; the scene
-  // grows to fit, and scroll positions are re-measured.
-  story.addEventListener('click', (ev) => {
-    const b = ev.target.closest('.more-btn');
-    if (!b) return;
-    const open = b.getAttribute('aria-expanded') !== 'true';
-    b.setAttribute('aria-expanded', open ? 'true' : 'false');
-    document.getElementById(b.getAttribute('aria-controls')).hidden = !open;
-    const sec = b.closest('.step');
-    sec.classList.toggle('grown', !!sec.querySelector('.more-btn[aria-expanded="true"]'));
-    if (typeof measure === 'function' && started) { measure(); queue(); }
-  });
   const exploreBtn = document.getElementById('explore-open');
   const exploreClose = document.getElementById('explore-close');
 
@@ -769,39 +749,63 @@
   qInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { const first = results.querySelector('[data-i]'); if (first) goTo(+first.dataset.i); } });
   results.addEventListener('click', (ev) => { const b = ev.target.closest('[data-i]'); if (b) goTo(+b.dataset.i); });
 
-  // ---------- Gospels: compare the accounts, filter, follow one Gospel ----------
-  const gosDlg = document.getElementById('gospels');
+  // ---------- Go deeper: the Gospels, Old Testament, daily life, archaeology, reflection ----------
+  const deepDlg = document.getElementById('deeper');
+  const dpTabs = document.getElementById('dp-tabs');
+  const dpBody = document.getElementById('dp-body');
   const gIndex = (key) => GOSPELS.findIndex((g) => g[0] === key);
   const toldBy = (key) => { const k = gIndex(key); return STEPS.map((st, i) => (HARM[st.id] && HARM[st.id][k] ? i : -1)).filter((i) => i >= 0); };
   const harmCount = STEPS.filter((st) => HARM[st.id]).length;
-  let gosOpener = null;
-  function openGospels(id) {
-    const i = STEPS.findIndex((st) => st.id === id);
+  let deepOpener = null, deepId = null;
+  function gospelsHTML(id) {
     const h = HARM[id];
-    if (!h) return;
-    document.getElementById('gos-scene').textContent = stepLabel(STEPS[i]);
-    document.getElementById('gos-list').innerHTML = GOSPELS.map((g, k) => h[k]
+    const told = GOSPELS.filter((g, k) => h[k]).length;
+    const say = told === 1 ? 'Only one Gospel tells this scene.' : told === 4 ? 'All four Gospels tell this scene.' : `${told} Gospels tell this scene.`;
+    return `<p class="dp-lede">${say} Tap a passage to read it.</p><ul class="gos-list">` + GOSPELS.map((g, k) => h[k]
       ? `<li><span class="gn">${g[1]}</span><button type="button" class="gos-read" data-ref="${esc(h[k])}">${esc(h[k])}<span class="ref-icon" aria-hidden="true"></span></button>`
         + `<button type="button" class="gos-follow" data-follow="${g[0]}"${follow === g[0] ? ' aria-pressed="true"' : ''}>${follow === g[0] ? 'Following' : 'Follow'}</button></li>`
-      : `<li class="off"><span class="gn">${g[1]}</span><span class="gos-none">Does not tell this scene</span></li>`).join('');
-    const note = document.getElementById('gos-note');
-    note.innerHTML = h[4] ? linkRefs(esc(h[4])) : '';
-    note.hidden = !h[4];
-    gosOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
-    if (gosOpener && gosOpener.blur) gosOpener.blur();
-    gosDlg.showModal();
+      : `<li class="off"><span class="gn">${g[1]}</span><span class="gos-none">Does not tell this scene</span></li>`).join('') + '</ul>'
+      + (h[4] ? `<p class="gos-note">${linkRefs(esc(h[4]))}</p>` : '')
+      + '<p class="gos-foot"><b>Follow</b> steps through the story one Gospel at a time.</p>';
   }
-  gosDlg.addEventListener('close', () => {
-    if (gosOpener && gosOpener.focus && !touchedSinceJump) { try { gosOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
-    gosOpener = null;
+  function layerHTML(st, k) {
+    if (k === 'gospels') return gospelsHTML(st.id);
+    if (k === 'ot') return '<p class="dp-lede">Where the New Testament quotes or points to the Old.</p>' + otHTML(st.ot);
+    if (k === 'ask') return `<p class="dp-ask">${linkRefs(esc(st.ask))}</p><p class="gos-foot">A question for personal reflection or a small group.</p>`;
+    return `<p class="dp-text">${linkRefs(esc(st[k]))}</p>`;
+  }
+  function showLayer(k) {
+    const st = STEPS.find((x) => x.id === deepId);
+    dpTabs.querySelectorAll('[data-layer]').forEach((b) => b.setAttribute('aria-selected', b.dataset.layer === k ? 'true' : 'false'));
+    dpBody.className = 'dp-body dp-' + k;
+    dpBody.innerHTML = layerHTML(st, k);
+    dpBody.scrollTop = 0;
+  }
+  function openDeeper(id, layer) {
+    const st = STEPS.find((x) => x.id === id);
+    const layers = deepLayers(st);
+    if (!layers.length) return;
+    deepId = id;
+    document.getElementById('dp-kicker').textContent = st.ref ? st.ref[0].replace(/\s*·\s*BSB$/, '') : '';
+    document.getElementById('dp-title').textContent = stepLabel(st);
+    dpTabs.innerHTML = layers.map(([k, label]) => `<button type="button" role="tab" data-layer="${k}">${label}</button>`).join('');
+    showLayer(layers.some((l) => l[0] === layer) ? layer : layers[0][0]);
+    deepOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+    if (deepOpener && deepOpener.blur) deepOpener.blur();
+    if (!deepDlg.open) deepDlg.showModal();
+  }
+  dpTabs.addEventListener('click', (ev) => { const b = ev.target.closest('[data-layer]'); if (b) showLayer(b.dataset.layer); });
+  deepDlg.addEventListener('close', () => {
+    if (deepOpener && deepOpener.focus && !touchedSinceJump) { try { deepOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+    deepOpener = null;
   });
-  gosDlg.addEventListener('click', (ev) => {
-    if (ev.target === gosDlg) { gosDlg.close(); return; }
+  deepDlg.addEventListener('click', (ev) => {
+    if (ev.target === deepDlg) { deepDlg.close(); return; }
     const f = ev.target.closest('[data-follow]');
-    if (f) { setFollow(follow === f.dataset.follow ? null : f.dataset.follow); gosDlg.close(); }
+    if (f) { setFollow(follow === f.dataset.follow ? null : f.dataset.follow); deepDlg.close(); }
   });
-  document.getElementById('gos-close').addEventListener('click', () => gosDlg.close());
-  story.addEventListener('click', (ev) => { const b = ev.target.closest('[data-gos]'); if (b) openGospels(b.dataset.gos); });
+  document.getElementById('dp-close').addEventListener('click', () => deepDlg.close());
+  story.addEventListener('click', (ev) => { const b = ev.target.closest('[data-deep]'); if (b) openDeeper(b.dataset.deep); });
 
   // Follow one Gospel: a bar under the header steps to that Gospel's next scene.
   const followBar = document.getElementById('follow');

@@ -93,7 +93,7 @@ window.WAY_HARMONY = {
 // A 30-day reading plan through the story: about three scenes a day, in story
 // order. Each day: [title, [scene ids]].
 window.WAY_PLAN = [
-  ['In the beginning', ['land', 'marks', 'word', 'zechariah', 'annunciation']],
+  ['In the beginning', ['word', 'land', 'marks', 'zechariah', 'annunciation']],
   ['Toward Bethlehem', ['visitation', 'decree', 'journey']],
   ['Born and presented', ['birth', 'shepherds', 'present']],
   ['Childhood', ['magi', 'egypt', 'nazareth', 'twelve']],
