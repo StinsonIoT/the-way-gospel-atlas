@@ -128,6 +128,8 @@
     story.appendChild(sec);
   });
   const sections = Array.from(story.querySelectorAll('.step'));
+  const exploreBtn = document.getElementById('explore-open');
+  const exploreClose = document.getElementById('explore-close');
 
   // ---------- map ----------
   const overlay = { type: 'FeatureCollection', features: [] };
@@ -150,9 +152,11 @@
     }
   } catch (err) { hasContours = false; }
   if (!terrainSources.dem) terrainSources.dem = { type: 'raster-dem', encoding: 'terrarium', tiles: [DEM_URL], tileSize: 256, maxzoom: 13 };
+  terrainSources.terrain = { ...terrainSources.dem };
   const map = new maplibregl.Map({
     container: 'map',
-    interactive: false,
+    interactive: true,
+    maxPitch: 70,
     attributionControl: false,
     fadeDuration: 0,
     center: [35.3, 32.1],
@@ -160,10 +164,11 @@
     style: {
       version: 8,
       sources: {
-        land: { type: 'geojson', data: 'data/land.geojson?v=7' },
-        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=7' },
-        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=7' },
-        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=7' },
+        land: { type: 'geojson', data: 'data/land.geojson?v=8' },
+        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=8' },
+        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=8' },
+        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=8' },
+        city3d: { type: 'geojson', data: 'data/jerusalem3d.geojson?v=8' },
         overlay: { type: 'geojson', data: overlay },
         ...terrainSources
       },
@@ -185,6 +190,10 @@
         { id: 'temple-fill', type: 'fill', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['temple', 'fortress', 'palace']]], paint: { 'fill-color': '#000', 'fill-opacity': 0 } },
         { id: 'temple-line', type: 'line', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['temple', 'fortress', 'palace']]], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 1.2 } },
         { id: 'wall', type: 'line', source: 'jeru', filter: ['==', ['get', 'kind'], 'wall'], paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 1.4, 'line-dasharray': [1, 2] } },
+        { id: 'pools', type: 'fill', source: 'city3d', filter: ['==', ['get', 'kind'], 'pool'], paint: { 'fill-color': '#88AAB0', 'fill-opacity': 0 } },
+        { id: 'city3d', type: 'fill-extrusion', source: 'city3d', filter: ['!=', ['get', 'kind'], 'pool'], layout: { visibility: 'none' },
+          paint: { 'fill-extrusion-color': '#ccc', 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-base': ['get', 'base'],
+            'fill-extrusion-opacity': 0, 'fill-extrusion-vertical-gradient': true } },
         { id: 'area-fill', type: 'fill', source: 'overlay', filter: ['==', ['get', 'kind'], 'area'], paint: { 'fill-color': '#000', 'fill-opacity': ['*', 0.07, ['get', 'op']] } },
         { id: 'area-line', type: 'line', source: 'overlay', filter: ['==', ['get', 'kind'], 'area'], paint: { 'line-color': '#000', 'line-opacity': ['get', 'op'], 'line-width': 1.3, 'line-dasharray': [3, 3] } },
         { id: 'ring-line', type: 'line', source: 'overlay', filter: ['==', ['get', 'kind'], 'ring'], paint: { 'line-color': '#000', 'line-opacity': ['get', 'op'], 'line-width': 1.4, 'line-dasharray': [4, 3] } },
@@ -220,14 +229,28 @@
     if (w >= 900) return { top: 90, bottom: 60, left: Math.min(560, w * 0.42), right: 48 };
     return { top: 70, bottom: Math.round(h * 0.52), left: 22, right: 22 };
   }
+  // Jerusalem scenes tilt into 3D; the bearing shifts a little each time so the
+  // camera circles the city across the story.
+  const ORBIT = [-28, -12, 6, 22, 34, 18, 0, -18];
+  const is3D = (s) => (s.plan || 0) >= 0.5;
+  let camPad = null;
   function computeCams() {
     const pad = padding();
+    camPad = pad;
+    let k = 0;
     cams = STEPS.map((s) => {
-      const c = map.cameraForBounds(s.view, { padding: pad });
-      const m = maplibregl.MercatorCoordinate.fromLngLat(c.center);
-      return { x: m.x, y: m.y, zoom: c.zoom };
+      const pitch = s.pitch != null ? s.pitch : (is3D(s) ? 56 : 0);
+      const bearing = s.bearing != null ? s.bearing : (is3D(s) ? ORBIT[(k++) % ORBIT.length] : 0);
+      // Zoom that fits the bounds in the padded area; the centre is the middle of
+      // the bounds, and the map's padding keeps it centred in the free space even
+      // when the camera is tilted.
+      const c = map.cameraForBounds(s.view, { padding: pad, bearing });
+      const mid = [(s.view[0][0] + s.view[1][0]) / 2, (s.view[0][1] + s.view[1][1]) / 2];
+      const m = maplibregl.MercatorCoordinate.fromLngLat(mid);
+      return { x: m.x, y: m.y, zoom: c.zoom - (pitch ? 0.35 : 0), pitch, bearing };
     });
   }
+  const lerpAngle = (a, b, t) => { let d = ((b - a + 540) % 360) - 180; return a + d * t; };
 
   // ---------- scroll → progress ----------
   let tops = [];
@@ -245,22 +268,28 @@
   const chapterEl = document.getElementById('chapter');
   let lastCh = '';
 
+  let exploring = false;
   function render() {
-    if (!cams.length) return;
+    if (!cams.length || exploring) return;
     const p = progress();
     const i = Math.min(N - 2, Math.floor(p));
     const f = p - i;
     let e = smooth(clamp((f - HOLD) / (1 - HOLD), 0, 1));
     if (reduceMotion) e = f < 0.5 ? 0 : 1;
-    const a = STEPS[i], b = STEPS[i + 1];
+    const ca = cams[i], cb = cams[i + 1];
+    const merc = new maplibregl.MercatorCoordinate(lerp(ca.x, cb.x, e), lerp(ca.y, cb.y, e));
+    map.jumpTo({ center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: camPad });
+    apply(STEPS[i], STEPS[i + 1], e, p);
+    // header
+    bar.style.width = (100 * p / (N - 1)).toFixed(2) + '%';
+    const ch = STEPS[Math.round(p)].ch;
+    if (ch !== lastCh) { chapterEl.textContent = ch; lastCh = ch; }
+  }
+
+  function apply(a, b, e, p) {
     const A = PALETTES[a.pal], B = PALETTES[b.pal];
     const C = {};
     ['sea', 'land', 'coast', 'lake', 'river', 'txt', 'muted', 'accent', 'trad'].forEach((k) => { C[k] = mixA(hx(A[k]), hx(B[k]), e); });
-
-    // camera
-    const ca = cams[i], cb = cams[i + 1];
-    const merc = new maplibregl.MercatorCoordinate(lerp(ca.x, cb.x, e), lerp(ca.y, cb.y, e));
-    map.jumpTo({ center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e) });
 
     // light
     const plan = lerp(a.plan || 0, b.plan || 0, e);
@@ -275,13 +304,30 @@
     map.setPaintProperty('valley-band', 'line-opacity', plan * 0.4);
     map.setPaintProperty('valley-line', 'line-color', rgb(C.river));
     map.setPaintProperty('valley-line', 'line-opacity', plan);
+    const WHITE3 = [255, 255, 255];
     const wallC = mixA(C.land, C.txt, 0.42);
     map.setPaintProperty('wall', 'line-color', rgb(wallC));
-    map.setPaintProperty('wall', 'line-opacity', plan);
+    map.setPaintProperty('wall', 'line-opacity', 0);
+    // 3D city: stone colours follow the light of each scene
+    const stone = mixA(mixA(C.land, WHITE3, 0.35), C.txt, 0.05);
+    const shadowStone = mixA(C.land, C.txt, 0.12);
+    const gold = mixA(stone, hx('#C9A45C'), 0.35 + 0.35 * temple);
+    map.setLayoutProperty('city3d', 'visibility', plan > 0.01 ? 'visible' : 'none');
+    map.setPaintProperty('city3d', 'fill-extrusion-opacity', Math.min(1, plan) * 0.96);
+    map.setPaintProperty('city3d', 'fill-extrusion-color', ['match', ['get', 'kind'],
+      'sanctuary', rgb(gold),
+      'altar', rgb(mixA(stone, BLACK, 0.12)),
+      'house', rgb(mixA(stone, C.land, 0.35)),
+      'court', rgb(mixA(stone, WHITE3, 0.1)),
+      'platform', rgb(mixA(stone, C.accent, temple * 0.18)),
+      'wall', rgb(shadowStone), 'tower', rgb(mixA(shadowStone, stone, 0.5)),
+      rgb(stone)]);
+    map.setPaintProperty('pools', 'fill-color', rgb(C.lake));
+    map.setPaintProperty('pools', 'fill-opacity', plan);
     const isTemple = ['==', ['get', 'kind'], 'temple'];
     const reconFill = mixA(C.land, C.txt, 0.08);
     map.setPaintProperty('temple-fill', 'fill-color', ['case', isTemple, rgb(mixA(reconFill, C.accent, temple * 0.25)), rgb(reconFill)]);
-    map.setPaintProperty('temple-fill', 'fill-opacity', plan);
+    map.setPaintProperty('temple-fill', 'fill-opacity', 0);
     map.setPaintProperty('temple-line', 'line-color', ['case', isTemple, rgb(mixA(wallC, C.accent, temple)), rgb(wallC)]);
     map.setPaintProperty('temple-line', 'line-width', ['case', isTemple, 1.2 + temple * 1.4, 1]);
     const WHITE = [255, 255, 255];
@@ -292,7 +338,7 @@
       map.setPaintProperty('contours', 'line-color', rgb(mixA(C.land, C.txt, 0.2)));
       map.setPaintProperty('contours', 'line-opacity', 0.45 + 0.35 * plan);
     }
-    map.setPaintProperty('temple-line', 'line-opacity', plan);
+    map.setPaintProperty('temple-line', 'line-opacity', 0);
     ['area-fill', 'ring-line', 'route'].forEach((id) => map.setPaintProperty(id, id === 'area-fill' ? 'fill-color' : 'line-color', rgb(C.accent)));
     map.setPaintProperty('area-line', 'line-color', rgb(C.accent));
     map.setPaintProperty('link', 'line-color', rgb(mixA(C.land, C.txt, 0.5)));
@@ -329,17 +375,16 @@
       const op = vis(id);
       if (op < 0.01) return;
       const k = routeStart[id];
-      let d = k <= 0 ? 1 : clamp((p - (k - 1) - HOLD) / (1 - HOLD), 0, 1);
+      let d = p == null || k <= 0 ? 1 : clamp((p - (k - 1) - HOLD) / (1 - HOLD), 0, 1);
       if (reduceMotion) d = p >= k - 0.5 ? 1 : 0;
       feats.push({ type: 'Feature', properties: { kind: ROUTES[id].kind, op }, geometry: { type: 'LineString', coordinates: slicePts(routePts[id], d) } });
     });
     overlay.features = feats;
     map.getSource('overlay').setData(overlay);
 
-    // header
-    bar.style.width = (100 * p / (N - 1)).toFixed(2) + '%';
-    const ch = STEPS[Math.round(p)].ch;
-    if (ch !== lastCh) { chapterEl.textContent = ch; lastCh = ch; }
+    // Explore button appears over Jerusalem scenes
+    exploreBtn.style.opacity = clamp((plan - 0.5) * 2, 0, 1).toFixed(2);
+    exploreBtn.style.visibility = plan > 0.5 ? 'visible' : 'hidden';
   }
 
   let queued = false;
@@ -350,9 +395,16 @@
   }
 
   let started = false;
+  function setHandlers(on) {
+    ['dragPan', 'dragRotate', 'scrollZoom', 'touchZoomRotate', 'touchPitch', 'doubleClickZoom', 'keyboard', 'boxZoom']
+      .forEach((h) => { if (map[h]) on ? map[h].enable() : map[h].disable(); });
+  }
   function start() {
     if (started) return;
     started = true;
+    setHandlers(false);
+    try { map.setTerrain({ source: 'terrain', exaggeration: 1.3 }); } catch (err) { /* terrain unavailable: the model still draws */ }
+    map.setLight({ anchor: 'viewport', color: '#ffffff', intensity: 0.38, position: [1.3, 210, 35] });
     measure();
     computeCams();
     render();
@@ -367,6 +419,32 @@
     measure();
     if (started) { computeCams(); queue(); }
   });
+
+  // ---------- Explore Jerusalem (free rotate and zoom) ----------
+  const EXPLORE = { pal: 'day', plan: 1, temple: 0, show: ['templelbl', 'sanctlbl', 'antonia', 'palacelbl', 'uppercity', 'lowercity', 'bethesda', 'siloam', 'olives', 'kidron', 'cenacle', 'gethsemane', 'sepulchre', 'gardentomb'] };
+  function openExplore() {
+    exploring = true;
+    document.documentElement.classList.add('exploring');
+    apply(EXPLORE, EXPLORE, 0, null);
+    chapterEl.textContent = 'Explore Jerusalem';
+    lastCh = '';
+    setHandlers(true);
+    const small = window.innerWidth < 900;
+    map.flyTo({ center: [35.2318, 31.7748], zoom: small ? 14.7 : 15.4, pitch: 60, bearing: -24,
+      padding: small ? { top: 60, bottom: 200, left: 0, right: 0 } : { top: 60, bottom: 40, left: 0, right: 0 },
+      duration: reduceMotion ? 0 : 1800, essential: true });
+    exploreClose.focus();
+  }
+  function closeExplore() {
+    setHandlers(false);
+    exploring = false;
+    document.documentElement.classList.remove('exploring');
+    exploreBtn.focus();
+    queue();
+  }
+  exploreBtn.addEventListener('click', openExplore);
+  exploreClose.addEventListener('click', closeExplore);
+  document.addEventListener('keydown', (ev) => { if (exploring && ev.key === 'Escape') closeExplore(); });
 
   // Key dialog
   const dlg = document.getElementById('key');

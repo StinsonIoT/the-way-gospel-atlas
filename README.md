@@ -17,7 +17,7 @@ A scroll-driven atlas of the whole Gospel story, in 75 scenes and eight chapters
 | Simplified shapes | Historical reconstruction (temple courts, first wall). |
 | Hollow diamond | Identified by later tradition, or a later proposal, not by the text. |
 
-The Jerusalem plan is a simplified reconstruction drawn over real terrain (shaded relief and contour lines). It shows only the first wall: the second wall's course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate's praetorium is marked at both proposed sites, Herod's palace and the Antonia.
+Jerusalem is a simplified 3D model over real 3D terrain, styled like a museum model: the temple platform with its porticoes, the Royal Stoa, the inner courts and the sanctuary (about 50 m high, after Josephus), the Antonia with its four towers, Herod's palace with its three towers, the first wall with towers, and the pools of Bethesda and Siloam. Houses in the Upper and Lower City are illustrative only. Jerusalem scenes tilt the camera and circle the city; an "Explore Jerusalem in 3D" button lets you rotate and zoom freely. It shows only the first wall: the second wall's course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate's praetorium is marked at both proposed sites, Herod's palace and the Antonia.
 
 ## Running it
 
@@ -35,7 +35,7 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type
-- `data/`: Natural Earth land, lakes and rivers clipped to the region, plus the simplified Jerusalem reconstruction
+- `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, and `jerusalem3d.geojson` (the 3D model: heights in metres, `illustrative: true` on houses)
 - `vendor/`: MapLibre GL JS 4.7.1 and maplibre-contour 0.1.0 (both BSD-3-Clause; licences included)
 
 To add or edit a scene, change `js/scenes.js` only.

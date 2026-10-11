@@ -117,6 +117,22 @@ body.ready #map { opacity: 1; }
 .verse .ref { font-size: 13px; color: var(--m-muted); }
 .after { margin: 0; font-family: var(--serif); font-size: 16px; line-height: 1.45; color: var(--m-muted); }
 
+/* ---------- Explore Jerusalem ---------- */
+#map { pointer-events: none; }
+.explore-open { position: fixed; z-index: 9; right: 12px; top: calc(66px + env(safe-area-inset-top)); min-height: 44px; display: inline-flex; align-items: center; gap: 8px;
+  padding: 0 14px; border-radius: 999px; border: 0; background: var(--m-txt); color: var(--m-land); font: 600 13px var(--sans); cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); opacity: 0; visibility: hidden; transition: opacity 0.25s ease; }
+.explore-open svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
+.explore-ui { position: fixed; z-index: 12; left: 12px; right: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); max-width: 520px; margin: 0 auto;
+  display: none; flex-direction: column; gap: 12px; padding: 16px 18px; border-radius: 18px; background: #F4EEE2; color: #1C2A25; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); }
+.explore-ui p { margin: 0; font-size: 13.5px; line-height: 1.45; color: #3E4C46; }
+.explore-ui b { color: #1C2A25; }
+.explore-ui button { min-height: 46px; border-radius: 12px; border: 0; background: #1C2A25; color: #F4EEE2; font: 500 14px var(--sans); cursor: pointer; }
+html.exploring, html.exploring body { overflow: hidden; }
+html.exploring #map { pointer-events: auto; touch-action: none; }
+html.exploring #story, html.exploring .credits, html.exploring .explore-open { visibility: hidden; opacity: 0 !important; }
+html.exploring .explore-ui { display: flex; }
+
 /* ---------- footer & dialog ---------- */
 .credits { position: relative; z-index: 1; background: #F1E8D6; color: #3E4C46; padding: 28px 20px calc(40px + env(safe-area-inset-bottom)); font-size: 13px; line-height: 1.55; }
 .credits p { max-width: 640px; margin: 0 auto 10px; }
