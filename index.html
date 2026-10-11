@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Way — A Gospel Atlas</title>
-<meta name="description" content="A scroll-driven atlas of the life of Jesus, from Bethlehem to the ascension, with Scripture in the Berean Standard Bible and maps that show how certain each place is.">
+<meta name="description" content="A scroll-driven atlas of the life of Jesus, from Bethlehem to Pentecost, with Scripture in the Berean Standard Bible and maps that show how certain each place is.">
 <meta name="theme-color" content="#0F1A1C">
 <link rel="canonical" href="https://stinsoniot.github.io/the-way-gospel-atlas/">
 <meta property="og:type" content="website">
@@ -27,9 +27,9 @@
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin>
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=47">
+<link rel="stylesheet" href="css/style.css?v=48">
 </head>
-<body>
+<body class="opening">
 <a class="skip" href="#s-land">Skip to the story</a>
 <div id="map" aria-hidden="true"></div>
 
@@ -40,7 +40,7 @@
       <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7,0 L8.6,5.4 L14,7 L8.6,8.6 L7,14 L5.4,8.6 L0,7 L5.4,5.4 Z"/></svg>
       <span>THE WAY</span>
     </a>
-    <button id="chapter-btn" class="chapter" type="button" aria-haspopup="dialog"><span id="chapter">The Way</span><span class="vh">: open the menu</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg></button>
+    <button id="chapter-btn" class="chapter" type="button" aria-haspopup="dialog"><span id="chapter">Chapters</span><span class="vh">: open the menu</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg></button>
     <button id="search-open" class="icon-btn" type="button" aria-label="Search the story" aria-haspopup="dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="12.8" y1="12.8" x2="17" y2="17"/></svg></button>
     <button id="key-open" class="key-btn" type="button">Map key</button>
   </div>
@@ -59,9 +59,10 @@
   <audio id="t-audio" preload="none"></audio>
 </header>
 
-<button id="explore-open" class="explore-open" type="button">
+<div id="story-stage" class="story-stage" hidden aria-hidden="true"></div>
+<button id="explore-open" class="explore-open" type="button" aria-label="Explore Jerusalem in 3D">
   <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2 L17 6 L17 14 L10 18 L3 14 L3 6 Z"/><path d="M3 6 L10 10 L17 6 M10 10 L10 18"/></svg>
-  Explore Jerusalem in 3D
+  <span>Explore 3D</span>
 </button>
 <div class="explore-ui" role="region" aria-label="Explore the map">
   <p id="explore-msg"><b>Explore the map.</b> Drag, pinch, and use two fingers to tilt. Tap a name for its story.</p>
@@ -169,6 +170,7 @@
 <script src="js/places.js?v=6"></script>
 <script src="js/study.js?v=9"></script>
 <script src="js/guide.js?v=1"></script>
-<script src="js/app.js?v=47"></script>
+<script src="js/experience.js?v=48"></script>
+<script src="js/app.js?v=48"></script>
 </body>
 </html>
