@@ -246,6 +246,8 @@
     }
   });
 
+  window.__wayMap = map; // for debugging in the browser console
+
   // ---------- markers (HTML, constant size on screen) ----------
   const markerEls = {};
   Object.keys(PLACES).forEach((id) => {
@@ -877,6 +879,7 @@
     const ca = cams[i], cb = cams[i + 1];
     const merc = new maplibregl.MercatorCoordinate(lerp(ca.x, cb.x, e), lerp(ca.y, cb.y, e));
     map.jumpTo({ center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: camPad });
+    syncElevation();
     apply(STEPS[i], STEPS[i + 1], e, p);
     // header
     updateTimeline(p);
@@ -1088,9 +1091,42 @@
   };
   const jumps = document.querySelector('.explore-jumps');
   jumps.innerHTML = Object.keys(VIEWS).map((k) => `<button type="button" data-view="${k}">${esc(VIEWS[k].label)}</button>`).join('');
+  // On a long flight (e.g. Capernaum, 200 m below sea level, to Jerusalem,
+  // 750 m above) a tilted camera keeps the ground height of where it started
+  // and lands aimed at the wrong spot. So fly in looking straight down, where
+  // ground height does not shift the view, wait for the terrain under the new
+  // spot, then tilt into the final view, unless the reader takes over first.
+  // MapLibre does not refresh the camera's ground height after a programmed
+  // move, so set it from the terrain under the current centre.
+  function syncElevation() {
+    try {
+      if (!map.getTerrain || !map.getTerrain()) return;
+      const rel = map.queryTerrainElevation(map.getCenter()); // relative to the current camera ground height
+      if (rel == null || !isFinite(rel) || Math.abs(rel) < 1) return;
+      map.transform.elevation = map.transform.elevation + rel;
+      map.triggerRepaint();
+    } catch (err) { /* terrain not ready */ }
+  }
+  let flyToken = 0, userMoved = false;
+  ['dragstart', 'zoomstart', 'rotatestart', 'pitchstart'].forEach((ev) => map.on(ev, (e) => { if (e.originalEvent) userMoved = true; }));
   function flyView(v) {
-    const z = v.zoom - (small() && v.zoom > 13 ? 0 : 0);
-    map.flyTo({ center: v.center, zoom: z, pitch: v.pitch, bearing: v.bearing, padding: exPad(), duration: reduceMotion ? 0 : 1800, essential: true });
+    const token = ++flyToken;
+    userMoved = false;
+    const pad = exPad();
+    const tilt = () => {
+      if (token !== flyToken || !exploring || userMoved) return;
+      syncElevation();
+      map.easeTo({ center: v.center, zoom: v.zoom, pitch: v.pitch, bearing: v.bearing, padding: pad, duration: reduceMotion ? 0 : 1100 });
+    };
+    if (reduceMotion) { map.jumpTo({ center: v.center, zoom: v.zoom, pitch: 0, bearing: v.bearing, padding: pad }); setTimeout(tilt, 50); return; }
+    map.flyTo({ center: v.center, zoom: Math.min(v.zoom, Math.max(v.zoom - 1.2, 9)), pitch: 0, bearing: v.bearing, padding: pad, duration: 1600, essential: true });
+    map.once('moveend', () => {
+      if (token !== flyToken) return;
+      let done = false;
+      const go = () => { if (!done) { done = true; tilt(); } };
+      map.once('idle', go);
+      setTimeout(go, 900); // do not wait forever if terrain tiles are slow
+    });
   }
   function placeView(key) {
     const p = PLACES[key] || PLACES[Object.keys(ALIAS).find((a) => ALIAS[a] === key)];
