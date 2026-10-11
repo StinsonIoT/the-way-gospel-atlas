@@ -458,3 +458,15 @@ html.og body::after { content: 'THE WAY · A GOSPEL ATLAS'; position: fixed; z-i
 html.following .step, html.touring .step { padding-top: calc(130px + env(safe-area-inset-top)); }
 /* Gospels that do not tell the scene: outlined and dashed, still readable. */
 .gos-dots .g { opacity: 1; border-style: dashed; color: var(--c-muted, var(--m-muted)); }
+
+/* ---------- study notes in the reader ---------- */
+.p-tabs { display: flex; gap: 4px; padding: 3px; margin: 0 0 10px; border-radius: 10px; background: color-mix(in srgb, var(--c-line) 55%, transparent); }
+.p-tabs button { flex: 1; min-height: 36px; border: 0; border-radius: 8px; background: transparent; color: var(--c-muted); font: 600 13px var(--sans); cursor: pointer; }
+.p-tabs button[aria-selected="true"] { background: var(--c-bg); color: var(--c-fg); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.p-body[hidden] { display: none; }
+.p-notes .snote { padding: 10px 0; border-top: 1px solid var(--c-line); font-size: 15px; line-height: 1.55; }
+.p-notes .snote:first-child { border-top: 0; padding-top: 0; }
+.p-notes .snote p { margin: 0 0 6px; }
+.n-ref { color: var(--c-accent); font-weight: 600; margin-right: 2px; }
+.n-credit { margin: 12px 0 4px; font-size: 12px; line-height: 1.45; color: var(--c-muted); }
+.n-credit a { color: var(--c-accent); }

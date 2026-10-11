@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin>
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=34">
+<link rel="stylesheet" href="css/style.css?v=36">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -74,7 +74,7 @@
 <footer class="credits">
   <p class="credit-links"><a href="about.html">About the atlas</a> · <a href="sources.html">Sources</a> · <a href="https://github.com/StinsonIoT/the-way-gospel-atlas/issues">Suggest a correction</a></p>
   <p><b>Accuracy.</b> Dots mark named towns at approximate locations. Dashed circles mark regions where the exact site is unknown. Dashed lines are schematic and never follow modern roads; grey dots mean the text moves on without describing the travel. Hollow diamonds are traditional or later-proposed sites. Jerusalem is a simplified 3D model over real terrain; landmarks follow published dimensions and houses are illustrative. It shows only the first wall: the second wall’s course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate’s praetorium is marked at both proposed sites, Herod’s palace and the Antonia. Capernaum is an illustrative village model: the basalt house type and the synagogue site come from excavations, but individual houses and the village’s extent do not.</p>
-  <p>Scripture quotations: Berean Standard Bible (public domain); passages load from the Free Use Bible API (bible.helloao.org). Map data: Natural Earth (public domain), modern coastlines. Sea of Galilee shoreline: Who’s On First (<a href="https://whosonfirst.org/docs/licenses/">licence</a>). Terrain: Terrain Tiles on AWS (Mapzen; SRTM and other public sources). Built with MapLibre GL JS and maplibre-contour. Fonts: Newsreader and Instrument Sans (SIL Open Font License).</p>
+  <p>Scripture quotations: Berean Standard Bible (public domain); passages load from the Free Use Bible API (bible.helloao.org). Study notes: Tyndale Open Study Notes © 2022 Tyndale House Publishers, CC BY-SA 4.0. Map data: Natural Earth (public domain), modern coastlines. Sea of Galilee shoreline: Who’s On First (<a href="https://whosonfirst.org/docs/licenses/">licence</a>). Terrain: Terrain Tiles on AWS (Mapzen; SRTM and other public sources). Built with MapLibre GL JS and maplibre-contour. Fonts: Newsreader and Instrument Sans (SIL Open Font License).</p>
 </footer>
 
 <dialog id="toc" aria-labelledby="toc-title">
@@ -116,7 +116,12 @@
     <span id="p-reader" class="p-reader"></span>
   </div>
   <audio id="p-audio" preload="none"></audio>
-  <div id="passage-body" class="p-body"></div>
+  <div class="p-tabs" role="tablist" aria-label="Passage">
+    <button type="button" role="tab" id="pt-text" aria-controls="passage-body" aria-selected="true">Text</button>
+    <button type="button" role="tab" id="pt-notes" aria-controls="passage-notes" aria-selected="false">Study notes</button>
+  </div>
+  <div id="passage-body" class="p-body" role="tabpanel" aria-labelledby="pt-text"></div>
+  <div id="passage-notes" class="p-body p-notes" role="tabpanel" aria-labelledby="pt-notes" hidden></div>
   <p class="p-foot">Berean Standard Bible · public domain · audio via the Free Use Bible API · <a id="passage-hub" href="https://biblehub.com/bsb/" target="_blank" rel="noopener">Open on BibleHub</a></p>
 </dialog>
 
@@ -144,10 +149,10 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=34"></script>
-<script src="js/scenes.js?v=34"></script>
+<script src="vendor/maplibre-contour.min.js?v=36"></script>
+<script src="js/scenes.js?v=36"></script>
 <script src="js/places.js?v=3"></script>
 <script src="js/study.js?v=3"></script>
-<script src="js/app.js?v=34"></script>
+<script src="js/app.js?v=36"></script>
 </body>
 </html>

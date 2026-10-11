@@ -41,6 +41,10 @@ The line at the top is a timeline split into the eight chapters (plus a short pr
 
 Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that opens the parallel passages, each readable in place, with a note where the accounts differ. **Follow** steps through the story one Gospel at a time, from a bar under the header. Parallels follow the standard Gospel synopses; the longer ending of Mark (16:9–20) is not used. Reading progress and saved scenes are kept on the device only.
 
+## Study notes
+
+The Scripture reader has a **Study notes** tab: the Tyndale Open Study Notes (© 2022 Tyndale House Publishers, CC BY-SA 4.0) for the verses shown, loaded from the Free Use Bible API and shown unchanged with credit. Town locations have also been cross-checked against STEPBible's TIPNR data (Tyndale House, Cambridge; CC BY): all named towns agree within about 1 km, except Jericho, where the atlas deliberately marks the Herodian city of Jesus' day rather than the Old Testament mound.
+
 ## Reflect
 
 Each scene has a **Reflect** button with one open question for personal reflection or a small group (`WAY_ASK` in `js/study.js`). The questions stay with what the passage says and do not presume an answer.

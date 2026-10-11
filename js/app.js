@@ -929,7 +929,7 @@
     if ('serviceWorker' in navigator && 'caches' in window) {
       let when = null;
       try { when = localStorage.getItem('the-way:offline-text'); } catch (err) { /* ignore */ }
-      html += `<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">Save the text of all four Gospels to this phone, so every passage opens without a signal (a few megabytes). Map areas you have viewed are kept as well. Listening needs a connection.</p>
+      html += `<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">Save the text of all four Gospels and their study notes to this phone, so every passage opens without a signal (a few megabytes). Map areas you have viewed are kept as well. Listening needs a connection.</p>
         <button type="button" class="plan-offline"${when ? ' data-done="1"' : ''}>${when ? 'Saved for offline ✓ · Save again' : 'Save the Gospels for offline'}</button>`;
     }
     html += `<p class="plan-note">Your progress and saved scenes stay on this device.</p>${read || saved.size ? '<button type="button" class="plan-reset">Reset reading progress</button>' : ''}`;
@@ -946,14 +946,16 @@
     const next = async () => {
       while (jobs.length) {
         const [b, c] = jobs.shift();
-        const url = `https://bible.helloao.org/api/BSB/${API_BOOK[b]}/${c}.json`;
-        try {
-          if (!(await cache.match(url))) {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(res.status);
-            await cache.put(url, res);
-          }
-        } catch (err) { failed++; }
+        // The BSB text and the Tyndale study notes for the chapter.
+        for (const url of [`https://bible.helloao.org/api/BSB/${API_BOOK[b]}/${c}.json`, `https://bible.helloao.org/api/c/tyndale/${API_BOOK[b]}/${c}.json`]) {
+          try {
+            if (!(await cache.match(url))) {
+              const res = await fetch(url);
+              if (!res.ok && res.status !== 404) throw new Error(res.status);
+              if (res.ok) await cache.put(url, res);
+            }
+          } catch (err) { failed++; }
+        }
         done++;
         if (btn.isConnected) btn.textContent = `Saving… ${done} of ${done + jobs.length}`;
       }
@@ -1027,6 +1029,67 @@
   const pHub = document.getElementById('passage-hub');
   let passageOpener = null;
   let passageToken = 0;
+  // ---------- Study notes: Tyndale Open Study Notes, for the verses shown ----------
+  // Each note is anchored at the first verse it covers and begins with its
+  // reference ("6:30-44 …"). Loaded only when the Study notes tab is opened.
+  const pNotes = document.getElementById('passage-notes');
+  const ptText = document.getElementById('pt-text');
+  const ptNotes = document.getElementById('pt-notes');
+  let notesFor = [], notesToken = 0, notesShown = -1;
+  const notesCache = new Map();
+  function loadNotes(book, c) {
+    const key = book + c;
+    if (!notesCache.has(key)) {
+      const pr = fetch(`https://bible.helloao.org/api/c/tyndale/${API_BOOK[book]}/${c}.json`)
+        .then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); });
+      pr.catch(() => notesCache.delete(key));
+      notesCache.set(key, pr);
+    }
+    return notesCache.get(key);
+  }
+  function noteHTML(text) {
+    const paras = String(text).split(/\n+/).filter(Boolean);
+    return paras.map((para, k) => {
+      if (k === 0) {
+        const m = /^(\d+:\d+(?:[-–]\d+(?::\d+)?)?)\s+(.*)$/.exec(para);
+        if (m) return `<p><b class="n-ref">${esc(m[1].replace('-', '–'))}</b> ${esc(m[2])}</p>`;
+      }
+      return `<p>${esc(para)}</p>`;
+    }).join('');
+  }
+  async function showNotes() {
+    const token = notesToken;
+    if (notesShown === token) return;
+    pNotes.innerHTML = '<p class="p-status">Loading study notes…</p>';
+    try {
+      const out = [];
+      for (const sp of notesFor.slice(0, 3)) {
+        const last = Math.min(sp.c2, sp.c1 + 2);
+        for (let c = sp.c1; c <= last; c++) {
+          const json = await loadNotes(sp.book, c);
+          if (!json || !json.chapter) continue;
+          const from = c === sp.c1 && sp.v1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
+          (json.chapter.content || []).filter((v) => v.type === 'verse' && v.number >= from && v.number <= to)
+            .forEach((v) => (v.content || []).forEach((t) => { if (typeof t === 'string' && t.trim()) out.push(`<div class="snote">${noteHTML(t)}</div>`); }));
+        }
+      }
+      if (token !== notesToken) return;
+      notesShown = token;
+      pNotes.innerHTML = (out.length ? out.join('') : '<p class="p-status">No study notes for these verses.</p>')
+        + '<p class="n-credit">From the <a href="https://tyndaleopenresources.com/" target="_blank" rel="noopener">Tyndale Open Study Notes</a> © 2022 Tyndale House Publishers, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. The notes are the editors’ own, shown unchanged.</p>';
+    } catch (err) {
+      if (token === notesToken) pNotes.innerHTML = '<p class="p-status">The study notes couldn’t be loaded right now.</p>';
+    }
+  }
+  function showPassageTab(name) {
+    const notes = name === 'notes';
+    ptText.setAttribute('aria-selected', notes ? 'false' : 'true');
+    ptNotes.setAttribute('aria-selected', notes ? 'true' : 'false');
+    pBody.hidden = notes; pNotes.hidden = !notes;
+    if (notes) { pNotes.scrollTop = 0; showNotes(); }
+  }
+  ptText.addEventListener('click', () => showPassageTab('text'));
+  ptNotes.addEventListener('click', () => showPassageTab('notes'));
   async function openPassage(label) {
     if (tour) tourPause();
     const spans = refSpans(label).filter((sp) => API_BOOK[sp.book]);
@@ -1035,6 +1098,8 @@
     pTitle.textContent = label.replace(/\s*·\s*BSB$/, '');
     pHub.href = `https://biblehub.com/bsb/${HUB_BOOK[first.book]}/${first.c1}.htm`;
     pBody.innerHTML = '<p class="p-status">Loading…</p>';
+    notesFor = spans; notesToken++;
+    pNotes.innerHTML = ''; showPassageTab('text');
     passageOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
     if (passageOpener && passageOpener.blur) passageOpener.blur();
     passage.showModal();
