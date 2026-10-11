@@ -128,12 +128,14 @@ body.ready #map { opacity: 1; }
 .btn-solid { background: var(--c-fg); color: var(--c-bg); border-color: var(--c-fg); letter-spacing: 0; text-transform: none; }
 .more { margin: 0; font-size: 12.5px; color: var(--c-muted); }
 
-.verse { width: 100%; max-width: 640px; padding: 0 16px 56px; color: var(--m-txt); display: flex; flex-direction: column; gap: 20px; }
+.verse { width: 100%; max-width: 640px; margin-bottom: 24px; padding: 22px 20px 20px; color: var(--m-txt); display: flex; flex-direction: column; gap: 18px;
+  border-radius: 22px; background: color-mix(in srgb, var(--m-land) 86%, transparent); -webkit-backdrop-filter: blur(8px) saturate(1.1); backdrop-filter: blur(8px) saturate(1.1);
+  box-shadow: 0 10px 40px rgba(0,0,0,.12), inset 0 0 0 1px color-mix(in srgb, var(--m-txt) 8%, transparent); }
 .verse .kicker { color: var(--m-accent); }
-.verse blockquote { margin: 0; font-family: var(--serif); font-style: italic; font-weight: 300; font-size: clamp(28px, 7.8vw, 46px); line-height: 1.2; letter-spacing: -0.01em;
+.verse blockquote { margin: 0; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(27px, 7.4vw, 44px); line-height: 1.22; letter-spacing: -0.01em;
   text-shadow: 0 0 18px var(--m-land); }
 .verse .ref { font-size: 13px; color: var(--m-muted); }
-.after { margin: 0; font-family: var(--serif); font-size: 16px; line-height: 1.45; color: var(--m-muted); }
+.after { margin: 0; font-family: var(--serif); font-size: 17px; line-height: 1.5; color: color-mix(in srgb, var(--m-txt) 82%, var(--m-land)); }
 
 /* ---------- Explore Jerusalem ---------- */
 #map { pointer-events: none; }

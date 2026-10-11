@@ -288,6 +288,12 @@
     const marks = [];
     live.forEach((v) => { const sym = v.el.querySelector('.dot, .dia, .star'); if (sym) marks.push({ id: v.id, r: sym.getBoundingClientRect() }); });
     const placed = [{ left: -1e4, right: 1e4, top: -1e4, bottom: top.bottom }];
+    // Verse panels and cards near the current scene hide any label behind them.
+    const near = Math.round(progress());
+    for (let k = Math.max(0, near - 1); k <= Math.min(sections.length - 1, near + 1); k++) {
+      const box = sections[k].querySelector('.verse, .card');
+      if (box) { const r = box.getBoundingClientRect(); if (r.bottom > 0 && r.top < window.innerHeight) placed.push(r); }
+    }
     const hits = (r, q) => r.left < q.right + pad && r.right > q.left - pad && r.top < q.bottom + pad && r.bottom > q.top - pad;
     live.forEach((v) => {
       const r = v.el.querySelector('.lbl').getBoundingClientRect();
