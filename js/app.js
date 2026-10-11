@@ -148,10 +148,10 @@
     style: {
       version: 8,
       sources: {
-        land: { type: 'geojson', data: 'data/land.geojson' },
-        lakes: { type: 'geojson', data: 'data/lakes.geojson' },
-        rivers: { type: 'geojson', data: 'data/rivers.geojson' },
-        jeru: { type: 'geojson', data: 'data/jerusalem.geojson' },
+        land: { type: 'geojson', data: 'data/land.geojson?v=4' },
+        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=4' },
+        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=4' },
+        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=4' },
         overlay: { type: 'geojson', data: overlay },
         ...terrainSources
       },
