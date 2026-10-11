@@ -66,7 +66,10 @@
   // ---------- story markup ----------
   const story = document.getElementById('story');
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const refLink = (ref, cls) => ref ? `<a class="${cls || 'ref'}" href="https://biblehub.com/bsb/${ref[1]}/${ref[2]}.htm" target="_blank" rel="noopener">${esc(ref[0])}<span aria-hidden="true"> ↗</span></a>` : '';
+  const refLink = (ref, cls) => ref ? `<a class="${cls || 'ref'}" data-ref="${esc(ref[0])}" href="https://biblehub.com/bsb/${ref[1]}/${ref[2]}.htm" target="_blank" rel="noopener">${esc(ref[0])}<span class="ref-icon" aria-hidden="true"></span></a>` : '';
+  // Scripture references inside notes, e.g. "(Luke 2:44)", become tappable.
+  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Leviticus|Micah|Isaiah|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
+    (m) => `<button type="button" class="vref" data-ref="${m}">${m}</button>`);
   const SYM = {
     named: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="5" class="s-fill"/></svg>',
     region: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="8" class="s-area"/></svg>',
@@ -85,7 +88,7 @@
     const ks = ['life', 'found'].filter((k) => s[k]);
     if (!ks.length) return '';
     return `<div class="more">${ks.map((k) => `<button type="button" class="more-btn more-${k}" aria-expanded="false" aria-controls="x-${s.id}-${k}">${ICON[k]}<span>${EXTRA_LABEL[k]}</span></button>`).join('')}</div>`
-      + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${esc(s[k])}</div>`).join('');
+      + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${linkRefs(esc(s[k]))}</div>`).join('');
   }
   const LEGEND = [
     ['named', 'Named place.', 'The text names the town; the dot is approximate.'],
@@ -115,13 +118,13 @@
         <div class="kicker"><span>${esc(s.kicker)}</span></div>
         <blockquote>${esc(s.verse)}</blockquote>
         <div class="verse-foot">${refLink(s.ref, 'ref')}</div>
-        ${s.after ? `<p class="after">${esc(s.after)}</p>` : ''}
+        ${s.after ? `<p class="after">${linkRefs(esc(s.after))}</p>` : ''}
         ${extrasHTML(s)}
       </div>`;
     }
     let body = '';
     if (s.text) body += `<p class="text">${esc(s.text)}</p>`;
-    if (s.note) body += `<p class="note">${esc(s.note)}</p>`;
+    if (s.note) body += `<p class="note">${linkRefs(esc(s.note))}</p>`;
     if (s.kind === 'legend') body += legendHTML;
     if (s.kind === 'chapter') body += `<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>`;
     if (s.kind === 'list') body = `<ol class="steps-list">${s.items.map((m, i) => `<li><b>${i + 1}</b><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>` + body;
@@ -536,7 +539,7 @@
   }
   // Bible references: "John 4", "Mk 14:36", "1 Maccabees 4". A scene matches when
   // its reference covers that chapter (and verse, if given).
-  const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'] };
+  const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'], leviticus: ['lev'], micah: ['mic'], isaiah: ['isa'], psalms: ['ps', 'psa', 'psalm'] };
   const bookOf = (w) => Object.keys(BOOKS).find((b) => b.startsWith(w) && w.length >= 3 || BOOKS[b].includes(w));
   function refSpans(label) {
     // "John 4:1–42", "Mark 4:35–5:20", "Matthew 5–7", "Mark 14:26 · John 18:1"
@@ -614,6 +617,97 @@
   qInput.addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(runSearch, 120); });
   qInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { const first = results.querySelector('[data-i]'); if (first) goTo(+first.dataset.i); } });
   results.addEventListener('click', (ev) => { const b = ev.target.closest('[data-i]'); if (b) goTo(+b.dataset.i); });
+
+  // ---------- Scripture reader ----------
+  // Tapping a reference opens the passage in a panel over the map, so the reader
+  // never leaves the scene. Text: Berean Standard Bible (public domain), loaded
+  // from the Free Use Bible API; if that fails, a link to BibleHub is offered.
+  const API_BOOK = { matthew: 'MAT', mark: 'MRK', luke: 'LUK', john: 'JHN', acts: 'ACT', leviticus: 'LEV', micah: 'MIC', isaiah: 'ISA', psalms: 'PSA' };
+  const HUB_BOOK = { matthew: 'matthew', mark: 'mark', luke: 'luke', john: 'john', acts: 'acts', leviticus: 'leviticus', micah: 'micah', isaiah: 'isaiah', psalms: 'psalms' };
+  const chapterCache = new Map();
+  function loadChapter(book, c) {
+    const key = book + c;
+    if (!chapterCache.has(key)) {
+      const pr = fetch(`https://bible.helloao.org/api/BSB/${API_BOOK[book]}/${c}.json`)
+        .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      pr.catch(() => chapterCache.delete(key));
+      chapterCache.set(key, pr);
+    }
+    return chapterCache.get(key);
+  }
+  function verseHTML(v) {
+    let h = '';
+    v.content.forEach((x) => {
+      if (typeof x === 'string') h += esc(x) + ' ';
+      else if (x.text != null) h += x.wordsOfJesus ? `<span class="woj">${esc(x.text)}</span> ` : esc(x.text) + ' ';
+      else if (x.heading) h += `</span><span class="p-head">${esc(x.heading)}</span><span>`;
+      else if (x.lineBreak) h += '<br>';
+    });
+    return `<span class="v"><sup>${v.number}</sup><span>${h.trim()}</span></span> `;
+  }
+  function sectionHTML(json, from, to) {
+    let h = ''; let open = false;
+    json.chapter.content.forEach((it) => {
+      if (it.type === 'verse' && it.number >= from && it.number <= to) { h += verseHTML(it); open = true; }
+      else if (it.type === 'heading' && open !== null) {
+        // keep headings that fall inside the range
+        const next = json.chapter.content.slice(json.chapter.content.indexOf(it)).find((x) => x.type === 'verse');
+        if (next && next.number >= from && next.number <= to) h += `<span class="p-head">${esc(it.content.join(' '))}</span>`;
+      } else if (it.type === 'line_break' && open) h += '<br>';
+    });
+    return h;
+  }
+  const passage = document.getElementById('passage');
+  const pTitle = document.getElementById('passage-title');
+  const pBody = document.getElementById('passage-body');
+  const pHub = document.getElementById('passage-hub');
+  let passageOpener = null;
+  let passageToken = 0;
+  async function openPassage(label) {
+    const spans = refSpans(label).filter((sp) => API_BOOK[sp.book]);
+    if (!spans.length) return false;
+    const first = spans[0];
+    pTitle.textContent = label.replace(/\s*·\s*BSB$/, '');
+    pHub.href = `https://biblehub.com/bsb/${HUB_BOOK[first.book]}/${first.c1}.htm`;
+    pBody.innerHTML = '<p class="p-status">Loading…</p>';
+    passageOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+    if (passageOpener && passageOpener.blur) passageOpener.blur();
+    passage.showModal();
+    pBody.scrollTop = 0;
+    const token = ++passageToken;
+    try {
+      const parts = [];
+      for (const sp of spans.slice(0, 3)) {
+        const last = Math.min(sp.c2, sp.c1 + 2);
+        for (let c = sp.c1; c <= last; c++) {
+          const json = await loadChapter(sp.book, c);
+          const from = c === sp.c1 && sp.v1 ? sp.v1 : 1;
+          const to = c === sp.c2 ? sp.v2 : 999;
+          const head = spans.length > 1 || sp.c1 !== sp.c2 ? `<h3 class="p-ch">${esc(json.book && json.book.commonName ? json.book.commonName : label.split(' ')[0])} ${c}</h3>` : '';
+          parts.push(head + `<p class="p-text">${sectionHTML(json, from, to)}</p>`);
+        }
+        if (sp.c2 > last) parts.push(`<p class="p-status">The passage continues to chapter ${sp.c2}. <a href="${pHub.href}" target="_blank" rel="noopener">Read on</a>.</p>`);
+      }
+      if (token === passageToken) pBody.innerHTML = parts.join('');
+    } catch (err) {
+      if (token === passageToken) pBody.innerHTML = `<p class="p-status">The passage couldn’t be loaded right now. You can read it on <a href="${pHub.href}" target="_blank" rel="noopener">BibleHub</a> instead.</p>`;
+    }
+    return true;
+  }
+  document.getElementById('passage-close').addEventListener('click', () => passage.close());
+  passage.addEventListener('click', (ev) => { if (ev.target === passage) passage.close(); });
+  passage.addEventListener('close', () => {
+    if (passageOpener && passageOpener.focus) { try { passageOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+    passageOpener = null;
+  });
+  document.addEventListener('click', (ev) => {
+    const a = ev.target.closest('[data-ref]');
+    if (!a) return;
+    const label = a.getAttribute('data-ref');
+    if (!refSpans(label).some((sp) => API_BOOK[sp.book])) return; // e.g. "Four Gospels": follow the link
+    ev.preventDefault();
+    openPassage(label);
+  });
 
   document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); showTab('chapters'); openToc(); });
   document.getElementById('search-open').addEventListener('click', () => { if (exploring) closeExplore(); showTab('search'); openToc(); });

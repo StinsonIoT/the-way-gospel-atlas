@@ -25,6 +25,10 @@ Capernaum is a second, illustrative model: dense blocks of one-storey basalt roo
 
 Many scenes carry two optional notes, opened with a tap: **Life in Jesus' day** (customs, money, meals, burial, the hours of the day) and **Found by archaeologists** (inscriptions, excavations and writers outside the Bible, such as Josephus and Tacitus). Both cite their sources. A **Who ruled where** layer shades the territories of Herod Antipas, Philip, the Roman governor and the Decapolis, with approximate boundaries, starting from Luke 3:1–2.
 
+## Reading the passage
+
+Tapping a Scripture reference (on a card, under a verse, or inside a note) opens the passage in a panel over the map, so the reader stays on the scene. The text is the Berean Standard Bible (public domain), loaded in the browser from the [Free Use Bible API](https://bible.helloao.org); if it can't be reached, the panel offers the passage on BibleHub instead.
+
 ## Getting around
 
 The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with three tabs: **Chapters** (every chapter and scene), **Places** (every town, site and landmark, with the scenes it appears in) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
@@ -52,4 +56,4 @@ To add or edit a scene, change `js/scenes.js` only.
 
 ## Credits
 
-Scripture quotations are from the Berean Standard Bible (public domain). Map data from Natural Earth (public domain). Sea of Galilee shoreline from Who's On First. Terrain from Terrain Tiles on AWS (Mapzen; SRTM and other public sources), loaded in the browser. Built with MapLibre GL JS.
+Scripture quotations are from the Berean Standard Bible (public domain). Map data from Natural Earth (public domain). Sea of Galilee shoreline from Who's On First. Terrain from Terrain Tiles on AWS (Mapzen; SRTM and other public sources), loaded in the browser. Built with MapLibre GL JS. Passage text from the Free Use Bible API (bible.helloao.org).

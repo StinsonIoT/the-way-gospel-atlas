@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Instrument+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=15">
+<link rel="stylesheet" href="css/style.css?v=16">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -42,7 +42,7 @@
 
 <footer class="credits">
   <p><b>Accuracy.</b> Dots mark named towns at approximate locations. Dashed circles mark regions where the exact site is unknown. Dashed lines are schematic and never follow modern roads; grey dots mean the text moves on without describing the travel. Hollow diamonds are traditional or later-proposed sites. Jerusalem is a simplified 3D model over real terrain; landmarks follow published dimensions and houses are illustrative. It shows only the first wall: the second wall’s course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate’s praetorium is marked at both proposed sites, Herod’s palace and the Antonia. Capernaum is an illustrative village model: the basalt house type and the synagogue site come from excavations, but individual houses and the village’s extent do not.</p>
-  <p>Scripture quotations: Berean Standard Bible (public domain). Map data: Natural Earth (public domain), modern coastlines. Sea of Galilee shoreline: Who’s On First (<a href="https://whosonfirst.org/docs/licenses/">licence</a>). Terrain: Terrain Tiles on AWS (Mapzen; SRTM and other public sources). Built with MapLibre GL JS and maplibre-contour.</p>
+  <p>Scripture quotations: Berean Standard Bible (public domain); passages load from the Free Use Bible API (bible.helloao.org). Map data: Natural Earth (public domain), modern coastlines. Sea of Galilee shoreline: Who’s On First (<a href="https://whosonfirst.org/docs/licenses/">licence</a>). Terrain: Terrain Tiles on AWS (Mapzen; SRTM and other public sources). Built with MapLibre GL JS and maplibre-contour.</p>
 </footer>
 
 <dialog id="toc" aria-labelledby="toc-title">
@@ -68,6 +68,17 @@
   </div>
 </dialog>
 
+<dialog id="passage" aria-labelledby="passage-title">
+  <div class="dlg-head">
+    <h2 id="passage-title">Scripture</h2>
+    <button id="passage-close" type="button" aria-label="Close passage">
+      <svg viewBox="0 0 18 18" aria-hidden="true"><line x1="3" y1="3" x2="15" y2="15"/><line x1="15" y1="3" x2="3" y2="15"/></svg>
+    </button>
+  </div>
+  <div id="passage-body" class="p-body"></div>
+  <p class="p-foot">Berean Standard Bible · public domain · <a id="passage-hub" href="https://biblehub.com/bsb/" target="_blank" rel="noopener">Open on BibleHub</a></p>
+</dialog>
+
 <dialog id="key" aria-labelledby="key-title">
   <div class="dlg-head">
     <h2 id="key-title">How sure is each mark?</h2>
@@ -79,8 +90,8 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=15"></script>
-<script src="js/scenes.js?v=15"></script>
-<script src="js/app.js?v=15"></script>
+<script src="vendor/maplibre-contour.min.js?v=16"></script>
+<script src="js/scenes.js?v=16"></script>
+<script src="js/app.js?v=16"></script>
 </body>
 </html>
