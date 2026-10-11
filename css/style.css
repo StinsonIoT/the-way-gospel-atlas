@@ -22,6 +22,8 @@ body.ready #map { opacity: 1; }
 .mk { position: absolute; width: 0; height: 0; pointer-events: none; will-change: opacity; }
 .mk .lbl { position: absolute; top: 0; transform: translateY(-50%); white-space: nowrap; display: flex; flex-direction: column; gap: 1px; color: var(--m-txt); font-size: 12.5px; line-height: 1.15;
   text-shadow: 0 0 3px var(--m-land), 0 0 3px var(--m-land), 0 0 6px var(--m-land); }
+.mk .lbl { transition: opacity .25s ease; }
+.mk.clash .lbl { opacity: 0; }
 .mk-right .lbl { left: 13px; }
 .mk-left .lbl { right: 13px; text-align: right; }
 .mk .nm { font-weight: 600; }

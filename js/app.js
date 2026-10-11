@@ -222,6 +222,30 @@
     markerEls[id] = el;
   });
 
+  // ---------- label collisions ----------
+  // After every frame, hide any label that overlaps a more important one.
+  // Named places and sites outrank area and water labels; the symbol stays.
+  const RANK = { star: 0, named: 1, trad: 2, proposal: 2, area: 3, water: 4 };
+  const markerOrder = Object.keys(PLACES).map((id, i) => ({ id, i, r: RANK[PLACES[id].type] ?? 3 }))
+    .sort((x, y) => x.r - y.r || x.i - y.i).map((o) => o.id);
+  let clashQueued = false;
+  function declutter() {
+    clashQueued = false;
+    const placed = [];
+    const pad = 3;
+    markerOrder.forEach((id) => {
+      const el = markerEls[id];
+      if (!el || el.style.visibility === 'hidden' || +el._op < 0.3) { if (el) el.classList.remove('clash'); return; }
+      const lbl = el.querySelector('.lbl');
+      const r = lbl.getBoundingClientRect();
+      const hit = placed.some((q) => r.left < q.right + pad && r.right > q.left - pad && r.top < q.bottom + pad && r.bottom > q.top - pad);
+      el.classList.toggle('clash', hit);
+      if (!hit) placed.push(r);
+    });
+  }
+  function queueDeclutter() { if (!clashQueued) { clashQueued = true; requestAnimationFrame(declutter); } }
+  map.on('render', queueDeclutter);
+
   // ---------- cameras ----------
   let cams = [];
   function padding() {
@@ -403,7 +427,7 @@
     if (started) return;
     started = true;
     setHandlers(false);
-    try { map.setTerrain({ source: 'terrain', exaggeration: 1.3 }); } catch (err) { /* terrain unavailable: the model still draws */ }
+    try { map.setTerrain({ source: 'terrain', exaggeration: 1.1 }); } catch (err) { /* terrain unavailable: the model still draws */ }
     map.setLight({ anchor: 'viewport', color: '#ffffff', intensity: 0.38, position: [1.3, 210, 35] });
     measure();
     computeCams();
@@ -421,7 +445,7 @@
   });
 
   // ---------- Explore Jerusalem (free rotate and zoom) ----------
-  const EXPLORE = { pal: 'day', plan: 1, temple: 0, show: ['templelbl', 'sanctlbl', 'antonia', 'palacelbl', 'uppercity', 'lowercity', 'bethesda', 'siloam', 'olives', 'kidron', 'cenacle', 'gethsemane', 'sepulchre', 'gardentomb'] };
+  const EXPLORE = { pal: 'day', plan: 1, temple: 0, show: ['templelbl', 'antonia', 'palacelbl', 'uppercity', 'lowercity', 'bethesda', 'siloam', 'olives', 'kidron', 'cenacle', 'gethsemane', 'sepulchre', 'gardentomb'] };
   function openExplore() {
     exploring = true;
     document.documentElement.classList.add('exploring');
@@ -430,7 +454,7 @@
     lastCh = '';
     setHandlers(true);
     const small = window.innerWidth < 900;
-    map.flyTo({ center: [35.2318, 31.7748], zoom: small ? 14.7 : 15.4, pitch: 60, bearing: -24,
+    map.flyTo({ center: [35.2322, 31.7757], zoom: small ? 14.5 : 15.2, pitch: 60, bearing: -24,
       padding: small ? { top: 60, bottom: 200, left: 0, right: 0 } : { top: 60, bottom: 40, left: 0, right: 0 },
       duration: reduceMotion ? 0 : 1800, essential: true });
     exploreClose.focus();
