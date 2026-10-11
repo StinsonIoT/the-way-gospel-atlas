@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Instrument+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=13">
+<link rel="stylesheet" href="css/style.css?v=14">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -25,6 +25,7 @@
       <span>THE WAY</span>
     </a>
     <button id="chapter-btn" class="chapter" type="button" aria-haspopup="dialog" aria-label="Open chapter menu"><span id="chapter" aria-live="polite">The Way</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg></button>
+    <button id="search-open" class="icon-btn" type="button" aria-label="Search the story" aria-haspopup="dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="12.8" y1="12.8" x2="17" y2="17"/></svg></button>
     <button id="key-open" class="key-btn" type="button">Map key</button>
   </div>
 </header>
@@ -45,13 +46,26 @@
 </footer>
 
 <dialog id="toc" aria-labelledby="toc-title">
+  <div class="toc-top">
   <div class="dlg-head">
-    <h2 id="toc-title">Chapters</h2>
+    <h2 id="toc-title">Find your way</h2>
     <button id="toc-close" type="button" aria-label="Close chapter menu">
       <svg viewBox="0 0 18 18" aria-hidden="true"><line x1="3" y1="3" x2="15" y2="15"/><line x1="15" y1="3" x2="3" y2="15"/></svg>
     </button>
   </div>
-  <div id="toc-body"></div>
+  <div class="tabs" role="tablist" aria-label="Find your way">
+    <button type="button" role="tab" id="tab-chapters" aria-controls="panel-chapters" aria-selected="true">Chapters</button>
+    <button type="button" role="tab" id="tab-places" aria-controls="panel-places" aria-selected="false">Places</button>
+    <button type="button" role="tab" id="tab-search" aria-controls="panel-search" aria-selected="false">Search</button>
+  </div>
+  </div>
+  <div id="panel-chapters" role="tabpanel" aria-labelledby="tab-chapters"><div id="toc-body"></div></div>
+  <div id="panel-places" role="tabpanel" aria-labelledby="tab-places" hidden><div id="places-body"></div></div>
+  <div id="panel-search" role="tabpanel" aria-labelledby="tab-search" hidden>
+    <input id="q" type="search" placeholder="People, places, verses, words…" aria-label="Search the story" autocomplete="off" enterkeyhint="search">
+    <p id="q-hint" class="q-hint">Try “Peter”, “Siloam”, “John 4” or “Passover”.</p>
+    <ol id="results" class="results"></ol>
+  </div>
 </dialog>
 
 <dialog id="key" aria-labelledby="key-title">
@@ -65,8 +79,8 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=13"></script>
-<script src="js/scenes.js?v=13"></script>
-<script src="js/app.js?v=13"></script>
+<script src="vendor/maplibre-contour.min.js?v=14"></script>
+<script src="js/scenes.js?v=14"></script>
+<script src="js/app.js?v=14"></script>
 </body>
 </html>

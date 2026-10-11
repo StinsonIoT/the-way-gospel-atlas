@@ -92,7 +92,7 @@ window.WAY = (function () {
     'r-deca':      { lng: 36.02, lat: 32.38, label: 'Decapolis', note: 'Greek cities', type: 'rule' },
     'zl-galilee':  { lng: 35.552, lat: 32.905, label: 'Herod Antipas', note: 'Galilee', type: 'rule' },
     'zl-philip':   { lng: 35.636, lat: 32.912, label: 'Philip', type: 'rule' },
-    gerizim:    { lng: 35.2725, lat: 32.1995, label: 'Mount Gerizim', type: 'area' },
+    gerizim:    { lng: 35.2690, lat: 32.1990, label: 'Mount Gerizim', type: 'area' },
     ebal:       { lng: 35.2757, lat: 32.2337, label: 'Mount Ebal', type: 'area' },
     hermonlbl:  { lng: 35.8571, lat: 33.4163, label: 'Mount Hermon', type: 'area' },
     jezreel:    { lng: 35.3000, lat: 32.6380, label: 'Jezreel Valley', type: 'area' },

@@ -267,15 +267,27 @@
   function declutter() {
     clashQueued = false;
     const top = document.querySelector('.top').getBoundingClientRect();
-    const placed = [{ left: -1e4, right: 1e4, top: -1e4, bottom: top.bottom }];
     const pad = 3;
-    markerOrder.forEach((id) => {
+    const live = [];
+    markerOrder.forEach((id, i) => {
       const el = markerEls[id];
-      if (!el || el.style.visibility === 'hidden' || +el._op < 0.3) { if (el) el.classList.remove('clash'); return; }
-      const lbl = el.querySelector('.lbl');
-      const r = lbl.getBoundingClientRect();
-      const hit = placed.some((q) => r.left < q.right + pad && r.right > q.left - pad && r.top < q.bottom + pad && r.bottom > q.top - pad);
-      el.classList.toggle('clash', hit);
+      if (!el) return;
+      const op = +el._op || 0;
+      if (el.style.visibility === 'hidden' || op < 0.02) { el.classList.remove('clash'); return; }
+      live.push({ id, el, op, i, r: RANK[PLACES[id].type] ?? 3 });
+    });
+    // The scene arriving (or on screen) wins over the one fading out; then rank.
+    live.sort((a, b) => (a.op < 0.5) - (b.op < 0.5) || a.r - b.r || a.i - b.i);
+    // Symbols (dots, diamonds, the star) are obstacles too, so a label never
+    // covers another place's mark.
+    const marks = [];
+    live.forEach((v) => { const sym = v.el.querySelector('.dot, .dia, .star'); if (sym) marks.push({ id: v.id, r: sym.getBoundingClientRect() }); });
+    const placed = [{ left: -1e4, right: 1e4, top: -1e4, bottom: top.bottom }];
+    const hits = (r, q) => r.left < q.right + pad && r.right > q.left - pad && r.top < q.bottom + pad && r.bottom > q.top - pad;
+    live.forEach((v) => {
+      const r = v.el.querySelector('.lbl').getBoundingClientRect();
+      const hit = placed.some((q) => hits(r, q)) || marks.some((m) => m.id !== v.id && hits(r, m.r));
+      v.el.classList.toggle('clash', hit);
       if (!hit) placed.push(r);
     });
   }
@@ -416,7 +428,173 @@
     toc.showModal();
     if (cur) cur.scrollIntoView({ block: 'center' });
   }
-  document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); openToc(); });
+  // ---------- tabs: Chapters · Places · Search ----------
+  const TABS = ['chapters', 'places', 'search'];
+  function showTab(name) {
+    TABS.forEach((t) => {
+      document.getElementById('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
+      document.getElementById('panel-' + t).hidden = t !== name;
+    });
+    if (name === 'search') setTimeout(() => qInput.focus(), 30);
+  }
+  TABS.forEach((t) => document.getElementById('tab-' + t).addEventListener('click', () => showTab(t)));
+
+  // ---------- Places index ----------
+  // Every named town, traditional site and landmark, with the scenes it appears in.
+  const inJerusalem = (p) => p.lng > 35.222 && p.lng < 35.25 && p.lat > 31.765 && p.lat < 31.79;
+  const ALIAS = { tiberias: 'sog', star: 'bethlehem', bethlbl: 'bethlehem', palacelbl: 'praetH', praetA: 'antonia', hermonlbl: 'hermon', 'zl-galilee': 'galilee', capsyn: 'capsyn', templelbl: 'templelbl', sanctlbl: 'templelbl' };
+  const SKIP_TYPES = ['ring', 'rule'];
+  const SKIP_IDS = ['moab', 'uppercity', 'lowercity', 'capvillage', 'fieldslbl', 'jezreel', 'colonnade'];
+  const placeGroups = { town: [], jeru: [], site: [], nature: [], region: [] };
+  const placeIndex = {};
+  Object.keys(PLACES).forEach((id) => {
+    const p = PLACES[id];
+    if (SKIP_TYPES.includes(p.type) || SKIP_IDS.includes(id)) return;
+    const key = ALIAS[id] || id;
+    if (!placeIndex[key]) {
+      const base = PLACES[key] || p;
+      let g = 'site';
+      if (inJerusalem(base) && key !== 'jerusalem') g = 'jeru';
+      else if (base.type === 'named') g = 'town';
+      else if (base.type === 'region') g = 'region';
+      else if (base.type === 'water' || base.type === 'area') g = 'nature';
+      placeIndex[key] = { key, label: base.label.replace(' · houses illustrative', ''), type: base.type, note: base.note || '', group: g, ids: [], steps: [] };
+      placeGroups[g].push(placeIndex[key]);
+    }
+    placeIndex[key].ids.push(id);
+  });
+  Object.values(placeIndex).forEach((pl) => {
+    STEPS.forEach((st, i) => { if (st.show.some((x) => pl.ids.includes(x))) pl.steps.push(i); });
+  });
+  const GROUP_NAMES = { town: 'Towns and cities', jeru: 'In Jerusalem', site: 'Traditional and proposed sites', nature: 'Seas, rivers and mountains', region: 'Regions' };
+  const markSym = (t) => t === 'named' ? SYM.named : (t === 'trad' || t === 'proposal') ? SYM.trad : t === 'region' ? SYM.region : '';
+  document.getElementById('places-body').innerHTML = Object.keys(GROUP_NAMES).map((g) => {
+    const list = placeGroups[g].filter((pl) => pl.steps.length).sort((a, b) => a.label.localeCompare(b.label));
+    if (!list.length) return '';
+    return `<h3 class="pl-group">${GROUP_NAMES[g]}</h3>` + list.map((pl) => `
+      <section class="toc-ch pl">
+        <button class="toc-head" type="button" aria-expanded="false" aria-controls="pl-${pl.key}">
+          <span class="pl-sym">${markSym(pl.type)}</span><span>${esc(pl.label)}${pl.note ? `<small>${esc(pl.note)}</small>` : ''}</span><span class="cnt">${pl.steps.length}</span>
+          <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg>
+        </button>
+        <ol class="toc-scenes" id="pl-${pl.key}">${pl.steps.map((i) => {
+          const st = STEPS[i]; const g2 = groups.find((gg) => gg.steps.includes(i));
+          return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}<small>${esc((g2 && g2.num ? g2.num + ' · ' : '') + (st.ref ? st.ref[0] : (g2 ? g2.title : '')))}</small></button></li>`;
+        }).join('')}</ol>
+      </section>`).join('');
+  }).join('');
+  document.getElementById('places-body').addEventListener('click', (ev) => {
+    const head = ev.target.closest('.toc-head');
+    if (head) { head.setAttribute('aria-expanded', head.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); return; }
+    const sb = ev.target.closest('[data-i]');
+    if (sb) goTo(+sb.dataset.i);
+  });
+
+  // ---------- Search ----------
+  const norm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’‘]/g, "'").replace(/[“”]/g, '"').toLowerCase();
+  const searchDocs = STEPS.map((st, i) => {
+    const places = st.show.map((id) => PLACES[id] && !['rule', 'ring'].includes(PLACES[id].type) && PLACES[id].label).filter(Boolean);
+    const parts = [
+      ['title', strip(st.title)], ['kicker', strip(st.kicker)], ['ref', st.ref ? st.ref[0] : ''],
+      ['text', st.text], ['verse', st.verse], ['after', st.after], ['note', st.note],
+      ['items', (st.items || []).map((x) => x.join(' ')).join(' · ')],
+      ['life', st.life], ['found', st.found], ['places', places.join(' · ')]
+    ].filter((x) => x[1]);
+    return { i, parts: parts.map(([k, t]) => ({ k, t, n: norm(t) })) };
+  });
+  const WEIGHT = { title: 6, kicker: 4, ref: 5, places: 4, text: 2, verse: 2, items: 2, note: 1, after: 1, life: 1, found: 1 };
+  const qInput = document.getElementById('q');
+  const results = document.getElementById('results');
+  const qHint = document.getElementById('q-hint');
+  function snippet(t, term) {
+    const n = norm(t); const at = n.indexOf(term);
+    if (at < 0) return esc(t.length > 120 ? t.slice(0, 117) + '…' : t);
+    const from = Math.max(0, at - 50), to = Math.min(t.length, at + term.length + 70);
+    return (from ? '…' : '') + esc(t.slice(from, at)) + '<mark>' + esc(t.slice(at, at + term.length)) + '</mark>' + esc(t.slice(at + term.length, to)) + (to < t.length ? '…' : '');
+  }
+  // Bible references: "John 4", "Mk 14:36", "1 Maccabees 4". A scene matches when
+  // its reference covers that chapter (and verse, if given).
+  const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'] };
+  const bookOf = (w) => Object.keys(BOOKS).find((b) => b.startsWith(w) && w.length >= 3 || BOOKS[b].includes(w));
+  function refSpans(label) {
+    // "John 4:1–42", "Mark 4:35–5:20", "Matthew 5–7", "Mark 14:26 · John 18:1"
+    const out = [];
+    norm(label).split('·').forEach((part) => {
+      const m = /^\s*([a-z]+)\s+(\d+)(?::(\d+))?(?:\s*[–-]\s*(\d+)(?::(\d+))?)?/.exec(part);
+      if (!m) return;
+      const book = bookOf(m[1]); if (!book) return;
+      const c1 = +m[2], v1 = m[3] ? +m[3] : 0;
+      let c2 = c1, v2 = m[3] ? +m[3] : 999;
+      if (m[4] && m[5]) { c2 = +m[4]; v2 = +m[5]; } else if (m[4] && m[3]) { v2 = +m[4]; } else if (m[4]) { c2 = +m[4]; v2 = 999; }
+      out.push({ book, c1, v1, c2, v2 });
+    });
+    return out;
+  }
+  const stepSpans = STEPS.map((st) => [st.ref ? st.ref[0] : '', ...(st.items || []).map((x) => x[1])].flatMap(refSpans));
+  function refQuery(q) {
+    const m = /^\s*([a-z]+)\.?\s+(\d+)(?::(\d+))?\s*$/.exec(norm(q));
+    if (!m) return null;
+    const book = bookOf(m[1]);
+    return book ? { book, c: +m[2], v: m[3] ? +m[3] : null } : null;
+  }
+  const covers = (sp, r) => {
+    if (sp.book !== r.book) return false;
+    const at = (c, v) => c * 1000 + v;
+    if (r.v == null) return r.c >= sp.c1 && r.c <= sp.c2;
+    return at(r.c, r.v) >= at(sp.c1, sp.v1) && at(r.c, r.v) <= at(sp.c2, sp.v2);
+  };
+  function runSearch() {
+    const rq = refQuery(qInput.value);
+    if (rq) {
+      const hitsR = [];
+      stepSpans.forEach((spans, i) => { if (spans.some((sp) => covers(sp, rq))) hitsR.push(i); });
+      // Also scenes whose notes cite that chapter, e.g. "(John 2:6)".
+      const cite = new RegExp('\\b' + rq.book.slice(0, 4) + '[a-z]*\\s+' + rq.c + (rq.v ? ':' + rq.v + '\\b' : ':'));
+      searchDocs.forEach((d) => { if (!hitsR.includes(d.i) && d.parts.some((p) => cite.test(p.n))) hitsR.push(d.i); });
+      qHint.hidden = hitsR.length > 0;
+      if (!hitsR.length) qHint.textContent = 'No scene covers that passage.';
+      results.innerHTML = hitsR.map((i) => {
+        const st = STEPS[i]; const g = groups.find((gg) => gg.steps.includes(i));
+        return `<li><button type="button" data-i="${i}"><span class="r-title">${esc(stepLabel(st))}</span><small>${esc((g && g.num ? g.num + ' · ' + g.title : 'Prologue') + (st.ref ? ' · ' + st.ref[0] : ''))}</small></button></li>`;
+      }).join('');
+      return;
+    }
+    const terms = norm(qInput.value).split(/[\s,;:.]+/).filter((x) => x.length > 1 || /\d/.test(x));
+    if (!terms.length) { results.innerHTML = ''; qHint.hidden = false; qHint.textContent = 'Try “Peter”, “Siloam”, “John 4” or “Passover”.'; return; }
+    const hits = [];
+    searchDocs.forEach((d) => {
+      let score = 0; let best = null;
+      for (const term of terms) {
+        let found = false;
+        d.parts.forEach((p) => {
+          if (p.n.includes(term)) {
+            found = true;
+            const wordStart = new RegExp('(^|[^a-z0-9])' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(p.n);
+            score += WEIGHT[p.k] * (wordStart ? 2 : 1);
+            if (!['title', 'kicker', 'ref', 'places'].includes(p.k) && (!best || WEIGHT[p.k] > WEIGHT[best.k])) best = { k: p.k, t: p.t, term };
+          }
+        });
+        if (!found) return;
+      }
+      hits.push({ i: d.i, score, best });
+    });
+    hits.sort((a, b) => b.score - a.score || a.i - b.i);
+    qHint.hidden = hits.length > 0;
+    if (!hits.length) qHint.textContent = 'No scenes match. Try a shorter word.';
+    results.innerHTML = hits.slice(0, 40).map((h) => {
+      const st = STEPS[h.i]; const g = groups.find((gg) => gg.steps.includes(h.i));
+      const where = (g && g.num ? g.num + ' · ' + g.title : 'Prologue') + (st.ref ? ' · ' + st.ref[0] : '');
+      const snip = h.best && !['title', 'kicker', 'ref'].includes(h.best.k) ? `<span class="snip">${snippet(h.best.t, h.best.term)}</span>` : '';
+      return `<li><button type="button" data-i="${h.i}"><span class="r-title">${esc(stepLabel(st))}</span><small>${esc(where)}</small>${snip}</button></li>`;
+    }).join('');
+  }
+  let qTimer = 0;
+  qInput.addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(runSearch, 120); });
+  qInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { const first = results.querySelector('[data-i]'); if (first) goTo(+first.dataset.i); } });
+  results.addEventListener('click', (ev) => { const b = ev.target.closest('[data-i]'); if (b) goTo(+b.dataset.i); });
+
+  document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); showTab('chapters'); openToc(); });
+  document.getElementById('search-open').addEventListener('click', () => { if (exploring) closeExplore(); showTab('search'); openToc(); });
   document.getElementById('toc-close').addEventListener('click', () => toc.close());
   toc.addEventListener('click', (ev) => { if (ev.target === toc) toc.close(); });
 

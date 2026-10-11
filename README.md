@@ -27,7 +27,7 @@ Many scenes carry two optional notes, opened with a tap: **Life in Jesus' day** 
 
 ## Getting around
 
-The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu of every chapter and scene. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
+The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with three tabs: **Chapters** (every chapter and scene), **Places** (every town, site and landmark, with the scenes it appears in) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
 
 ## Running it
 
