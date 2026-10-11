@@ -1,6 +1,6 @@
 # The Way — A Gospel Atlas
 
-A scroll-driven atlas of the whole Gospel story, in 75 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection and Ascension. It is built for iPhone first and also works on desktop.
+A scroll-driven atlas of the whole Gospel story, in 77 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection and Ascension. It is built for iPhone first and also works on desktop.
 
 ## What it does
 

@@ -56,6 +56,7 @@ window.WAY = (function () {
     praetH:     { lng: 35.2283, lat: 31.7750, label: 'Herod’s palace', note: 'praetorium? · debated', type: 'proposal', side: 'right' },
     peterhouse: { lng: 35.5751, lat: 32.8808, label: 'Peter’s house', note: 'traditional', type: 'trad', side: 'right' },
     capsyn:     { lng: 35.5750, lat: 32.8812, label: 'Synagogue site', note: 'first-century floor? · debated', type: 'proposal', side: 'left' },
+    machaerus:  { lng: 35.6300, lat: 31.5680, label: 'Machaerus', note: 'named by Josephus', type: 'proposal', side: 'right' },
     tabor:      { lng: 35.3904, lat: 32.6869, label: 'Mount Tabor', note: 'traditional', type: 'trad', side: 'right' },
     hermon:     { lng: 35.8571, lat: 33.4163, label: 'Mount Hermon', note: 'also suggested', type: 'proposal', side: 'left' },
     // Jerusalem features named in John
@@ -82,6 +83,7 @@ window.WAY = (function () {
     lowercity:  { lng: 35.2353, lat: 31.7738, label: 'Lower City', type: 'area' },
     templelbl:  { lng: 35.2356, lat: 31.7770, label: 'Temple', type: 'area' },
     kidron:     { lng: 35.2376, lat: 31.7745, label: 'Kidron Valley', type: 'water' },
+    moab:       { lng: 35.7000, lat: 31.6600, label: 'Perea', type: 'region' },
     gerizim:    { lng: 35.2725, lat: 32.1995, label: 'Mount Gerizim', type: 'area' },
     ebal:       { lng: 35.2757, lat: 32.2337, label: 'Mount Ebal', type: 'area' },
     hermonlbl:  { lng: 35.8571, lat: 33.4163, label: 'Mount Hermon', type: 'area' },
@@ -172,9 +174,17 @@ window.WAY = (function () {
       kicker: 'Before you begin', title: 'Every mark says <em>how sure</em> we are.', kind: 'legend' },
 
     // ---------- I · Origins ----------
-    { id: 'decree', ch: 'I · Origins', chapter: 'I', pal: 'day', view: [[31.6, 29.6], [38.4, 35.2]],
+    { id: 'annunciation', ch: 'I · Origins', chapter: 'I', pal: 'dawn', view: [[35.25, 32.66], [35.35, 32.73]], pitch: 52, bearing: 8,
+      show: ['nazareth', 'jezreel'],
+      kicker: 'I · Origins · Nazareth', ref: ['Luke 1:26–38', 'luke', 1],
+      title: 'Do not be afraid, <em>Mary.</em>',
+      text: 'In Nazareth, a small town in Galilee, the angel Gabriel tells Mary, a virgin pledged to marry Joseph, that she will bear a son and name Him Jesus. “I am the Lord’s servant,” she answers.',
+      note: 'Matthew tells the news from Joseph’s side: in a dream an angel tells him to take Mary as his wife (Matthew 1:18–25). Nazareth was a farming village of probably a few hundred people.',
+      chips: ['named'] },
+
+    { id: 'decree', ch: 'I · Origins', pal: 'day', view: [[31.6, 29.6], [38.4, 35.2]],
       show: ['nazareth', 'bethlehem', 'syria', 'judea', 'galilee'],
-      kicker: 'I · Origins · a decree', ref: ['Luke 2:1–3', 'luke', 2],
+      kicker: 'A decree from Rome', ref: ['Luke 2:1–3', 'luke', 2],
       title: 'A census of <em>the whole empire.</em>',
       text: 'Caesar Augustus orders a registration, and everyone goes to his own town to be registered. The decree comes from Rome, far to the west.',
       note: 'Luke ties this to a census taken while Quirinius governed Syria. How to date that census against other records is still debated.' },
@@ -214,23 +224,23 @@ window.WAY = (function () {
       kicker: 'Jerusalem → Bethlehem', ref: ['Matthew 2:1–12', 'matthew', 2],
       title: 'Visitors <em>from the east.</em>',
       text: 'Magi come to Jerusalem asking for the newborn king. Sent on to Bethlehem, they find the child with Mary, worship Him and offer gold, frankincense and myrrh, then return home another way.',
-      note: 'Matthew does not say how many Magi came; “three” comes from the three gifts. He places the visit in a house in Bethlehem.',
+      note: 'Matthew does not say how many Magi came; “three” comes from the three gifts. He places the visit in a house, and Herod’s order about boys two and under suggests it came some time after the birth (Matthew 2:16). Luke and Matthew each tell part of these years; this order is a common way of fitting them together.',
       chips: ['named', 'route'] },
 
     { id: 'egypt', ch: 'I · Origins', pal: 'night', view: [[30.6, 29.4], [36.2, 33.4]],
       show: ['bethlehem', 'egypt', 'to-egypt', 'judea'],
       kicker: 'Bethlehem → Egypt · by night', ref: ['Matthew 2:13–18', 'matthew', 2],
       title: 'Taken <em>to safety.</em>',
-      text: 'An angel warns Joseph that Herod intends to kill the child. Joseph gets up, takes the child and His mother by night, and leaves for Egypt.',
-      note: 'Matthew names Egypt but no town and no road. Later traditions of the route are not drawn.',
+      text: 'An angel warns Joseph that Herod intends to kill the child. Joseph takes the child and His mother by night and leaves for Egypt. Herod orders the killing of the boys in and around Bethlehem.',
+      note: 'Matthew names Egypt but no town and no road, so later route traditions are not drawn. No other source records the killings at Bethlehem, a small village; the historian Josephus does record Herod’s brutal last years, including the execution of three of his own sons.',
       chips: ['route', 'region'] },
 
     { id: 'nazareth', ch: 'I · Origins', pal: 'day', view: [[33.6, 30.4], [36.0, 33.2]],
       show: ['nazareth', 'egypt-naz', 'galilee', 'egypt'],
       kicker: 'Egypt → Nazareth', ref: ['Luke 2:39–40', 'luke', 2],
       title: 'Growing <em>in wisdom.</em>',
-      text: 'After Herod dies, the family returns and settles in Nazareth in Galilee. The child grows in wisdom and stature, and in favor with God and people.',
-      note: 'Matthew says they came back to the land of Israel and withdrew to Galilee (Matthew 2:19–23). The Gospels leave most of these years unrecorded.',
+      text: 'After Herod dies, the family returns and settles in Nazareth in Galilee. The child grows and becomes strong, filled with wisdom, and the grace of God is upon Him.',
+      note: 'Matthew says Joseph avoided Judea because Herod’s son Archelaus ruled there, and withdrew to Galilee (Matthew 2:19–23). Rome removed Archelaus in AD 6. The Gospels leave most of these years unrecorded.',
       chips: ['named', 'link'] },
 
     { id: 'twelve', ch: 'I · Origins', pal: 'day', view: V.temple, plan: 1, temple: 1,
@@ -276,7 +286,7 @@ window.WAY = (function () {
       kicker: 'Cana in Galilee', ref: ['John 2:1–11', 'john', 2],
       title: 'Water <em>into wine.</em>',
       text: 'At a wedding, the wine runs out. Jesus has servants fill six stone jars with water, and it becomes wine. John calls it the first of His signs.',
-      note: 'Two sites are proposed for Cana: Kafr Kanna, the traditional one, and Khirbet Qana to the north. The atlas shows both.',
+      note: 'Two sites are proposed for Cana: Kafr Kanna, the traditional one, and Khirbet Qana to the north, which many archaeologists now favor. The atlas shows both.',
       chips: ['trad'] },
 
     { id: 'zeal', ch: 'II · Beginnings', pal: 'day', view: V.temple, plan: 1, temple: 1,
@@ -365,9 +375,9 @@ window.WAY = (function () {
 
     { id: 'gerasenes', ch: 'III · In Galilee', pal: 'day', view: [[35.54, 32.76], [35.70, 32.90]], pitch: 55, bearing: 92,
       show: ['capernaum', 'crossing', 'easternshore', 'decapolis', 'sog'],
-      kicker: 'The other side of the sea', ref: ['Mark 5:1–20', 'mark', 5],
+      kicker: 'The other side of the sea', ref: ['Mark 4:35–5:20', 'mark', 4],
       title: 'Restored, <em>and sent to tell.</em>',
-      text: 'Across the lake, Jesus frees a man from unclean spirits and sends him home to tell what the Lord has done. He proclaims it in the Decapolis.',
+      text: 'On the crossing, Jesus calms a storm with a word. On the far shore He frees a man from unclean spirits and sends him home to tell what the Lord has done, and the man proclaims it in the Decapolis.',
       note: 'The crossing is recorded, but not where they landed. The eastern shore is marked as a region.',
       chips: ['route', 'region'] },
 
@@ -384,6 +394,14 @@ window.WAY = (function () {
       title: 'The Twelve <em>are sent.</em>',
       text: 'Jesus sends the Twelve out two by two. They preach repentance, drive out demons and heal the sick.',
       chips: ['region'] },
+
+    { id: 'john', ch: 'III · In Galilee', pal: 'dusk', view: [[35.36, 31.42], [35.80, 31.80]], pitch: 55, bearing: 82,
+      show: ['machaerus', 'deadsea', 'moab'],
+      kicker: 'Herod’s fortress · east of the Dead Sea', ref: ['Mark 6:14–29', 'mark', 6],
+      title: 'John <em>is killed.</em>',
+      text: 'Herod Antipas has imprisoned John the Baptist for condemning his marriage to Herodias. At a birthday banquet, bound by an oath, he has John beheaded. John’s disciples bury his body.',
+      note: 'Mark does not name the place. Josephus, the first-century Jewish historian, says John was held and killed at Herod’s fortress of Machaerus, and that many saw Herod’s later military defeat as God’s judgment for it (Antiquities 18.116–119).',
+      chips: ['trad'] },
 
     { id: 'loaves', ch: 'III · In Galilee', pal: 'warm', view: V.lake,
       show: ['lakeregion', 'bethsaida', 'capernaum', 'sog'],
@@ -443,7 +461,7 @@ window.WAY = (function () {
       kicker: 'V · Toward Jerusalem · on the journey', ref: ['Luke 10:25–37', 'luke', 10],
       title: 'Who is <em>my neighbor?</em>',
       text: 'Jesus sets out resolutely for Jerusalem. On the way, a lawyer asks who his neighbor is, and Jesus tells of a Samaritan who shows mercy.',
-      note: 'Luke 9:51 begins the journey. Many episodes on it have no named place.' },
+      note: 'Luke 9:51 begins the journey. Many episodes on it have no named place. The parable itself is set on the road down from Jerusalem to Jericho (Luke 10:30), the same climb Jesus later makes in the other direction.' },
 
     { id: 'ten', ch: 'V · Toward Jerusalem', pal: 'warm', view: [[35.10, 32.30], [35.75, 32.80]],
       show: ['border', 'galilee', 'samaria'],
@@ -579,6 +597,7 @@ window.WAY = (function () {
       kicker: 'Unleavened Bread · evening', ref: ['Mark 14:12–26', 'mark', 14],
       title: 'Bread and <em>the cup.</em>',
       text: 'In a furnished upper room, Jesus shares the Passover meal with the Twelve and gives them bread and the cup. In John’s account, He washes their feet.',
+      note: 'John’s account places the crucifixion as Passover lambs were being prepared (John 19:14), and how his timing fits the other Gospels is debated. The Cenacle marks a later tradition; the present building is medieval.',
       chips: ['trad'] },
 
     { id: 'kidron', ch: 'VI · Holy Week', pal: 'night2', view: [[35.2262, 31.7690], [35.2455, 31.7815]], plan: 1,
@@ -626,7 +645,8 @@ window.WAY = (function () {
       show: ['sepulchre', 'gardentomb', 'nearcity'],
       kicker: 'Day of Preparation · evening', ref: ['John 19:38–42', 'john', 19],
       title: 'Laid <em>in a tomb.</em>',
-      text: 'Joseph of Arimathea and Nicodemus lay Jesus’ body in a new tomb in a garden near the place of crucifixion. Two traditional sites are shown; the atlas chooses neither.',
+      text: 'Joseph of Arimathea and Nicodemus lay Jesus’ body in a new tomb in a garden near the place of crucifixion.',
+      note: 'The Holy Sepulchre marks a site honored by the fourth century; it lay outside the city walls of Jesus’ day, in an old quarry with first-century tombs. The Garden Tomb was proposed in the nineteenth century, and most archaeologists date that tomb centuries earlier, so it would not have been new.',
       chips: ['trad'] },
 
     // ---------- VII · Resurrection ----------
