@@ -31,7 +31,7 @@ Tapping a Scripture reference (on a card, under a verse, or inside a note) opens
 
 ## Getting around
 
-The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with three tabs: **Chapters** (every chapter and scene), **Places** (every town, site and landmark, with the scenes it appears in) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
+The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with three tabs: **Chapters** (every chapter and scene), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
 
 ## Sharing and installing
 
@@ -56,6 +56,7 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `about.html`, `sources.html`, `css/page.css`: the About and Sources pages
 - `manifest.webmanifest`, `sw.js`, `og.png`, icons: install, offline cache and link previews
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
+- `js/places.js`: the place profiles
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type
 - `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, `jerusalem3d.geojson` and `capernaum3d.geojson` (the 3D models: heights in metres, `illustrative: true` on houses)

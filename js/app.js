@@ -496,6 +496,13 @@
   const SKIP_IDS = ['moab', 'uppercity', 'lowercity', 'capvillage', 'fieldslbl', 'jezreel', 'colonnade'];
   const placeGroups = { town: [], jeru: [], site: [], nature: [], region: [] };
   const placeIndex = {};
+  // Place profiles (js/places.js): then, today, and how sure.
+  const INFO = window.WAY_INFO || {};
+  function placeInfoHTML(key) {
+    const inf = INFO[key];
+    if (!inf) return '';
+    return `<div class="pl-info">${inf.then ? `<p><b>In Jesus’ day</b> ${linkRefs(esc(inf.then))}</p>` : ''}${inf.today ? `<p><b>Today</b> ${linkRefs(esc(inf.today))}</p>` : ''}${inf.sure ? `<p class="pl-sure"><b>How sure</b> ${esc(inf.sure)}</p>` : ''}</div>`;
+  }
   Object.keys(PLACES).forEach((id) => {
     const p = PLACES[id];
     if (SKIP_TYPES.includes(p.type) || SKIP_IDS.includes(id)) return;
@@ -526,12 +533,33 @@
           <span class="pl-sym">${markSym(pl.type)}</span><span>${esc(pl.label)}${pl.note ? `<small>${esc(pl.note)}</small>` : ''}</span><span class="cnt">${pl.steps.length}</span>
           <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg>
         </button>
-        <ol class="toc-scenes" id="pl-${pl.key}">${pl.steps.map((i) => {
+        <div class="toc-scenes pl-body" id="pl-${pl.key}">${placeInfoHTML(pl.key)}<p class="pl-in">In the story</p><ol class="pl-list">${pl.steps.map((i) => {
           const st = STEPS[i]; const g2 = groups.find((gg) => gg.steps.includes(i));
           return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}<small>${esc((g2 && g2.num ? g2.num + ' · ' : '') + (st.ref ? st.ref[0] : (g2 ? g2.title : '')))}</small></button></li>`;
-        }).join('')}</ol>
+        }).join('')}</ol></div>
       </section>`).join('');
   }).join('');
+  // Tapping a place's label on the map opens its profile.
+  function openPlace(key) {
+    if (exploring) closeExplore();
+    showTab('places');
+    openToc();
+    const head = document.querySelector(`#places-body .toc-head[aria-controls="pl-${key}"]`);
+    if (!head) return;
+    document.querySelectorAll('#places-body .toc-head[aria-expanded="true"]').forEach((h) => h.setAttribute('aria-expanded', 'false'));
+    head.setAttribute('aria-expanded', 'true');
+    requestAnimationFrame(() => {
+      const pinned = document.querySelector('#toc .toc-top').offsetHeight;
+      toc.scrollTop += head.getBoundingClientRect().top - toc.getBoundingClientRect().top - pinned - 4;
+    });
+  }
+  Object.keys(PLACES).forEach((id) => {
+    const key = ALIAS[id] || id;
+    const el = markerEls[id];
+    if (!el || !INFO[key] || !placeIndex[key] || !placeIndex[key].steps.length) return;
+    el.classList.add('tappable');
+    el.querySelector('.lbl').addEventListener('click', (ev) => { ev.stopPropagation(); openPlace(key); });
+  });
   document.getElementById('places-body').addEventListener('click', (ev) => {
     const head = ev.target.closest('.toc-head');
     if (head) { head.setAttribute('aria-expanded', head.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); return; }
