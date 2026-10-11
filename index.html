@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin>
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=46">
+<link rel="stylesheet" href="css/style.css?v=47">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -87,10 +87,11 @@
   </div>
   <div class="tabs" role="tablist" aria-label="Find your way">
     <button type="button" role="tab" id="tab-chapters" aria-controls="panel-chapters" aria-selected="true">Chapters</button>
-<button type="button" role="tab" id="tab-topics" aria-controls="panel-topics" aria-selected="false">Topics</button>
-    <button type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false">Plan</button>
+    <button type="button" role="tab" id="tab-topics" aria-controls="panel-topics" aria-selected="false">Topics</button>
+    <button type="button" role="tab" id="tab-people" aria-controls="panel-people" aria-selected="false">People</button>
     <button type="button" role="tab" id="tab-places" aria-controls="panel-places" aria-selected="false">Places</button>
-    <button type="button" role="tab" id="tab-search" aria-controls="panel-search" aria-selected="false">Search</button>
+    <button type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false">Plan</button>
+    <button type="button" role="tab" id="tab-search" class="tab-icon" aria-controls="panel-search" aria-selected="false" aria-label="Search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><line x1="10.4" y1="10.4" x2="14" y2="14"/></svg></button>
   </div>
   </div>
   <div id="panel-chapters" role="tabpanel" aria-labelledby="tab-chapters"><div id="toc-body"></div></div>
@@ -98,6 +99,7 @@
     <div id="topic-chips" class="topics"></div>
     <ol id="topic-results" class="results"></ol>
   </div>
+  <div id="panel-people" role="tabpanel" aria-labelledby="tab-people" hidden><div id="people-body"></div></div>
   <div id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" hidden><div id="plan-body"></div></div>
   <div id="panel-places" role="tabpanel" aria-labelledby="tab-places" hidden><div id="places-body"></div></div>
   <div id="panel-search" role="tabpanel" aria-labelledby="tab-search" hidden>
@@ -141,6 +143,16 @@
   <div id="dp-body" class="dp-body" role="tabpanel"></div>
 </dialog>
 
+<dialog id="explain" aria-labelledby="ex-title">
+  <div class="dlg-head">
+    <div class="dp-head"><p id="ex-kicker" class="dp-kicker"></p><h2 id="ex-title"></h2></div>
+    <button id="ex-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 18 18" aria-hidden="true"><line x1="3" y1="3" x2="15" y2="15"/><line x1="15" y1="3" x2="3" y2="15"/></svg>
+    </button>
+  </div>
+  <div id="ex-body" class="ex-body"></div>
+</dialog>
+
 <dialog id="key" aria-labelledby="key-title">
   <div class="dlg-head">
     <h2 id="key-title">How sure is each mark?</h2>
@@ -152,10 +164,11 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=46"></script>
-<script src="js/scenes.js?v=46"></script>
+<script src="vendor/maplibre-contour.min.js?v=47"></script>
+<script src="js/scenes.js?v=47"></script>
 <script src="js/places.js?v=6"></script>
 <script src="js/study.js?v=9"></script>
-<script src="js/app.js?v=46"></script>
+<script src="js/guide.js?v=1"></script>
+<script src="js/app.js?v=47"></script>
 </body>
 </html>

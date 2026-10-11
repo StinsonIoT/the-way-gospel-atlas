@@ -587,7 +587,7 @@ window.WAY = (function () {
       after: 'Tax collectors and sinners draw near, and Jesus tells of a lost sheep, a lost coin and a lost son (Luke 15).' },
 
     { id: 'ten', ch: 'V · Toward Jerusalem', pal: 'warm', view: [[35.10, 32.30], [35.75, 32.80]],
-      life: 'People with skin diseases had to live apart and warn others by calling out “Unclean!” (Leviticus 13:45–46). Only a priest could declare them clean, which is why Jesus sends them to the priests (Luke 17:14).',
+      life: 'People with skin diseases had to live apart and warn others by crying out “Unclean, unclean!” (Leviticus 13:45–46). Only a priest could declare them clean, which is why Jesus sends them to the priests (Luke 17:14).',
       show: ['border', 'galilee', 'samaria', 'z-galilee', 'z-judea', 'r-antipas-g', 'r-pilate'],
       kicker: 'Between Samaria and Galilee', ref: ['Luke 17:11–19', 'luke', 17],
       title: 'Ten are cleansed. <em>One returns.</em>',
@@ -765,7 +765,7 @@ window.WAY = (function () {
       kicker: 'Night into early morning', ref: ['Four Gospels', 'mark', 15],
       title: 'Before the <em>authorities.</em>', kind: 'list',
       items: [['Annas', 'John 18:13'], ['Caiaphas and the council', 'Matthew 26:57; Mark 14:53'], ['Peter denies Him', 'Mark 14:66–72'], ['Pilate, early morning', 'Mark 15:1'], ['Herod, then Pilate again', 'Luke 23:7–11']],
-      text: 'The high priest’s house is unlocated. Pilate’s praetorium is argued for both Herod’s palace and the Antonia, so the atlas marks both and picks neither.' },
+      text: 'The high priest’s house is unlocated. Pilate’s praetorium is argued for both Herod the Great’s palace and the Antonia, so the atlas marks both and picks neither.' },
 
     { id: 'golgotha', ch: 'VI · Holy Week', pal: 'noon', view: V.golgotha, plan: 1,
       found: 'The Roman historian Tacitus, writing around AD 116, records that Christ suffered the death penalty under Pontius Pilate in the reign of Tiberius (Annals 15.44). Josephus also mentions Jesus, and the death of His brother James.',

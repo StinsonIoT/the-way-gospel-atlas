@@ -5,7 +5,7 @@
 //   URLs carry a version number, so a new version is a new file.
 // - Bible passages and terrain tiles: kept in their own caches, which survive
 //   app updates. Terrain keeps the most recent tiles only.
-const APP = 'the-way-v23';
+const APP = 'the-way-v24';
 const BIBLE = 'the-way-bible';
 const TILES = 'the-way-tiles';
 const TILE_LIMIT = 900;

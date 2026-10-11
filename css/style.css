@@ -543,3 +543,52 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
   .step { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
   dialog { width: min(520px, calc(100vw - 48px)); }
 }
+
+/* ---------- who, what and when ---------- */
+/* People and words in the card text: tap to explain. */
+.xp { display: inline; padding: 0; border: 0; background: none; color: inherit; font: inherit; line-height: inherit; cursor: pointer;
+  text-decoration: underline dotted; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, var(--c-accent, var(--m-accent)) 75%, transparent); text-underline-offset: 3px; }
+.xp:hover, .xp:focus-visible { text-decoration-style: solid; }
+/* When: a small line on each card. */
+.when { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin: 2px 0 -2px; padding: 4px 0; min-height: 30px; border: 0; background: none; color: var(--c-muted, var(--m-muted)); font: 500 12.5px var(--sans); letter-spacing: .01em; cursor: pointer; text-align: left; }
+.when svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.when span:first-of-type { text-decoration: underline dotted; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); }
+.verse .when { display: flex; margin: 6px 0 0; }
+/* The explain sheet: a bottom sheet on phones, centered on larger screens. */
+#explain { width: min(560px, 100vw); max-height: min(72vh, 680px); margin: auto auto 0; border-radius: 20px 20px 0 0; padding: 18px 22px calc(16px + env(safe-area-inset-bottom)); display: none; flex-direction: column; }
+#explain[open] { display: flex; }
+@media (min-width: 700px) { #explain { margin: auto; border-radius: 20px; } }
+#explain .dlg-head { align-items: flex-start; margin-bottom: 8px; }
+#ex-title { font-size: 26px; line-height: 1.15; }
+.ex-body { overflow: auto; overscroll-behavior: contain; padding-right: 4px; font-size: 16px; line-height: 1.55; }
+.ex-body > p { margin: 0 0 10px; }
+.ex-body .pl-list, .pp-body .pl-list { margin-top: 2px; }
+.ex-body .pl-list button { width: 100%; min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 6px 10px; border: 0; border-radius: 10px; background: transparent; color: inherit; cursor: pointer; text-align: left; font: 400 16px var(--serif); }
+.ex-body .pl-list button small { font: 400 11.5px var(--sans); color: var(--c-muted); }
+.ex-body .pl-list button:hover { background: rgba(0,0,0,.04); }
+.ex-body .pl-in { margin-left: 10px; }
+.pp-body { padding-left: 0; }
+.nw { white-space: nowrap; }
+.when-now { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--c-accent) 12%, transparent); font-size: 15px; }
+.when-now svg { width: 16px; height: 16px; margin-top: 3px; flex: none; fill: none; stroke: var(--c-accent); stroke-width: 1.6; stroke-linecap: round; }
+.when-now b { color: var(--c-accent); margin-right: 4px; }
+.when-list { list-style: none; margin: 4px 0 0; padding: 0; }
+.when-list li { display: grid; grid-template-columns: 82px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--c-line); font-size: 14.5px; line-height: 1.5; }
+.wl-when { font: 600 12px/1.4 var(--sans); color: var(--c-accent); padding-top: 2px; }
+.wl-what b { display: block; font-weight: 600; }
+/* People tab. */
+.pp .toc-head { grid-template-columns: 1fr auto 16px; }
+.pp .toc-head > span:nth-child(1) { display: flex; flex-direction: column; gap: 1px; }
+.pp-body > p { margin: 4px 10px 6px; font-size: 14.5px; line-height: 1.55; }
+.pp-body .vref { display: inline; width: auto; min-height: 0; padding: 0; border-radius: 0; font: inherit; color: inherit; }
+#people-body > .q-hint { margin-top: 2px; }
+/* Search: words to know, and people or words that match. */
+.results li.words-k { border: 0; margin: 6px 2px 6px; font: 600 11px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--c-accent); }
+.results li.words { border: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.results li.words button { width: auto; display: inline-flex; flex-direction: row; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--c-line); background: transparent; color: var(--c-fg); font: 500 13px var(--sans); }
+.results li.r-xp .r-title { color: var(--c-accent); }
+/* Search as an icon tab, so six tabs fit a phone. */
+.tabs .tab-icon { flex: 0 0 40px; }
+.tabs .tab-icon svg { width: 17px; height: 17px; display: block; margin: auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+#saved-h:first-child { margin-top: 2px; }
+.saved-list + .plan-head { margin-top: 20px; }

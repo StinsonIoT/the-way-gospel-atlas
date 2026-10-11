@@ -71,8 +71,10 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const refLink = (ref, cls) => ref ? `<a class="${cls || 'ref'}" data-ref="${esc(ref[0])}" href="https://biblehub.com/bsb/${ref[1]}/${ref[2]}.htm" target="_blank" rel="noopener">${esc(ref[0])}<span class="ref-icon" aria-hidden="true"></span></a>` : '';
   // Scripture references inside notes, e.g. "(Luke 2:44)", become tappable.
-  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Numbers|Jeremiah|Daniel|Hosea|Joel|Jonah|Micah|Isaiah|Zechariah|Malachi|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
-    (m) => `<button type="button" class="vref" data-ref="${m}">${m}</button>`);
+  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Numbers|Jeremiah|Daniel|Hosea|Joel|Jonah|Micah|Isaiah|Zechariah|Malachi|Romans|Galatians|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
+    (m) => `<button type="button" class="vref" data-ref="${m}">${m}</button>`)
+    // Keep "(" and ")" with the reference, so a line never starts with ")".
+    .replace(/(\()?(<button type="button" class="vref"[^>]*>[^<]*<\/button>)([).,;:]*)/g, (m, o, b, c) => (o || c ? `<span class="nw">${o || ''}${b}${c}</span>` : b));
   const SYM = {
     named: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="5" class="s-fill"/></svg>',
     region: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="8" class="s-area"/></svg>',
@@ -123,6 +125,17 @@
     ['hist', 'Historical site.', 'Known from history and archaeology; the Gospels do not name it.'],
     ['rule', 'Territory.', 'Who ruled where. Boundaries are approximate.']
   ];
+  // When: each scene's period (js/guide.js), shown as a small line on the card.
+  const WHEN = window.WAY_WHEN || { periods: [], timeline: [] };
+  const whenOf = {};
+  (() => { let cur = null; STEPS.forEach((st) => { const p = WHEN.periods.find((x) => x.from === st.id); if (p) cur = p.label ? p : null; if (cur) whenOf[st.id] = cur; }); })();
+  const CLOCK = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.6 V8 L10.4 9.4"/></svg>';
+  const whenText = (p) => p.label + (p.years ? ' · ' + p.years : '');
+  function whenHTML(s) {
+    const p = whenOf[s.id];
+    if (!p || s.kind === 'title' || s.kind === 'close') return '';
+    return `<button type="button" class="when" data-when="${s.id}" aria-haspopup="dialog">${CLOCK}<span>${esc(whenText(p))}</span><span class="vh">. When did it happen?</span></button>`;
+  }
   const legendHTML = '<ul class="legend">' + LEGEND.map((l) => `<li>${SYM[l[0]]}<span><b>${l[1]}</b> ${l[2]}</span></li>`).join('') + '</ul>';
   document.getElementById('key-body').innerHTML = legendHTML;
 
@@ -145,7 +158,7 @@
         <blockquote>${esc(s.verse)}</blockquote>
         <div class="verse-foot">${refLink(s.ref, 'ref')}</div>
         ${s.after ? `<p class="after">${linkRefs(esc(s.after))}</p>` : ''}
-        ${studyRow(s)}
+        ${whenHTML(s)}${studyRow(s)}
       </div>`;
     }
     let body = '';
@@ -161,7 +174,7 @@
         <div class="actions">${refLink(s.ref, 'btn btn-solid')}<a class="btn" href="#top">Begin again</a></div>
         <p class="more">The story continues in the book of Acts.</p>`;
     }
-    body += studyRow(s);
+    body += whenHTML(s) + studyRow(s);
     const tight = s.kind === 'list' && s.items && s.items.length > 5 ? ' step-list-tight' : '';
     return `<article class="card card-${pal.card}${tight}">${kick}<h2>${s.title}</h2>${body}</article>`;
   }
@@ -173,6 +186,57 @@
     story.appendChild(sec);
   });
   const sections = Array.from(story.querySelectorAll('.step'));
+
+  // ---------- Tap to explain: people and words in the card text ----------
+  // The first mention of each person (in the scenes they belong to) and of a
+  // few key words becomes a button that opens a short explanation.
+  const PEOPLE = window.WAY_PEOPLE || [];
+  const WORDS = window.WAY_WORDS || [];
+  const reEsc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const MAX_WORDS = 2;
+  sections.forEach((sec, i) => {
+    const st = STEPS[i];
+    if (st.kind === 'title' || st.kind === 'close') return;
+    const pats = [];
+    PEOPLE.forEach((p) => { if (p.scenes.includes(st.id)) p.names.forEach((n) => pats.push({ n, kind: 'person', id: p.id })); });
+    WORDS.forEach((w) => w.match.forEach((n) => pats.push({ n, kind: 'word', id: w.id })));
+    if (!pats.length) return;
+    pats.sort((a, b) => b.n.length - a.n.length);
+    const byText = {};
+    pats.forEach((p) => { if (!byText[p.n]) byText[p.n] = p; });
+    const re = new RegExp('(^|[^A-Za-z’\'-])(' + Object.keys(byText).map(reEsc).join('|') + ')(?![A-Za-z])(?!\\s?\\d)', 'g');
+    const used = new Set();
+    let words = 0;
+    sec.querySelectorAll('.text, .note, .after, .steps-list li > span:nth-of-type(1)').forEach((el) => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n.parentNode.closest('button, a') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        const t = node.nodeValue;
+        let m, last = 0, frag = null;
+        re.lastIndex = 0;
+        while ((m = re.exec(t))) {
+          const p = byText[m[2]];
+          const key = p.kind + ':' + p.id;
+          if (used.has(key) || (p.kind === 'word' && words >= MAX_WORDS)) continue;
+          used.add(key);
+          if (p.kind === 'word') words++;
+          frag = frag || document.createDocumentFragment();
+          const at = m.index + m[1].length;
+          frag.appendChild(document.createTextNode(t.slice(last, at)));
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = p.kind === 'person' ? 'xp xp-person' : 'xp';
+          b.dataset.explain = key;
+          b.setAttribute('aria-haspopup', 'dialog');
+          b.textContent = m[2];
+          frag.appendChild(b);
+          last = at + m[2].length;
+        }
+        if (frag) { frag.appendChild(document.createTextNode(t.slice(last))); node.parentNode.replaceChild(frag, node); }
+      });
+    });
+  });
   const exploreBtn = document.getElementById('explore-open');
   const exploreClose = document.getElementById('explore-close');
 
@@ -469,6 +533,8 @@
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     tocOpener = null;
     if (toc.open) toc.close();
+    const ex = document.getElementById('explain');
+    if (ex && ex.open) ex.close();
     touchedSinceJump = false;
     requestAnimationFrame(() => requestAnimationFrame(() => {
       measure();
@@ -520,8 +586,10 @@
     if (cur) cur.scrollIntoView({ block: 'center' });
   }
   // ---------- tabs: Chapters · Places · Search ----------
-  const TABS = ['chapters', 'topics', 'plan', 'places', 'search'];
+  const TABS = ['chapters', 'topics', 'people', 'places', 'plan', 'search'];
   function showTab(name, focus) {
+    const was = TABS.find((t) => document.getElementById('tab-' + t).getAttribute('aria-selected') === 'true');
+    if (was !== name) toc.scrollTop = 0;
     TABS.forEach((t) => {
       document.getElementById('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
       document.getElementById('panel-' + t).hidden = t !== name;
@@ -612,6 +680,75 @@
     if (sb) goTo(+sb.dataset.i);
   });
 
+  // ---------- People tab and the explain sheet ----------
+  const personById = Object.fromEntries(PEOPLE.map((p) => [p.id, p]));
+  const wordById = Object.fromEntries(WORDS.map((w) => [w.id, w]));
+  const sceneIdx = (id) => STEPS.findIndex((st) => st.id === id);
+  const sceneListHTML = (ids) => '<ol class="pl-list">' + ids.map(sceneIdx).filter((i) => i >= 0).map((i) => {
+    const st = STEPS[i]; const g2 = groups.find((gg) => gg.steps.includes(i));
+    return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}<small>${esc((g2 && g2.num ? g2.num + ' · ' : '') + (st.ref ? st.ref[0].replace(/\s*·\s*BSB$/, '') : (g2 ? g2.title : '')))}</small></button></li>`;
+  }).join('') + '</ol>';
+  const personHTML = (p) => `<p>${linkRefs(esc(p.text))}</p><p class="pl-in">In the story</p>${sceneListHTML(p.scenes)}`;
+  document.getElementById('people-body').innerHTML = '<p class="q-hint">The people you meet most often in the story. Tap a name in any scene to see who they are.</p>'
+    + (window.WAY_PEOPLE_GROUPS || []).map(([g, title]) => `<h3 class="pl-group">${esc(title)}</h3>` + PEOPLE.filter((p) => p.group === g).map((p) => `
+      <section class="toc-ch pl pp">
+        <button class="toc-head" type="button" aria-expanded="false" aria-controls="pp-${p.id}">
+          <span>${esc(p.name)}<small>${esc(p.role)}</small></span><span class="cnt">${p.scenes.length}</span>
+          <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg>
+        </button>
+        <div class="toc-scenes pl-body pp-body" id="pp-${p.id}">${personHTML(p)}</div>
+      </section>`).join('')).join('');
+  document.getElementById('people-body').addEventListener('click', (ev) => {
+    const head = ev.target.closest('.toc-head');
+    if (head) { head.setAttribute('aria-expanded', head.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); return; }
+    const sb = ev.target.closest('[data-i]');
+    if (sb) goTo(+sb.dataset.i);
+  });
+
+  const exDlg = document.getElementById('explain');
+  const exKicker = document.getElementById('ex-kicker');
+  const exTitle = document.getElementById('ex-title');
+  const exBody = document.getElementById('ex-body');
+  let exOpener = null;
+  function whenSheetHTML(id) {
+    const p = whenOf[id];
+    const here = p ? `<p class="when-now">${CLOCK}<span><b>This scene</b> ${esc(whenText(p))}</span></p>` : '';
+    return here + '<p class="dp-lede">The Gospels date events by rulers and feasts, not by our calendar, so most years are approximate. Where scholars differ, both views are given.</p><ol class="when-list">'
+      + WHEN.timeline.map(([when, what, note]) => `<li><span class="wl-when">${esc(when)}</span><span class="wl-what"><b>${esc(what)}</b> ${linkRefs(esc(note))}</span></li>`).join('') + '</ol>'
+      + '<p class="gos-foot">For the days of Holy Week, see the <a href="holyweek.html#days">Holy Week guide</a>.</p>';
+  }
+  function openExplain(key) {
+    const [kind, id] = key.split(':');
+    exBody.scrollTop = 0;
+    if (kind === 'person' && personById[id]) {
+      const p = personById[id];
+      exKicker.textContent = p.role; exTitle.textContent = p.name; exBody.innerHTML = personHTML(p);
+    } else if (kind === 'word' && wordById[id]) {
+      const w = wordById[id];
+      exKicker.textContent = 'Word to know'; exTitle.textContent = w.word; exBody.innerHTML = `<p>${linkRefs(esc(w.text))}</p>`;
+    } else if (kind === 'when') {
+      exKicker.textContent = 'When'; exTitle.textContent = 'When did it happen?'; exBody.innerHTML = whenSheetHTML(id);
+    } else return;
+    exOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+    if (exOpener && exOpener.blur) exOpener.blur();
+    if (!exDlg.open) exDlg.showModal();
+  }
+  document.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-explain], [data-when]');
+    if (!b || exDlg.contains(b)) return;
+    openExplain(b.dataset.explain || 'when:' + b.dataset.when);
+  });
+  exDlg.addEventListener('click', (ev) => {
+    if (ev.target === exDlg) { exDlg.close(); return; }
+    const sb = ev.target.closest('[data-i]');
+    if (sb) { exDlg.close(); goTo(+sb.dataset.i); }
+  });
+  exDlg.addEventListener('close', () => {
+    if (exOpener && exOpener.focus && !touchedSinceJump) { try { exOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+    exOpener = null;
+  });
+  document.getElementById('ex-close').addEventListener('click', () => exDlg.close());
+
   // ---------- Search ----------
   const norm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’‘]/g, "'").replace(/[“”]/g, '"').toLowerCase();
   const searchDocs = STEPS.map((st, i) => {
@@ -639,7 +776,7 @@
   const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'], leviticus: ['lev'], micah: ['mic'], isaiah: ['isa'], psalms: ['ps', 'psa', 'psalm'],
     genesis: ['gen'], exodus: ['ex', 'exo'], deuteronomy: ['deut', 'dt'], joshua: ['josh'], judges: ['judg', 'jdg'], ruth: ['ru'], '1 samuel': ['1sa', '1 sam'], '2 samuel': ['2sa', '2 sam'],
     '1 kings': ['1ki', '1 kgs'], '2 kings': ['2ki', '2 kgs'], '1 chronicles': ['1ch', '1 chr'], '2 chronicles': ['2ch', '2 chr'], hosea: ['hos'], zechariah: ['zech', 'zec'],
-    numbers: ['num'], jeremiah: ['jer'], daniel: ['dan'], joel: ['jl'], jonah: ['jon'], malachi: ['mal'] };
+    numbers: ['num'], jeremiah: ['jer'], daniel: ['dan'], joel: ['jl'], jonah: ['jon'], malachi: ['mal'], romans: ['rom'], galatians: ['gal'] };
   const bookOf = (w) => Object.keys(BOOKS).find((b) => b.startsWith(w) && w.length >= 3 || BOOKS[b].includes(w));
   function refSpans(label) {
     // "John 4:1–42", "Mark 4:35–5:20", "Matthew 5–7", "Mark 14:26 · John 18:1"
@@ -685,7 +822,19 @@
       return;
     }
     const terms = norm(qInput.value).split(/[\s,;:.]+/).filter((x) => x.length > 1 || /\d/.test(x));
-    if (!terms.length) { results.innerHTML = ''; qHint.hidden = false; qHint.textContent = 'Try “Peter”, “Siloam”, “John 4” or “Passover”.'; return; }
+    if (!terms.length) {
+      qHint.hidden = false; qHint.textContent = 'Try “Peter”, “Siloam”, “John 4” or “Passover”.';
+      results.innerHTML = `<li class="words-k">Words to know</li><li class="words">${WORDS.slice().sort((a, b) => a.word.localeCompare(b.word)).map((w) => `<button type="button" data-explain="word:${w.id}">${esc(w.word)}</button>`).join('')}</li>`;
+      return;
+    }
+    // People and words whose name matches go first.
+    const q = norm(qInput.value).trim();
+    const nameHit = (names) => names.some((n) => norm(n).split(/[\s,]+/).some((w) => w.startsWith(q)) || norm(n).startsWith(q));
+    const extra = q.length < 3 ? [] : [
+      ...PEOPLE.filter((p) => nameHit([p.name, ...p.names])).map((p) => ['person:' + p.id, p.name, p.role]),
+      ...WORDS.filter((w) => nameHit([w.word, ...w.match])).map((w) => ['word:' + w.id, w.word, 'Word to know'])
+    ].slice(0, 4);
+    const extraHTML = extra.map(([key, name, sub]) => `<li class="r-xp"><button type="button" data-explain="${key}"><span class="r-title">${esc(name)}</span><small>${esc(sub)}</small></button></li>`).join('');
     const hits = [];
     searchDocs.forEach((d) => {
       let score = 0; let best = null;
@@ -704,9 +853,9 @@
       hits.push({ i: d.i, score, best });
     });
     hits.sort((a, b) => b.score - a.score || a.i - b.i);
-    qHint.hidden = hits.length > 0;
+    qHint.hidden = hits.length > 0 || extra.length > 0;
     if (!hits.length) qHint.textContent = 'No scenes match. Try a shorter word.';
-    results.innerHTML = hits.slice(0, 40).map((h) => {
+    results.innerHTML = extraHTML + hits.slice(0, 40).map((h) => {
       const st = STEPS[h.i]; const g = groups.find((gg) => gg.steps.includes(h.i));
       const where = (g && g.num ? g.num + ' · ' + g.title : 'Prologue') + (st.ref ? ' · ' + st.ref[0] : '');
       const snip = h.best && !['title', 'kicker', 'ref'].includes(h.best.k) ? `<span class="snip">${snippet(h.best.t, h.best.term)}</span>` : '';
@@ -748,6 +897,7 @@
   qInput.addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(runSearch, 120); });
   qInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { const first = results.querySelector('[data-i]'); if (first) goTo(+first.dataset.i); } });
   results.addEventListener('click', (ev) => { const b = ev.target.closest('[data-i]'); if (b) goTo(+b.dataset.i); });
+  runSearch();
 
   // ---------- Go deeper: the Gospels, Old Testament, daily life, archaeology, reflection ----------
   const deepDlg = document.getElementById('deeper');
@@ -943,9 +1093,11 @@
     const b = ev.target.closest('[data-save]');
     if (!b) return;
     const id = b.dataset.save;
-    if (saved.has(id)) saved.delete(id); else saved.add(id);
+    const adding = !saved.has(id);
+    if (adding) saved.add(id); else saved.delete(id);
     saveSet('the-way:saved', saved);
     syncSaveButtons();
+    showToast(adding ? 'Saved · find it in the menu under Plan' : 'Removed from saved');
   });
   syncSaveButtons();
   const planBody = document.getElementById('plan-body');
@@ -959,7 +1111,12 @@
     const read = PLAN.reduce((n, d) => n + d.steps.filter((i) => seen.has(STEPS[i].id)).length, 0);
     const startOf = (d) => { const u = d.steps.find((i) => !seen.has(STEPS[i].id)); return u != null ? u : d.steps[0]; };
     const sub = (d) => d.steps.map((i) => stepLabel(STEPS[i])).join(' · ');
-    let html = `<div class="plan-head"><p class="plan-k">Reading plan</p><h3>30 days through the Gospels</h3>
+    const list = STEPS.map((st, i) => i).filter((i) => saved.has(STEPS[i].id));
+    const savedHTML = '<h3 class="plan-h" id="saved-h">Saved scenes</h3>' + (list.length
+      ? '<ul class="saved-list">' + list.map((i) => { const st = STEPS[i]; return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}${st.ref ? `<small>${esc(st.ref[0])}</small>` : ''}</button><button type="button" class="unsave" data-unsave="${st.id}" aria-label="Remove ${esc(stepLabel(st))} from saved">${BOOKMARK}</button></li>`; }).join('') + '</ul>'
+      : `<p class="q-hint">Tap the bookmark ${BOOKMARK} on any scene to save it here.</p>`);
+    let html = list.length ? savedHTML : '';
+    html += `<div class="plan-head"><p class="plan-k">Reading plan</p><h3>30 days through the Gospels</h3>
       <p class="plan-sub">About three scenes a day, at your own pace. A day is ticked once you have scrolled through its scenes.</p>
       <div class="plan-bar" aria-hidden="true"><i style="width:${(100 * read / total).toFixed(1)}%"></i></div>
       <p class="plan-count">${days} of ${PLAN.length} days · ${read} of ${total} scenes</p>`;
@@ -970,10 +1127,7 @@
       const dn = doneDay(d);
       return `<li class="${dn ? 'done' : ''}${k === next ? ' next' : ''}"><button type="button" data-i="${startOf(d)}"><span class="d-num">${dn ? '✓' : k + 1}</span><span class="d-t">${esc(d.title)}<small>${esc(sub(d))}</small></span></button></li>`;
     }).join('') + '</ol>';
-    const list = STEPS.map((st, i) => i).filter((i) => saved.has(STEPS[i].id));
-    html += '<h3 class="plan-h">Saved scenes</h3>' + (list.length
-      ? '<ul class="saved-list">' + list.map((i) => { const st = STEPS[i]; return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}${st.ref ? `<small>${esc(st.ref[0])}</small>` : ''}</button><button type="button" class="unsave" data-unsave="${st.id}" aria-label="Remove ${esc(stepLabel(st))} from saved">${BOOKMARK}</button></li>`; }).join('') + '</ul>'
-      : `<p class="q-hint">Tap the bookmark ${BOOKMARK} on any scene to save it here.</p>`);
+    if (!list.length) html += savedHTML;
     if ('serviceWorker' in navigator && 'caches' in window) {
       let when = null;
       try { when = localStorage.getItem('the-way:offline-text'); } catch (err) { /* ignore */ }
@@ -1039,7 +1193,7 @@
   const API_BOOK = { matthew: 'MAT', mark: 'MRK', luke: 'LUK', john: 'JHN', acts: 'ACT', leviticus: 'LEV', micah: 'MIC', isaiah: 'ISA', psalms: 'PSA',
     genesis: 'GEN', exodus: 'EXO', deuteronomy: 'DEU', joshua: 'JOS', judges: 'JDG', ruth: 'RUT', '1 samuel': '1SA', '2 samuel': '2SA', '1 kings': '1KI', '2 kings': '2KI',
     '1 chronicles': '1CH', '2 chronicles': '2CH', hosea: 'HOS', zechariah: 'ZEC',
-    numbers: 'NUM', jeremiah: 'JER', daniel: 'DAN', joel: 'JOL', jonah: 'JON', malachi: 'MAL' };
+    numbers: 'NUM', jeremiah: 'JER', daniel: 'DAN', joel: 'JOL', jonah: 'JON', malachi: 'MAL', romans: 'ROM', galatians: 'GAL' };
   const HUB_BOOK = Object.fromEntries(Object.keys(API_BOOK).map((b) => [b, b.replace(' ', '_')]));
   const chapterCache = new Map();
   function loadChapter(book, c) {
