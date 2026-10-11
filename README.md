@@ -33,6 +33,13 @@ Tapping a Scripture reference (on a card, under a verse, or inside a note) opens
 
 The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with three tabs: **Chapters** (every chapter and scene), **Places** (every town, site and landmark, with the scenes it appears in) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”). The magnifier in the header opens Search directly. The address follows the scene you're on, so links like `#s-arrest` open at that scene.
 
+## Sharing and installing
+
+- **About** (`about.html`) and **Sources** (`sources.html`) pages explain how the atlas was made and list every source the notes cite.
+- Shared links show a preview card (`og.png`).
+- On iPhone, Share → Add to Home Screen installs it as an app (`manifest.webmanifest`, icons). A small offline cache (`sw.js`) makes it reopen quickly; terrain tiles still need a connection.
+- The atlas remembers the last scene you reached and offers to continue from there.
+
 ## Running it
 
 It is a static site with no build step. Open it through any local web server, for example:
@@ -45,7 +52,9 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 
 ## Files
 
-- `index.html`: page shell, header, map key dialog
+- `index.html`: page shell, header, menus, map key and passage dialogs
+- `about.html`, `sources.html`, `css/page.css`: the About and Sources pages
+- `manifest.webmanifest`, `sw.js`, `og.png`, icons: install, offline cache and link previews
 - `js/scenes.js`: all content (palettes, places, regions, routes and the scene list)
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type

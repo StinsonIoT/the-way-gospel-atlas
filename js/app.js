@@ -110,6 +110,7 @@
         <p class="eyebrow">A journey through the Gospels</p>
         <h1>Follow<br>the <em>Way.</em></h1>
         <p class="lede">From a manger in Bethlehem to the Mount of Olives: the life, death and resurrection of Jesus, read in the Berean Standard Bible.</p>
+        <div id="resume" class="resume" hidden></div>
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;
     }
@@ -388,8 +389,24 @@
     clearTimeout(hashTimer);
     hashTimer = setTimeout(() => {
       try { history.replaceState(null, '', r === 0 ? location.pathname + location.search : '#' + sections[r].id); } catch (err) { /* ignore */ }
+      // Remember the reader's place (only once they are into the story).
+      if (r >= 3) { try { localStorage.setItem('the-way:last', STEPS[r].id); } catch (err) { /* private mode */ } }
     }, 500);
   }
+  // ---------- Continue where you left off ----------
+  function offerResume() {
+    let last = null;
+    try { last = localStorage.getItem('the-way:last'); } catch (err) { return; }
+    const i = STEPS.findIndex((st) => st.id === last);
+    if (i < 3) return;
+    const box = document.getElementById('resume');
+    const g = groups.find((gg) => gg.steps.includes(i));
+    box.innerHTML = `<button type="button" class="resume-go"><span class="resume-k">Continue where you left off</span><span class="resume-t">${esc(stepLabel(STEPS[i]))}</span><small>${esc(g && g.num ? g.num + ' · ' + g.title : '')}</small></button><button type="button" class="resume-x" aria-label="Start from the beginning instead">×</button>`;
+    box.hidden = false;
+    box.querySelector('.resume-go').addEventListener('click', () => { box.hidden = true; goTo(i); });
+    box.querySelector('.resume-x').addEventListener('click', () => { box.hidden = true; try { localStorage.removeItem('the-way:last'); } catch (err) { /* ignore */ } });
+  }
+
   // Jump to a scene. On iPhone (WebKit), closing a dialog or the keyboard can
   // pull the page back to where it was, or to the top, on the next touch. So:
   // drop focus first, close, wait two frames, scroll, and re-apply the
@@ -882,6 +899,7 @@
     computeCams();
     const hashIdx = sections.findIndex((sec) => '#' + sec.id === location.hash);
     if (hashIdx > 0) window.scrollTo({ top: tops[hashIdx] + 2, behavior: 'instant' });
+    else offerResume();
     render();
     document.body.classList.add('ready');
   }
@@ -926,4 +944,9 @@
   document.getElementById('key-open').addEventListener('click', () => dlg.showModal());
   document.getElementById('key-close').addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', (ev) => { if (ev.target === dlg) dlg.close(); });
+
+  // Offline cache and Add to Home Screen support.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { /* optional */ }); });
+  }
 })();

@@ -6,12 +6,29 @@
 <title>The Way — A Gospel Atlas</title>
 <meta name="description" content="A scroll-driven atlas of the life of Jesus, from Bethlehem to the ascension, with Scripture in the Berean Standard Bible and maps that show how certain each place is.">
 <meta name="theme-color" content="#0F1A1C">
+<link rel="canonical" href="https://stinsoniot.github.io/the-way-gospel-atlas/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Way — A Gospel Atlas">
+<meta property="og:title" content="Follow the Way — A Gospel Atlas">
+<meta property="og:description" content="The life of Jesus on the map, from Bethlehem to the Mount of Olives, in 87 scenes with the Berean Standard Bible.">
+<meta property="og:url" content="https://stinsoniot.github.io/the-way-gospel-atlas/">
+<meta property="og:image" content="https://stinsoniot.github.io/the-way-gospel-atlas/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Follow the Way: a map of Galilee and Judea with Nazareth, Capernaum, Jerusalem and Bethlehem.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="The Way">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M7,0 L8.6,5.4 L14,7 L8.6,8.6 L7,14 L5.4,8.6 L0,7 L5.4,5.4 Z' fill='%23B4532A'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Instrument+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="css/style.css?v=18">
+<link rel="stylesheet" href="css/style.css?v=19">
 </head>
 <body>
 <a class="skip" href="#s-land">Skip to the story</a>
@@ -41,6 +58,7 @@
 <main id="story"></main>
 
 <footer class="credits">
+  <p class="credit-links"><a href="about.html">About the atlas</a> · <a href="sources.html">Sources</a> · <a href="https://github.com/StinsonIoT/the-way-gospel-atlas/issues">Suggest a correction</a></p>
   <p><b>Accuracy.</b> Dots mark named towns at approximate locations. Dashed circles mark regions where the exact site is unknown. Dashed lines are schematic and never follow modern roads; grey dots mean the text moves on without describing the travel. Hollow diamonds are traditional or later-proposed sites. Jerusalem is a simplified 3D model over real terrain; landmarks follow published dimensions and houses are illustrative. It shows only the first wall: the second wall’s course is debated, and the third wall was begun by Agrippa I (41–44 CE), after the Gospel events. Pilate’s praetorium is marked at both proposed sites, Herod’s palace and the Antonia. Capernaum is an illustrative village model: the basalt house type and the synagogue site come from excavations, but individual houses and the village’s extent do not.</p>
   <p>Scripture quotations: Berean Standard Bible (public domain); passages load from the Free Use Bible API (bible.helloao.org). Map data: Natural Earth (public domain), modern coastlines. Sea of Galilee shoreline: Who’s On First (<a href="https://whosonfirst.org/docs/licenses/">licence</a>). Terrain: Terrain Tiles on AWS (Mapzen; SRTM and other public sources). Built with MapLibre GL JS and maplibre-contour.</p>
 </footer>
@@ -66,6 +84,7 @@
     <p id="q-hint" class="q-hint">Try “Peter”, “Siloam”, “John 4” or “Passover”.</p>
     <ol id="results" class="results"></ol>
   </div>
+  <p class="toc-links"><a href="about.html">About the atlas</a> · <a href="sources.html">Sources</a></p>
 </dialog>
 
 <dialog id="passage" aria-labelledby="passage-title">
@@ -90,8 +109,8 @@
 </dialog>
 
 <script src="vendor/maplibre-gl.js"></script>
-<script src="vendor/maplibre-contour.min.js?v=18"></script>
-<script src="js/scenes.js?v=18"></script>
-<script src="js/app.js?v=18"></script>
+<script src="vendor/maplibre-contour.min.js?v=19"></script>
+<script src="js/scenes.js?v=19"></script>
+<script src="js/app.js?v=19"></script>
 </body>
 </html>
