@@ -41,6 +41,14 @@ The line at the top is a timeline split into the eight chapters (plus a short pr
 
 Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn). Tapping that opens the parallel passages, each readable in place, with a note where the accounts differ. **Follow** steps through the story one Gospel at a time, from a bar under the header. Parallels follow the standard Gospel synopses; the longer ending of Mark (16:9–20) is not used. Reading progress and saved scenes are kept on the device only.
 
+## Reflect
+
+Each scene has a **Reflect** button with one open question for personal reflection or a small group (`WAY_ASK` in `js/study.js`). The questions stay with what the passage says and do not presume an answer.
+
+## Accessibility
+
+Scenes grow to fit their cards, so nothing slides under the header with larger text (checked at 150%). Icon buttons have spoken names, the map is kept out of the screen-reader and tab order (the story text carries the meaning), and card text meets WCAG AA contrast (checked with axe-core).
+
 ## Listening
 
 **Listen to the story** (on the title screen) or the headphones on any scene starts a listen-through: each scene's passage is read aloud from the BSB audio recordings, then the map glides on to the next scene, or to the next scene in the Gospel you are following. Scenes without a passage pause for a few seconds. A bar under the header pauses, skips or stops it, and the phone's lock-screen controls work too. Scrolling away pauses the tour at the end of the passage, so you can pick up from wherever you are.

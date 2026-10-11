@@ -84,11 +84,14 @@
   };
   const ICON = {
     life: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8 L8 3.5 L13.5 8 M4.5 6.5 V13 H11.5 V6.5 M7 13 V10 H9 V13"/></svg>',
+    ask: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5 H13 V10.5 H7.5 L4.5 13 V10.5 H3 Z"/></svg>',
     found: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5 H14 M2 8.5 H14 M2 12 H14"/><circle cx="10" cy="10.2" r="1.1"/></svg>'
   };
-  const EXTRA_LABEL = { life: 'Life in Jesus’ day', found: 'Found by archaeologists' };
+  const EXTRA_LABEL = { life: 'Life in Jesus’ day', found: 'Found by archaeologists', ask: 'Reflect' };
+  const ASK = window.WAY_ASK || {};
+  STEPS.forEach((s) => { if (ASK[s.id]) s.ask = ASK[s.id]; });
   function extrasHTML(s) {
-    const ks = ['life', 'found'].filter((k) => s[k]);
+    const ks = ['life', 'found', 'ask'].filter((k) => s[k]);
     if (!ks.length) return '';
     return `<div class="more">${ks.map((k) => `<button type="button" class="more-btn more-${k}" aria-expanded="false" aria-controls="x-${s.id}-${k}">${ICON[k]}<span>${EXTRA_LABEL[k]}</span></button>`).join('')}</div>`
       + ks.map((k) => `<div class="extra extra-${k}" id="x-${s.id}-${k}" hidden><b>${EXTRA_LABEL[k]}</b> ${linkRefs(esc(s[k]))}</div>`).join('');
@@ -104,8 +107,8 @@
     if (!h) return '';
     const told = GOSPELS.filter((g, k) => h[k]).map((g) => g[1]);
     const say = told.length === 1 ? 'Only in ' + told[0] : told.length === 4 ? 'In all four Gospels' : 'Told in ' + told.length + ' Gospels';
-    return `<div class="study"><button type="button" class="gos-btn" data-gos="${s.id}" aria-haspopup="dialog" aria-label="${esc(say)}: ${esc(told.join(', '))}. Compare the accounts">`
-      + `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span><span class="gos-say" aria-hidden="true">${esc(say)}</span></button>`
+    return `<div class="study"><button type="button" class="gos-btn" data-gos="${s.id}" aria-haspopup="dialog">`
+      + `<span class="gos-dots" aria-hidden="true">${GOSPELS.map((g, k) => `<span class="g${h[k] ? ' on' : ''}">${g[2]}</span>`).join('')}</span><span class="gos-say">${esc(say)}</span><span class="vh">: ${esc(told.join(', '))}. Compare the accounts</span></button>`
       + `<span class="study-acts"><button type="button" class="listen-btn" data-tour-from="${s.id}" aria-label="Listen from this scene">${HEADPHONES}</button>`
       + `<button type="button" class="share-btn" data-share="${s.id}" aria-label="Share this scene">${SHARE}</button>`
       + `<button type="button" class="save-btn" data-save="${s.id}" aria-pressed="false" aria-label="Save this scene">${BOOKMARK}</button></span></div>`;
@@ -166,7 +169,6 @@
     const sec = document.createElement('section');
     sec.className = 'step step-' + (s.kind || 'scene');
     sec.id = i === 0 ? 'top' : 's-' + s.id;
-    sec.setAttribute('aria-label', s.ch);
     sec.innerHTML = cardHTML(s);
     story.appendChild(sec);
   });
@@ -268,6 +270,9 @@
       ]
     }
   });
+  // The map is decoration for screen readers (the story carries the meaning), so
+  // its canvas stays out of the tab order.
+  map.getCanvas().setAttribute('tabindex', '-1');
 
   window.__wayMap = map; // for debugging in the browser console
 
@@ -379,6 +384,10 @@
   // ---------- scroll → progress ----------
   let tops = [];
   function measure() { tops = sections.map((s) => s.offsetTop); }
+  if ('ResizeObserver' in window) {
+    let rq = 0;
+    new ResizeObserver(() => { cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { if (started) { measure(); queue(); } }); }).observe(story);
+  }
   function progress() {
     const y = window.scrollY;
     let i = 0;
