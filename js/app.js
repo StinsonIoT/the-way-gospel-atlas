@@ -96,6 +96,7 @@
     }
     let body = '';
     if (s.text) body += `<p class="text">${esc(s.text)}</p>`;
+    if (s.note) body += `<p class="note">${esc(s.note)}</p>`;
     if (s.kind === 'legend') body += legendHTML;
     if (s.kind === 'chapter') body += `<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>`;
     if (s.kind === 'list') body = `<ol class="steps-list">${s.items.map((m, i) => `<li><b>${i + 1}</b><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>` + body;
@@ -148,10 +149,10 @@
     style: {
       version: 8,
       sources: {
-        land: { type: 'geojson', data: 'data/land.geojson?v=4' },
-        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=4' },
-        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=4' },
-        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=4' },
+        land: { type: 'geojson', data: 'data/land.geojson?v=5' },
+        lakes: { type: 'geojson', data: 'data/lakes.geojson?v=5' },
+        rivers: { type: 'geojson', data: 'data/rivers.geojson?v=5' },
+        jeru: { type: 'geojson', data: 'data/jerusalem.geojson?v=5' },
         overlay: { type: 'geojson', data: overlay },
         ...terrainSources
       },
@@ -206,7 +207,7 @@
   function padding() {
     const w = window.innerWidth, h = window.innerHeight;
     if (w >= 900) return { top: 90, bottom: 60, left: Math.min(560, w * 0.42), right: 48 };
-    return { top: 70, bottom: Math.round(h * 0.44), left: 22, right: 22 };
+    return { top: 70, bottom: Math.round(h * 0.52), left: 22, right: 22 };
   }
   function computeCams() {
     const pad = padding();
