@@ -176,7 +176,7 @@ sayings = '<div class="aside"><h3>Seven sayings from the cross</h3><ol class="sa
     '“I am thirsty.” (John 19:28)',
     '“It is finished.” (John 19:30)',
     '“Father, into Your hands I commit My Spirit.” (Luke 23:46)',
-]) + '</ol><p class="small">' + fmt('No one Gospel records all seven; tradition gathers them. Luke 23:34 is missing from some early manuscripts.') + '</p></div>'
+]) + '</ol><p class="small">' + fmt('No one Gospel records all seven; tradition gathers them. The words “Father, forgive them…” (Luke 23:34) are missing from some early manuscripts.') + '</p></div>'
 section('cross', 'The cross', 'What the Gospels describe, and what history and archaeology add.', cross + sayings)
 
 # ---------------------------------------------------------------- tomb

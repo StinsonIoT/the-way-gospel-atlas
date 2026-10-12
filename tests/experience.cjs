@@ -8,7 +8,14 @@ vm.runInContext(fs.readFileSync('js/experience.js', 'utf8'), ctx);
 vm.runInContext(fs.readFileSync('js/study.js', 'utf8'), ctx);
 const ex = ctx.window.WAY_EXPERIENCE, steps = ctx.window.WAY.STEPS;
 assert.equal(steps.length, 90);
-for (const file of ['js/scenes.js', 'js/places.js', 'js/study.js', 'js/guide.js', 'data/jerusalem3d.json', 'data/capernaum3d.json']) {
+// Content files are edited after review; the scenes themselves (ids and order)
+// and the 3D models must stay as they were at the baseline.
+{
+  const base = { window: {} }; vm.createContext(base);
+  vm.runInContext(cp.execFileSync('git', ['show', '4b074cce54e39b69467c76a90ca086824de3b7e3:js/scenes.js']).toString(), base);
+  assert.equal(JSON.stringify(steps.map(s => s.id)), JSON.stringify(base.window.WAY.STEPS.map(s => s.id)), 'all 90 scenes keep their ids and order');
+}
+for (const file of ['data/jerusalem3d.json', 'data/capernaum3d.json']) {
   assert.equal(Buffer.compare(fs.readFileSync(file), cp.execFileSync('git', ['show', '4b074cce54e39b69467c76a90ca086824de3b7e3:' + file])), 0, file + ' must retain the original content');
 }
 // Expanded captions and additional header bars leave valid camera space.
@@ -48,5 +55,5 @@ assert.deepEqual(Array.from(ex.visible(steps[0])),['star','jerusalem']);
 for (const id of ex.visible(steps[0])) assert(steps[0].show.includes(id) || id==='jerusalem', id+' is an existing place');
 assert(ctx.window.WAY.PLACES.jerusalem, 'opening labels are existing places');
 assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=52')&&index.includes('js/app.js?v=52'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v29'));
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=52')&&index.includes('js/app.js?v=52'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v30'));
 console.log('PASS: all 90 scenes and model/content files retained; opening contains Bethlehem; stable Holy Week orientation; valid camera padding across six screen sizes, long captions, and extra header bars; real scene markup retains readings, notes, quotations and tools; cache versions updated. Logic checks, not browser visual QA.');

@@ -213,8 +213,8 @@ window.WAY = (function () {
       show: ['templelbl'],
       kicker: 'I · Origins · Jerusalem', ref: ['Luke 1:5–25', 'luke', 1],
       title: 'Your prayer <em>has been heard.</em>',
-      text: 'In the time of Herod king of Judea, the priest Zechariah is chosen by lot to burn incense in the temple. An angel tells him that his wife Elizabeth, old and childless, will bear a son, John, who will go before the Lord in the spirit and power of Elijah. Because he does not believe, he cannot speak until the child is born.',
-      note: 'The king is Herod the Great, who died about 4 BC. The angel is Gabriel (Luke 1:19), who comes to Mary six months later (Luke 1:26). Zechariah and Elizabeth lived in “a town in the hill country of Judah” (Luke 1:39), which Luke does not name.',
+      text: 'In the time of Herod king of Judea, the priest Zechariah is chosen by lot to burn incense in the temple. An angel tells him that his wife Elizabeth, old and childless, will bear a son, John, who will go before the Lord in the spirit and power of Elijah. Because he does not believe, he cannot speak until the child is named.',
+      note: 'The king is Herod the Great, who died about 4 BC. The angel is Gabriel (Luke 1:19), who comes to Mary in Elizabeth’s sixth month (Luke 1:26, 36). Zechariah and Elizabeth lived in “a town in the hill country of Judah” (Luke 1:39), which Luke does not name.',
       chips: ['recon'] },
 
     { id: 'annunciation', ch: 'I · Origins', pal: 'dawn', view: [[35.25, 32.66], [35.35, 32.73]], pitch: 52, bearing: 8,
@@ -346,12 +346,12 @@ window.WAY = (function () {
       kicker: 'Bethany beyond the Jordan', ref: ['John 1:35–51', 'john', 1],
       title: 'The first <em>followers.</em>',
       text: 'John the Baptist points to Jesus as the Lamb of God. Andrew follows Him and brings his brother Simon; Philip and Nathanael soon join them.',
-      note: 'John names “Bethany beyond the Jordan”. Its exact location is unresolved, so the map marks a region, not a point.',
+      note: 'John names “Bethany beyond the Jordan”. Its exact location is unresolved, so the map marks a region, not a point. Philip and Nathanael are called the next day, as Jesus sets out for Galilee (John 1:43).',
       chips: ['region'] },
 
     { id: 'cana', ch: 'II · Beginnings', pal: 'warm', view: [[35.22, 32.66], [35.42, 32.84]],
       found: 'Workshops that carved stone vessels in the early Roman period have been excavated in Galilee, including one at Reina, beside Kafr Kanna. They show how common purity jars like Cana’s were.',
-      life: 'John says the jars were for Jewish purification (John 2:6). Stone was used because, under purity rules, it could not become unclean. A village wedding could last several days, and running out of wine shamed the hosts.',
+      life: 'John says the jars were for Jewish purification (John 2:6). Stone was used because, under purity rules, it could not become unclean. A village wedding could last several days, and running out of wine would have embarrassed the hosts.',
       show: ['cana1', 'cana2', 'nazareth', 'galilee'],
       kicker: 'Cana in Galilee', ref: ['John 2:1–11', 'john', 2],
       title: 'Water <em>into wine.</em>',
@@ -388,7 +388,7 @@ window.WAY = (function () {
       kicker: 'Samaria · near Sychar', ref: ['John 4:1–42', 'john', 4],
       title: 'Living <em>water.</em>',
       text: 'On His way from Judea to Galilee, Jesus rests at Jacob’s well about the sixth hour and asks a Samaritan woman for a drink. Many in her town come to believe.',
-      note: 'When the woman speaks of worship “on this mountain” (John 4:20), she means Mount Gerizim, the Samaritans’ holy mountain, which rises above the well.',
+      note: 'When the woman speaks of worship “on this mountain” (John 4:20), she almost certainly means Mount Gerizim, the Samaritans’ holy mountain, which rises above the well.',
       chips: ['trad', 'link'] },
 
     { id: 'water', ch: 'II · Beginnings', pal: 'noon', view: [[35.258, 32.192], [35.296, 32.238]], pitch: 55, bearing: -12,
@@ -409,7 +409,7 @@ window.WAY = (function () {
       chips: ['named'] },
 
     { id: 'fishers', ch: 'III · In Galilee', pal: 'day', view: V.lake,
-      found: 'In 1986, when drought lowered the lake, two brothers found a wooden fishing boat in the mud near Magdala. It dates to around the first century and is about 8 m long: the kind of boat the disciples would have used.',
+      found: 'In 1986, when drought lowered the lake, two brothers found a wooden fishing boat in the mud near Ginosar, a little north of Magdala. It dates to about the first century BC or AD and is about 8 m long: the kind of boat fishermen used on the lake in Jesus’ day.',
       life: 'Fishing on the lake was a family business: Zebedee had hired men (Mark 1:20). Fish were salted and traded around the region; Magdala, about 8 km south-west along the shore, was probably the town the Greeks called Taricheae, “salted fish”.',
       show: ['capernaum', 'bethsaida', 'sog', 'nazareth'],
       kicker: 'Capernaum · by the sea', ref: ['Mark 1:14–20', 'mark', 1],
@@ -463,7 +463,7 @@ window.WAY = (function () {
       chips: ['trad'] },
 
     { id: 'nain', ch: 'III · In Galilee', pal: 'day', view: [[35.28, 32.58], [35.62, 32.92]],
-      life: 'Burial took place the same day as death. A widow who lost her only son also lost her support and her family’s future.',
+      life: 'Burial usually took place the same day as death. A widow who lost her only son also lost her support and her family’s future.',
       show: ['capernaum', 'nain', 'nazareth', 'sog'],
       kicker: 'Capernaum · Nain', ref: ['Luke 7:1–17', 'luke', 7],
       title: 'Compassion <em>and faith.</em>',
@@ -505,7 +505,7 @@ window.WAY = (function () {
       kicker: 'Herod’s fortress · east of the Dead Sea', ref: ['Mark 6:14–29', 'mark', 6],
       title: 'John <em>is killed.</em>',
       text: 'Herod Antipas has imprisoned John the Baptist for condemning his marriage to Herodias. At a birthday banquet, bound by an oath, he has John beheaded. John’s disciples bury his body.',
-      note: 'Mark does not name the place. Josephus, the first-century Jewish historian, says John was held and killed at Herod’s fortress of Machaerus, and that many saw Herod’s later military defeat as God’s judgment for it (Antiquities 18.116–119).',
+      note: 'Mark does not name the place. Josephus, the first-century Jewish historian, says John was held and killed at Herod’s fortress of Machaerus, and that some Jews saw Herod’s later defeat by the Nabatean king Aretas as God’s judgment for it (Antiquities 18.116–119).',
       chips: ['trad', 'rule'] },
 
     { id: 'loaves', ch: 'III · In Galilee', pal: 'warm', view: V.lake,
@@ -635,7 +635,7 @@ window.WAY = (function () {
       chips: ['region'] },
 
     { id: 'lazarus', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.235, 31.760], [35.280, 31.782]],
-      life: 'The tomb was a cave with a stone across the entrance (John 11:38). Mourning lasted seven days, and many came from nearby Jerusalem to console the sisters (John 11:18–19).',
+      life: 'The tomb was a cave with a stone across the entrance (John 11:38). Mourning customarily lasted seven days, and many came from nearby Jerusalem to console the sisters (John 11:18–19).',
       show: ['bethany', 'olives'],
       kicker: 'Bethany, near Jerusalem', ref: ['John 11:1–44', 'john', 11],
       title: 'Lazarus <em>is raised.</em>',
@@ -665,7 +665,7 @@ window.WAY = (function () {
 
     { id: 'zacchaeus', ch: 'V · Toward Jerusalem', pal: 'day', view: [[35.40, 31.83], [35.49, 31.88]],
       found: 'Herod’s winter palaces, with pools and gardens, have been excavated at New Testament Jericho. Herod the Great died there, usually dated 4 BC.',
-      life: 'Jericho was a rich oasis on the trade road, famed for its date palms and balsam, so its chief tax collector could grow wealthy. Sycamore-figs have short trunks and low, spreading branches that are easy to climb.',
+      life: 'Jericho was a rich oasis on the trade road, famed for its date palms and balsam, so a chief tax collector could grow wealthy. Sycamore-figs have short trunks and low, spreading branches that are easy to climb.',
       show: ['jericho'],
       kicker: 'Jericho', ref: ['Luke 19:1–10', 'luke', 19],
       title: 'To seek <em>and to save.</em>',
@@ -676,7 +676,7 @@ window.WAY = (function () {
       show: ['jericho', 'bethany', 'jerusalem', 'jer-bny', 'wildlabel'],
       kicker: 'Leaving Jericho', ref: ['Mark 10:46–52', 'mark', 10],
       title: 'Bartimaeus follows <em>on the way.</em>',
-      text: 'A blind beggar calls out to Jesus as He leaves Jericho. Healed, he follows Jesus along the road up to Jerusalem.',
+      text: 'A blind beggar calls out to Jesus as He leaves Jericho. Healed, he follows Jesus along the road, the road that leads up to Jerusalem.',
       note: 'Mark places the healing as Jesus leaves Jericho; Luke, as He approaches it (Luke 18:35). From Jericho, below sea level, the way to Jerusalem climbs about 1,000 m through the wilderness. The line is schematic.',
       chips: ['named', 'route'] },
 
@@ -686,7 +686,7 @@ window.WAY = (function () {
       kicker: 'VI · Holy Week', title: 'Holy <em>Week.</em>', kind: 'chapter',
       guide: ['holyweek.html', 'Open the Holy Week guide: people, the cross, the tomb, history'],
       text: 'From Jericho the road goes up toward Bethany and Jerusalem. Mark gives six of his sixteen chapters to these last days.',
-      markers: [['Six days before the Passover', 'John 12:1'], ['The next day', 'John 12:12'], ['Two days before the Passover', 'Mark 14:1'], ['First day of Unleavened Bread', 'Mark 14:12'], ['The day of Preparation', 'Mark 15:42'], ['First day of the week', 'Mark 16:2']] },
+      markers: [['Six days before the Passover', 'John 12:1'], ['The next day', 'John 12:12'], ['Two days before the Passover', 'Mark 14:1'], ['First day of Unleavened Bread', 'Mark 14:12'], ['Preparation Day', 'Mark 15:42'], ['First day of the week', 'Mark 16:2']] },
 
     { id: 'anoint', ch: 'VI · Holy Week', pal: 'dusk', view: [[35.24, 31.765], [35.272, 31.78]], plan: 0.4,
       show: ['bethany', 'olives'],
@@ -759,7 +759,7 @@ window.WAY = (function () {
       chips: ['link', 'trad'] },
 
     { id: 'trials', ch: 'VI · Holy Week', pal: 'predawn', view: [[35.2255, 31.7680], [35.2450, 31.7815]], plan: 1,
-      found: 'In 1961 a stone at Caesarea was found inscribed with the name of Pontius Pilate, prefect of Judea. In 1990 a decorated burial box inscribed “Joseph son of Caiaphas” was found in Jerusalem, very likely the high priest’s.',
+      found: 'In 1961 a stone at Caesarea was found inscribed with the name of Pontius Pilate, prefect of Judea. In 1990 a decorated burial box inscribed “Joseph son of Caiaphas” was found in Jerusalem, and many scholars think it belonged to the high priest.',
       life: 'John says the council could not put anyone to death (John 18:31); Rome normally kept capital cases for its governor, though scholars debate the exceptions. Pilate normally lived at Caesarea on the coast and came up to Jerusalem with troops at festival time, when crowds and tension were greatest.',
       show: ['gethsemane', 'citysites', 'led', 'praetA', 'praetH'],
       kicker: 'Night into early morning', ref: ['Four Gospels', 'mark', 15],
@@ -783,7 +783,7 @@ window.WAY = (function () {
       title: 'Seven sayings <em>from the cross.</em>',
       items: [['Father, forgive them', 'Luke 23:34'], ['Today you will be with Me in Paradise', 'Luke 23:43'], ['Woman, here is your son', 'John 19:26–27'], ['My God, My God, why have You forsaken Me?', 'Mark 15:34'], ['I am thirsty', 'John 19:28'], ['It is finished', 'John 19:30'], ['Father, into Your hands I commit My Spirit', 'Luke 23:46']],
       text: 'One of the two criminals crucified with Him asks to be remembered (Luke 23:42). Christian tradition gathers seven sayings from the four Gospels; no single Gospel has all of them.',
-      note: 'Luke 23:34 is missing from some early manuscripts.',
+      note: 'The words “Father, forgive them…” (Luke 23:34) are missing from some early manuscripts.',
       chips: ['trad'] },
 
     { id: 'finished', ch: 'VI · Holy Week', pal: 'dark', view: V.golgotha, plan: 0.5,
@@ -802,13 +802,13 @@ window.WAY = (function () {
       chips: ['recon'] },
 
     { id: 'burial', ch: 'VI · Holy Week', pal: 'evening', view: V.golgotha, plan: 1,
-      found: 'In 1968 the heel bone of a crucified man, still pierced by an iron nail, was found in a Jerusalem family tomb. It confirms the practice described in the Gospels and shows that a crucified man could receive a proper burial.',
+      found: 'In 1968 the heel bone of a crucified man, still pierced by an iron nail, was found in a Jerusalem family tomb. It shows that the Romans nailed victims to crosses in this period, and that a crucified man could receive a proper burial.',
       life: 'The body was wrapped in linen with spices (John 19:40) and laid on a bench in a rock-cut tomb. The burial had to be finished before the Sabbath began at sunset.',
       show: ['sepulchre', 'gardentomb', 'nearcity'],
       kicker: 'Day of Preparation · evening', ref: ['John 19:38–42', 'john', 19],
       title: 'Laid <em>in a tomb.</em>',
       text: 'Joseph of Arimathea and Nicodemus lay Jesus’ body in a new tomb in a garden near the place of crucifixion.',
-      note: 'The Holy Sepulchre marks a site honored by the fourth century; most archaeologists place it outside the city walls of Jesus’ day, in an old quarry with first-century tombs. The Garden Tomb was proposed in the nineteenth century, and most archaeologists date that tomb centuries earlier, so it would not have been new.',
+      note: 'The Holy Sepulchre marks a site honored by the fourth century; most archaeologists place it outside the city walls of Jesus’ day, in an old quarry with first-century tombs. The Garden Tomb was proposed in the nineteenth century, and most archaeologists date that tomb centuries earlier, which does not fit the Gospels’ “new tomb”.',
       chips: ['trad'] },
 
     { id: 'guard', ch: 'VI · Holy Week', pal: 'night', view: V.golgotha, plan: 1,
@@ -822,11 +822,11 @@ window.WAY = (function () {
 
     // ---------- VII · Resurrection ----------
     { id: 'risen', ch: 'VII · Resurrection', chapter: 'VII', pal: 'dawn', view: V.golgotha, plan: 1,
-      life: 'The women came after the Sabbath to anoint the body (Mark 16:1). In that culture a woman’s testimony carried less legal weight (Josephus, Antiquities 4.219), yet all four Gospels name women as the first witnesses.',
+      life: 'The women came after the Sabbath to anoint the body (Mark 16:1). In that culture a woman’s testimony carried less legal weight (Josephus, Antiquities 4.219), yet all four Gospels name women as the first to find the tomb empty.',
       show: ['sepulchre', 'gardentomb', 'nearcity'],
       kicker: 'VII · First day of the week · early', ref: ['Luke 24:1–8', 'luke', 24],
       title: 'He is not here; <em>He has risen!</em>',
-      text: 'Women come to the tomb at dawn with spices and find the stone rolled away. Two men in dazzling clothes tell them He has risen.',
+      text: 'Women come to the tomb at dawn with spices and find the stone rolled away. Two men in radiant apparel tell them He has risen.',
       chips: ['trad'] },
 
     { id: 'mary', ch: 'VII · Resurrection', pal: 'dawn', view: [[35.2275, 31.7768], [35.2322, 31.7852]], plan: 1,
