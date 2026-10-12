@@ -11,6 +11,7 @@
   if (OG) document.documentElement.classList.add('og');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HOLD = 0.35;
+  const TRAVEL_HOLD = 0.12;
   const experience = window.WAY_EXPERIENCE;
 
   // ---------- small helpers ----------
@@ -216,6 +217,9 @@
     sec.dataset.scene = s.id;
     if (experience.artDirected(s.id)) sec.classList.add('step-art-directed');
     sec.innerHTML = cardHTML(s);
+    // Each caption settles and holds while the reader scrolls through this
+    // spacer; then it moves on and the map travels to the next place.
+    if (i > 0) sec.insertAdjacentHTML('beforeend', '<div class="step-hold" aria-hidden="true"></div>');
     story.appendChild(sec);
   });
   const sections = Array.from(story.querySelectorAll('.step'));
@@ -466,7 +470,8 @@
       const pitch = s.pitch != null ? s.pitch : (is3D(s) ? 56 : 0);
       const bearing = experience.bearing(s.id, s.bearing != null ? s.bearing : (is3D(s) ? ORBIT[(k++) % ORBIT.length] : 0));
       const caption = sections[index].firstElementChild;
-      const scenePad = experience.focused(s.id) ? experience.padding(window.innerWidth, window.innerHeight, caption.offsetHeight, caption.offsetWidth, document.querySelector('.top').getBoundingClientRect().bottom) : pad;
+      // Fit the place into the map that stays visible above (or beside) the caption.
+      const scenePad = index === 0 && !experience.focused(s.id) ? pad : experience.padding(window.innerWidth, window.innerHeight, caption.offsetHeight + (window.innerWidth >= 900 ? 0 : 14), caption.offsetWidth, document.querySelector('.top').getBoundingClientRect().bottom);
       const view = experience.view(s);
       // Zoom that fits the bounds in the padded area; the centre is the middle of
       // the bounds, and the map's padding keeps it centred in the free space even
@@ -483,24 +488,52 @@
   const lerpAngle = (a, b, t) => { let d = ((b - a + 540) % 360) - 180; return a + d * t; };
 
   // ---------- scroll → progress ----------
-  let tops = [];
-  function measure() { tops = sections.map((s) => s.offsetTop); }
+  // Scroll positions for each scene: tops[i] is where its caption settles
+  // (the map has arrived), ends[i] where it starts to leave. Between ends[i]
+  // and tops[i + 1] the map travels to the next scene.
+  let tops = [], ends = [];
+  const headBottom = () => document.querySelector('.top').getBoundingClientRect().bottom;
+  function captionPin(h) {
+    const vh = window.innerHeight, vw = window.innerWidth;
+    const head = headBottom();
+    const gap = vw >= 900 ? 28 : 14;
+    if (vw >= 900 && h <= vh - head - 40) return Math.max(head + 16, Math.round((vh - h) / 2));
+    // Phones and tablets: rest at the bottom, the map above. A caption taller
+    // than the screen scrolls until its end is in view, then holds there.
+    return Math.round(vh - h - gap);
+  }
+  function measure() {
+    tops = []; ends = [];
+    sections.forEach((sec, i) => {
+      const cap = sec.firstElementChild;
+      if (i === 0 || !cap) { tops.push(sec.offsetTop); ends.push(sec.offsetTop); return; }
+      const h = cap.offsetHeight, pin = captionPin(h);
+      if (cap._pin !== pin) { cap.style.top = pin + 'px'; cap._pin = pin; }
+      const gap = parseFloat(getComputedStyle(sec).paddingTop) || 0;
+      // A caption taller than the screen counts as arrived when its top is
+      // just below the header, so a jump to it starts at the beginning.
+      const start = sec.offsetTop + gap - Math.max(pin, headBottom() + 8);
+      tops.push(Math.max(sec.offsetTop, start));
+      ends.push(Math.max(tops[i], sec.offsetTop + sec.offsetHeight - pin - h));
+    });
+  }
   if ('ResizeObserver' in window) {
     let rq = 0;
-    new ResizeObserver(() => { cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { if (started) { measure(); computeCams(); queue(); } }); }).observe(story);
+    new ResizeObserver(() => { cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { if (started) { measure(); computeCams(); holdAim(); queue(); } }); }).observe(story);
   }
   function progress() {
     const y = window.scrollY;
     let i = 0;
     while (i < N - 1 && y >= tops[i + 1]) i++;
     if (i >= N - 1) return N - 1;
-    return i + clamp((y - tops[i]) / (tops[i + 1] - tops[i]), 0, 1);
+    if (y <= ends[i]) return i;
+    return i + clamp((y - ends[i]) / Math.max(1, tops[i + 1] - ends[i]), 0, 1);
   }
 
   const root = document.documentElement.style;
   const chapterEl = document.getElementById('chapter');
   let lastCh = '';
-  const frameState = { opening: null, moment: null };
+  const frameState = { opening: null, moment: null, leaving: -1 };
 
   // ---------- chapters: timeline and menu ----------
   const strip = (h) => String(h || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -573,6 +606,12 @@
   // position once if something moved it before the reader touches the screen.
   let touchedSinceJump = false;
   window.addEventListener('touchstart', () => { touchedSinceJump = true; }, { passive: true });
+  // The scene a jump is aiming for. Fonts, cards and details can still change
+  // the page's height after the jump; until the reader scrolls, keep the
+  // aimed-for caption settled in place.
+  let aim = -1;
+  ['touchstart', 'wheel', 'keydown', 'mousedown'].forEach((ev) => window.addEventListener(ev, () => { aim = -1; }, { passive: true }));
+  function holdAim() { if (aim > 0 && Math.abs(window.scrollY - (tops[aim] + 2)) > 2) { setScroll(tops[aim] + 2); queue(); } }
   function setScroll(y) {
     window.scrollTo(0, y);
     if (document.scrollingElement) document.scrollingElement.scrollTop = y;
@@ -585,6 +624,7 @@
     const ex = document.getElementById('explain');
     if (ex && ex.open) ex.close();
     touchedSinceJump = false;
+    aim = i;
     requestAnimationFrame(() => requestAnimationFrame(() => {
       measure();
       const y = tops[i] + 2;
@@ -596,7 +636,17 @@
     }));
   }
   story.addEventListener('click', ev => { const b = ev.target.closest('[data-story-jump]'); if (b) { ev.preventDefault(); goTo(STEPS.findIndex(st => st.id === b.dataset.storyJump)); } });
-  story.addEventListener('toggle', () => { if (started) { measure(); computeCams(); queue(); } }, true);
+  // Opening or closing details changes a caption's height. Keep the reader's
+  // place in that scene, so the caption stays settled and grows in place.
+  story.addEventListener('toggle', (ev) => {
+    if (!started) return;
+    const r = Math.round(progress());
+    const mine = sections[r] && sections[r].contains(ev.target);
+    const off = window.scrollY - tops[r];
+    measure(); computeCams();
+    if (mine) setScroll(tops[r] + off);
+    queue();
+  }, true);
   segBtns.forEach((b) => b.addEventListener('click', () => goTo(groups[+b.dataset.g].start)));
 
   const toc = document.getElementById('toc');
@@ -1729,7 +1779,9 @@
     const p = progress();
     const i = Math.min(N - 2, Math.floor(p));
     const f = p - i;
-    const hold = experience.hold(STEPS[i].id);
+    // The caption hold does the pausing now; a short delay lets the leaving
+    // caption fade before the map sets off.
+    const hold = TRAVEL_HOLD;
     let e = smooth(clamp((f - hold) / (1 - hold), 0, 1));
     if (reduceMotion) e = f < 0.5 ? 0 : 1;
     const ca = cams[i], cb = cams[i + 1];
@@ -1746,6 +1798,15 @@
     const stageEl = document.getElementById('story-stage');
     if (stageEl.hidden !== !stage) stageEl.hidden = !stage;
     if (stageEl.textContent !== stage) stageEl.textContent = stage;
+    // The caption that is leaving fades as it rises, so it does not sit over
+    // the map while the map travels.
+    const leaving = p % 1 > 0 ? Math.floor(p) : -1;
+    if (leaving !== frameState.leaving && frameState.leaving > 0 && sections[frameState.leaving]) sections[frameState.leaving].firstElementChild.style.opacity = '';
+    frameState.leaving = leaving;
+    if (leaving > 0) {
+      const t = clamp((window.scrollY - ends[leaving]) / (window.innerHeight * 0.3), 0, 1);
+      sections[leaving].firstElementChild.style.opacity = (1 - t).toFixed(3);
+    }
     // When a long caption scrolls up under the floating Explore button, step
     // the button aside so it never sits on top of the text.
     const capEl = sections[Math.round(p)].firstElementChild;
@@ -1861,7 +1922,7 @@
       const op = vis(id);
       if (op < 0.01) return;
       const k = routeStart[id];
-      const routeHold = k > 0 ? experience.hold(STEPS[k - 1].id) : HOLD;
+      const routeHold = TRAVEL_HOLD;
       let d = p == null || k <= 0 ? 1 : clamp((p - (k - 1) - routeHold) / (1 - routeHold), 0, 1);
       if (reduceMotion) d = p >= k - 0.5 ? 1 : 0;
       feats.push({ type: 'Feature', properties: { kind: ROUTES[id].kind, op }, geometry: { type: 'LineString', coordinates: slicePts(routePts[id], d) } });
@@ -1904,7 +1965,7 @@
     measure();
     computeCams();
     const hashIdx = sections.findIndex((sec) => '#' + sec.id === location.hash);
-    if (hashIdx > 0) window.scrollTo({ top: tops[hashIdx] + 2, behavior: 'instant' });
+    if (hashIdx > 0) { aim = hashIdx; window.scrollTo({ top: tops[hashIdx] + 2, behavior: 'instant' }); }
     else if (!OG) offerResume();
     render();
     document.body.classList.add('ready');

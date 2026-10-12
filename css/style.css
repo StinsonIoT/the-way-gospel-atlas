@@ -723,3 +723,15 @@ html.exploring .story-atmosphere, html.og .story-atmosphere { display: none; }
 .step-focus .kicker { font-size: 11px; }
 .step-art-directed[data-scene="title"] .hero-meta { font-size: 11.5px; }
 .step-focus .chip { font-size: 11px; }
+
+/* ---------- captions settle, hold, then move on ---------- */
+/* Each scene: a stretch of open map (the map travels), the caption arriving
+   and settling, then a hold while the reader scrolls on. js/app.js sets each
+   caption's resting position (top) from its height. */
+:root { --scene-gap: 45vh; --scene-hold: 50vh; }
+@supports (height: 1svh) { :root { --scene-gap: 45svh; --scene-hold: 50svh; } }
+.step:not(.step-title) { height: auto; min-height: 0; justify-content: flex-start; padding-top: var(--scene-gap); padding-bottom: 0; }
+html.following .step:not(.step-title), html.touring .step:not(.step-title) { padding-top: var(--scene-gap); }
+.step:not(.step-title) > :first-child { position: sticky; top: 40vh; z-index: 1; }
+.step-hold { flex: none; width: 1px; height: var(--scene-hold); pointer-events: none; }
+.step:last-child .step-hold { height: 0; }

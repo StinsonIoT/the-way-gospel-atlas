@@ -50,3 +50,14 @@ Imported from the v2 package (bundle verified against its checksum; the ZIP's `s
 - **Smooth scrolling.** Per-frame writes to the page happen only when something changes.
 
 Asset versions are now `?v=50` and the app cache `the-way-v27`.
+
+## Captions settle and hold (2026-10-11)
+
+Requested after the first iPhone review: as the reader scrolls, each caption now settles at the bottom of the screen (beside the map on wide screens) and holds for about half a screen of scrolling while the map stays on its place. Then the caption rises and fades, the map travels with nothing over it, and the next caption arrives and settles.
+
+- Each scene is a stretch of open map (45svh), the caption, and a hold spacer (50svh). The caption is `position: sticky`; `js/app.js` sets its resting `top` from its height.
+- `tops[i]` is where scene *i*'s caption has settled (the map has arrived), and `ends[i]` is where it starts to leave. The camera moves only between `ends[i]` and `tops[i + 1]`.
+- A caption taller than the screen counts as arrived when its top is just below the header, so menu and link jumps start at its beginning. It then scrolls until its end is in view and holds there.
+- Opening or closing details keeps the caption settled and the reader's place in the scene.
+- Jumps from the menu or a link stay on target while fonts and cards finish laying out, until the reader scrolls.
+- The camera fits each place into the map that stays visible above (or beside) its caption, measured for every scene.
