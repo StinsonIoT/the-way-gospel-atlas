@@ -48,11 +48,34 @@
     return cache.get(url);
   };
 
+  // BSB text: the Free Use Bible API, or the atlas's saved copy of the BSB
+  // (data/bsb, tools/make-bsb.py) when the API can't be reached.
+  const isBSB = (j) => j && j.chapter && Array.isArray(j.chapter.content) && j.chapter.content.some((x) => x && x.type === 'verse')
+    && (!j.translation || j.translation.id === 'BSB');
+  const books = new Map();
+  function getText(code, c) {
+    return get(`https://bible.helloao.org/api/BSB/${code}/${c}.json`)
+      .then((j) => { if (!isBSB(j)) throw new Error('unexpected reply'); return j; })
+      .catch(() => {
+        if (!books.has(code)) {
+          const p = fetch(`data/bsb/${code}.json?v=1`).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+          p.catch(() => books.delete(code));
+          books.set(code, p);
+        }
+        return books.get(code).then((b) => {
+          const content = b.translation === 'BSB' && b.chapters && b.chapters[String(c)];
+          if (!content) throw new Error('not in the saved copy');
+          return { book: { commonName: b.commonName }, chapter: { number: c, content }, savedCopy: true };
+        });
+      });
+  }
+
   function verseHTML(v) {
     let h = '';
+    const add = (s) => { if (!s) return; h += (h && !/^[,.;:?!’”)]/.test(s) ? ' ' : '') + s; };
     (v.content || []).forEach((x) => {
-      if (typeof x === 'string') h += esc(x) + ' ';
-      else if (x.text != null) h += x.wordsOfJesus ? `<span class="woj">${esc(x.text)}</span> ` : esc(x.text) + ' ';
+      if (typeof x === 'string') add(esc(x.trim()));
+      else if (x.text != null) add(x.wordsOfJesus ? `<span class="woj">${esc(x.text.trim())}</span>` : esc(x.text.trim()));
       else if (x.lineBreak) h += '<br>';
     });
     return `<sup>${v.number}</sup>${h.trim()} `;
@@ -75,16 +98,19 @@
 
   async function loadText(t) {
     const parts = [];
+    let saved = false;
     for (const sp of current.slice(0, 4)) {
       const last = Math.min(sp.c2, sp.c1 + 3);
       for (let c = sp.c1; c <= last; c++) {
-        const json = await get(`https://bible.helloao.org/api/BSB/${sp.book}/${c}.json`);
+        const json = await getText(sp.book, c);
+        if (json.savedCopy) saved = true;
         const from = c === sp.c1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
         const vs = json.chapter.content.filter((x) => x.type === 'verse' && x.number >= from && x.number <= to);
         const head = current.length > 1 || sp.c1 !== sp.c2 ? `<h3>${esc(json.book && json.book.commonName ? json.book.commonName : '')} ${c}</h3>` : '';
         parts.push(head + `<p class="rd-text">${vs.map(verseHTML).join('')}</p>`);
       }
     }
+    if (saved && parts.length) parts.unshift('<p class="rd-status">The Bible service couldn’t supply this passage, so this is the atlas’s saved copy of the Berean Standard Bible (the same text, without footnotes).</p>');
     if (t === token) textEl.innerHTML = parts.join('') || '<p class="rd-status">No verses found.</p>';
   }
   async function loadNotes(t) {

@@ -215,70 +215,134 @@ window.WAY_ASK = {
   pentecost: 'The Spirit came on a group of Galileans, and each listener heard them in his own language. Where do you need the Spirit’s help to speak or to listen?'
 };
 
-// Old Testament links: only where a Gospel writer, or Jesus, quotes or points
-// to an Old Testament passage. Each: [Old Testament reference, where the New
-// Testament cites it, a short note]. Later Christian readings are not included.
+// Old Testament links: where a Gospel writer, Jesus, or the apostles in Acts
+// quote or point to an Old Testament passage. Later Christian readings are not
+// included, except where an entry is marked "compared" and says so.
+//   ot, nt  the Old Testament passage(s) and where the New Testament uses them
+//   kind    quoted   - the New Testament quotes the words
+//           echoed   - the words are echoed closely but not introduced as a quotation
+//           recalled - an event or person is recalled, not words
+//           unnamed  - "the Scripture" is said to be fulfilled, but no passage is named
+//           compared - the New Testament does not cite it; readers often compare it
+//   status  'reviewed' (the default) is shown; anything else (e.g. 'draft') is hidden
+// The quoted passages were checked against the BSB text and against the
+// sources the BSB itself gives in its footnotes (js/otrefs.js).
+window.WAY_OT_REVIEWED = '2026-10-12';
 window.WAY_OT = {
-  zechariah: [['Malachi 4:5–6', 'Luke 1:17', 'The angel says John will go before the Lord in the spirit and power of Elijah, “to turn the hearts of the fathers to their children”.']],
-  birth: [['Isaiah 7:14', 'Matthew 1:22–23', 'Matthew quotes it: the virgin will bear a son, and they will call Him Immanuel, “God with us”.']],
-  magi: [['Micah 5:2', 'Matthew 2:5–6', 'The chief priests and scribes quote it to Herod: a ruler will come from Bethlehem.']],
-  egypt: [
-    ['Hosea 11:1', 'Matthew 2:15', '“Out of Egypt I called My Son.” In Hosea the words refer to Israel; Matthew says Jesus’ stay in Egypt fulfilled them.'],
-    ['Jeremiah 31:15', 'Matthew 2:17–18', 'Rachel weeping for her children, recalled at the killing of Bethlehem’s boys.']
+  zechariah: [
+    { ot: 'Malachi 4:5–6', nt: 'Luke 1:17', kind: 'quoted', note: 'The angel says John will go before the Lord in the spirit and power of Elijah, “to turn the hearts of the fathers to their children”.' }
   ],
-  nazareth: [['“the prophets”', 'Matthew 2:23', '“He will be called a Nazarene.” Matthew cites the prophets in general; no single passage matches these words.']],
-  present: [['Exodus 13:2 · Leviticus 12:8', 'Luke 2:22–24', 'Mary and Joseph do what the Law requires: the firstborn is consecrated, and a pair of turtledoves or young pigeons is offered.']],
-  baptism: [['Isaiah 40:3 · Malachi 3:1', 'Mark 1:2–3', 'Mark opens by quoting both for John the Baptist: a messenger sent ahead, a voice calling in the wilderness.']],
-  wilderness: [['Deuteronomy 8:3 · 6:16 · 6:13', 'Matthew 4:4–10', 'Jesus answers each temptation with Deuteronomy. The devil quotes Psalm 91:11–12.']],
-  zeal: [['Psalm 69:9', 'John 2:17', 'The disciples remember: “Zeal for Your house will consume Me.”']],
-  nicodemus: [['Numbers 21:8–9', 'John 3:14–15', 'As Moses lifted up the snake in the wilderness, so the Son of Man must be lifted up.']],
-  synagogue: [['Isaiah 61:1–2; Isaiah 58:6', 'Luke 4:18–21', 'Jesus reads Isaiah 61:1–2, with a line from Isaiah 58:6, and says, “Today this Scripture is fulfilled in your hearing.”']],
-  fishers: [['Isaiah 9:1–2', 'Matthew 4:14–16', 'Matthew says Jesus’ move to Capernaum fulfilled it: “a light has dawned.”']],
-  firstday: [['Isaiah 53:4', 'Matthew 8:17', 'Matthew quotes it at the evening healings: “He took on our infirmities.”']],
-  sermon: [['Exodus 20:13 · Exodus 21:24 · Leviticus 19:18', 'Matthew 5:21–48', '“You have heard that it was said…” Jesus quotes the Law, then goes deeper: “But I tell you.”']],
-  levi: [['Hosea 6:6', 'Matthew 9:13', 'Jesus answers His critics: “I desire mercy, not sacrifice.”']],
+  birth: [
+    { ot: 'Isaiah 7:14', nt: 'Matthew 1:22–23', kind: 'quoted', note: 'Matthew quotes it: the virgin will bear a son, and they will call Him Immanuel, “God with us”.' }
+  ],
+  magi: [
+    { ot: 'Micah 5:2', nt: 'Matthew 2:5–6', kind: 'quoted', note: 'The chief priests and scribes quote it to Herod: a ruler will come from Bethlehem.' }
+  ],
+  egypt: [
+    { ot: 'Hosea 11:1', nt: 'Matthew 2:15', kind: 'quoted', note: '“Out of Egypt I called My Son.” In Hosea the words refer to Israel; Matthew says Jesus’ stay in Egypt fulfilled them.' },
+    { ot: 'Jeremiah 31:15', nt: 'Matthew 2:17–18', kind: 'quoted', note: 'Rachel weeping for her children, recalled at the killing of Bethlehem’s boys.' }
+  ],
+  nazareth: [
+    { ot: '“the prophets”', nt: 'Matthew 2:23', kind: 'unnamed', note: '“He will be called a Nazarene.” Matthew cites the prophets in general; no single passage matches these words.' }
+  ],
+  present: [
+    { ot: 'Exodus 13:2 · Leviticus 12:8', nt: 'Luke 2:22–24', kind: 'quoted', note: 'Mary and Joseph do what the Law requires: the firstborn is consecrated, and a pair of turtledoves or young pigeons is offered.' }
+  ],
+  baptism: [
+    { ot: 'Isaiah 40:3 · Malachi 3:1', nt: 'Mark 1:2–3', kind: 'quoted', note: 'Mark opens by quoting both for John the Baptist: a messenger sent ahead, a voice calling in the wilderness.' }
+  ],
+  wilderness: [
+    { ot: 'Deuteronomy 8:3 · 6:16 · 6:13', nt: 'Matthew 4:4–10', kind: 'quoted', note: 'Jesus answers each temptation with Deuteronomy. The devil quotes Psalm 91:11–12.' }
+  ],
+  zeal: [
+    { ot: 'Psalm 69:9', nt: 'John 2:17', kind: 'quoted', note: 'The disciples remember: “Zeal for Your house will consume Me.”' }
+  ],
+  nicodemus: [
+    { ot: 'Numbers 21:8–9', nt: 'John 3:14–15', kind: 'recalled', note: 'As Moses lifted up the snake in the wilderness, so the Son of Man must be lifted up.' }
+  ],
+  synagogue: [
+    { ot: 'Isaiah 61:1–2; Isaiah 58:6', nt: 'Luke 4:18–21', kind: 'quoted', note: 'Jesus reads Isaiah 61:1–2, with a line from Isaiah 58:6, and says, “Today this Scripture is fulfilled in your hearing.”' }
+  ],
+  fishers: [
+    { ot: 'Isaiah 9:1–2', nt: 'Matthew 4:14–16', kind: 'quoted', note: 'Matthew says Jesus’ move to Capernaum fulfilled it: “a light has dawned.”' }
+  ],
+  firstday: [
+    { ot: 'Isaiah 53:4', nt: 'Matthew 8:17', kind: 'quoted', note: 'Matthew quotes it at the evening healings: “He took up our infirmities.”' }
+  ],
+  sermon: [
+    { ot: 'Exodus 20:13 · Exodus 21:24 · Leviticus 19:18', nt: 'Matthew 5:21–48', kind: 'quoted', note: '“You have heard that it was said…” Jesus quotes the Law, then goes deeper: “But I tell you.”' }
+  ],
+  levi: [
+    { ot: 'Hosea 6:6', nt: 'Matthew 9:13', kind: 'quoted', note: 'Jesus answers His critics: “I desire mercy, not sacrifice.”' }
+  ],
   parables: [
-    ['Isaiah 6:9–10', 'Mark 4:11–12', 'Jesus quotes it to explain why He teaches in parables.'],
-    ['Psalm 78:2', 'Matthew 13:34–35', 'Matthew quotes it: “I will open My mouth in parables.”']
+    { ot: 'Isaiah 6:9–10', nt: 'Mark 4:11–12', kind: 'quoted', note: 'Jesus quotes it to explain why He teaches in parables.' },
+    { ot: 'Psalm 78:2', nt: 'Matthew 13:34–35', kind: 'quoted', note: 'Matthew quotes it: “I will open My mouth in parables.”' }
   ],
   bread: [
-    ['Exodus 16:4 · Psalm 78:24', 'John 6:31–35', 'The crowd recalls the manna; Jesus answers that His Father gives the true bread from heaven, and says, “I am the bread of life.”'],
-    ['Isaiah 54:13', 'John 6:45', '“And they will all be taught by God.”']
+    { ot: 'Exodus 16:4 · Psalm 78:24', nt: 'John 6:31–35', kind: 'quoted', note: 'The crowd recalls the manna; Jesus answers that His Father gives the true bread from heaven, and says, “I am the bread of life.”' },
+    { ot: 'Isaiah 54:13', nt: 'John 6:45', kind: 'quoted', note: '“And they will all be taught by God.”' }
   ],
-  samaritan: [['Deuteronomy 6:5 · Leviticus 19:18', 'Luke 10:27', 'Asked “What is written in the Law?”, the expert in the law answers with these two commands.']],
-  booths: [['“the Scripture”', 'John 7:37–39', 'Jesus promises streams of living water, “as the Scripture has said”. No single passage matches; John explains He meant the Spirit.']],
-  dedication: [['Psalm 82:6', 'John 10:34–36', 'Jesus answers the charge of blasphemy by quoting “I have said you are gods.”']],
-  children: [['Genesis 1:27 · 2:24', 'Mark 10:6–8', 'Asked about divorce, Jesus goes back to creation: “the two will become one flesh.”']],
+  samaritan: [
+    { ot: 'Deuteronomy 6:5 · Leviticus 19:18', nt: 'Luke 10:27', kind: 'quoted', note: 'Asked “What is written in the Law?”, the expert in the law answers with these two commands.' }
+  ],
+  booths: [
+    { ot: '“the Scripture”', nt: 'John 7:37–39', kind: 'unnamed', note: 'Jesus promises streams of living water, “as the Scripture has said”. No single passage matches; John explains He meant the Spirit.' }
+  ],
+  dedication: [
+    { ot: 'Psalm 82:6', nt: 'John 10:34–36', kind: 'quoted', note: 'Jesus answers the charge of blasphemy by quoting “I have said you are gods.”' }
+  ],
+  children: [
+    { ot: 'Genesis 1:27 · 2:24', nt: 'Mark 10:6–8', kind: 'quoted', note: 'Asked about divorce, Jesus goes back to creation: “the two will become one flesh.”' }
+  ],
   entry: [
-    ['Zechariah 9:9', 'Matthew 21:4–5 · John 12:14–15', 'Your king comes to you, gentle and riding on a donkey.'],
-    ['Psalm 118:25–26', 'Mark 11:9 · Luke 19:38', 'The crowd shouts: “Hosanna! Blessed is He who comes in the name of the Lord!” Luke has “Blessed is the King”.']
+    { ot: 'Zechariah 9:9', nt: 'Matthew 21:4–5 · John 12:14–15', kind: 'quoted', note: 'Your king comes to you, gentle and riding on a donkey.' },
+    { ot: 'Psalm 118:25–26', nt: 'Mark 11:9 · Luke 19:38', kind: 'quoted', note: 'The crowd shouts: “Hosanna! Blessed is He who comes in the name of the Lord!” Luke has “Blessed is the King”.' }
   ],
-  temple: [['Isaiah 56:7 · Jeremiah 7:11', 'Mark 11:17', 'A house of prayer for all the nations, made a den of robbers.']],
-  greatest: [['Deuteronomy 6:4–5 · Leviticus 19:18', 'Mark 12:29–31', 'Jesus joins the two commands: love God, and love your neighbor.']],
+  temple: [
+    { ot: 'Isaiah 56:7 · Jeremiah 7:11', nt: 'Mark 11:17', kind: 'quoted', note: 'A house of prayer for all the nations, made a den of robbers.' }
+  ],
+  greatest: [
+    { ot: 'Deuteronomy 6:4–5 · Leviticus 19:18', nt: 'Mark 12:29–31', kind: 'quoted', note: 'Jesus joins the two commands: love God, and love your neighbor.' },
+    { ot: 'Psalm 118:22–23', nt: 'Mark 12:10–11 · Acts 4:10–11', kind: 'quoted', note: 'In the temple courts Jesus ends the parable of the tenants with it: “The stone the builders rejected has become the cornerstone.” After the resurrection Peter says it of Jesus, “whom God raised from the dead” (Acts 4:10–11).' }
+  ],
   upper: [
-    ['Psalm 41:9', 'John 13:18', 'Jesus says the betrayal fulfils it: “The one who shares My bread has lifted up his heel against Me.”'],
-    ['Isaiah 53:12', 'Luke 22:37', '“And He was numbered with the transgressors”, which Jesus says must be fulfilled in Him.']
+    { ot: 'Psalm 41:9', nt: 'John 13:18', kind: 'quoted', note: 'Jesus says the betrayal fulfils it: “The one who shares My bread has lifted up his heel against Me.”' },
+    { ot: 'Isaiah 53:12', nt: 'Luke 22:37', kind: 'quoted', note: '“And He was numbered with the transgressors”, which Jesus says must be fulfilled in Him.' }
   ],
-  kidron: [['Zechariah 13:7', 'Mark 14:27', 'After they go out to the Mount of Olives, Jesus quotes it: strike the shepherd, and the sheep will be scattered.']],
-  trials: [['Psalm 110:1 · Daniel 7:13', 'Mark 14:62', 'Asked if He is the Christ, Jesus answers with these words: the Son of Man at the right hand of Power, coming with the clouds.']],
+  kidron: [
+    { ot: 'Zechariah 13:7', nt: 'Mark 14:27', kind: 'quoted', note: 'After they go out to the Mount of Olives, Jesus quotes it: strike the shepherd, and the sheep will be scattered.' }
+  ],
+  trials: [
+    { ot: 'Psalm 110:1 · Daniel 7:13', nt: 'Mark 14:62', kind: 'echoed', note: 'Asked if He is the Christ, Jesus answers with these words: the Son of Man at the right hand of Power, coming with the clouds.' }
+  ],
   golgotha: [
-    ['Psalm 22:18', 'John 19:23–24', 'The soldiers divide His garments and cast lots for His tunic.'],
-    ['Hosea 10:8', 'Luke 23:30', 'On the way, Jesus warns the weeping women in Hosea’s words: “Fall on us!”']
+    { ot: 'Psalm 22:18', nt: 'John 19:23–24', kind: 'quoted', note: 'The soldiers divide His garments and cast lots for His tunic.' },
+    { ot: 'Hosea 10:8', nt: 'Luke 23:30', kind: 'quoted', note: 'On the way, Jesus warns the weeping women in Hosea’s words: “Fall on us!”' }
   ],
   sayings: [
-    ['Psalm 22:1', 'Mark 15:34', '“My God, My God, why have You forsaken Me?”'],
-    ['Psalm 31:5', 'Luke 23:46', '“Into Your hands I commit My Spirit.”'],
-    ['“the Scripture”', 'John 19:28–29', '“I am thirsty”, which John says fulfilled Scripture without naming it. Psalm 22:15, and Psalm 69:21 for the sour wine, are often compared.']
+    { ot: 'Psalm 22:1', nt: 'Mark 15:34', kind: 'quoted', note: '“My God, My God, why have You forsaken Me?”' },
+    { ot: 'Psalm 31:5', nt: 'Luke 23:46', kind: 'quoted', note: '“Into Your hands I commit My Spirit.”' },
+    { ot: '“the Scripture”', nt: 'John 19:28–29', kind: 'unnamed', note: '“I am thirsty”, which John says fulfilled Scripture without naming it. Psalm 22:15, and Psalm 69:21 for the sour wine, are often compared.' }
   ],
   finished: [
-    ['Exodus 12:46 · Psalm 34:20', 'John 19:36', '“Not one of His bones will be broken.” John does not name the passage; the words match Psalm 34:20 and the Passover rule in Exodus 12:46.'],
-    ['Zechariah 12:10', 'John 19:37', '“They will look on the One they have pierced.”']
+    { ot: 'Exodus 12:46 · Numbers 9:12 · Psalm 34:20', nt: 'John 19:36', kind: 'quoted', note: '“Not one of His bones will be broken.” John does not name the passage; the words are closest to Psalm 34:20 and the Passover rule in Exodus 12:46 and Numbers 9:12.' },
+    { ot: 'Zechariah 12:10', nt: 'John 19:37', kind: 'quoted', note: '“They will look on the One they have pierced.”' }
   ],
-  risen: [['Jonah 1:17', 'Matthew 12:40', 'Earlier, Jesus had pointed to Jonah: “so the Son of Man will be three days and three nights in the heart of the earth.”']],
-  emmaus: [['“Moses and all the Prophets”', 'Luke 24:27', 'Jesus explains what all the Scriptures said about Himself. Luke does not list the passages; later, to the disciples, He adds the Psalms (Luke 24:44).']],
+  risen: [
+    { ot: 'Jonah 1:17', nt: 'Matthew 12:40', kind: 'recalled', note: 'Earlier, Jesus had pointed to Jonah: “so the Son of Man will be three days and three nights in the heart of the earth.”' },
+    { ot: 'Hosea 6:2', nt: '1 Corinthians 15:3–4', kind: 'compared', note: 'Paul passes on that Christ “was raised on the third day according to the Scriptures” but does not name a passage. Many readers compare Hosea 6:2, where the words are about Israel: “on the third day He will raise us up”. The sign of Jonah, above, is also compared.' }
+  ],
+  emmaus: [
+    { ot: '“Moses and all the Prophets”', nt: 'Luke 24:27', kind: 'unnamed', note: 'Jesus explains what all the Scriptures said about Himself. Luke does not list the passages; later, to the disciples, He adds the Psalms (Luke 24:44).' }
+  ],
   pentecost: [
-    ['Joel 2:28–32', 'Acts 2:16–21', 'Peter explains: this is what Joel foretold, the Spirit poured out on all people.'],
-    ['Psalm 16:8–11 · Psalm 110:1', 'Acts 2:25–35', 'Peter quotes David to proclaim the resurrection and the exaltation of Jesus.']
+    { ot: 'Joel 2:28–32', nt: 'Acts 2:16–21', kind: 'quoted', note: 'Peter explains: this is what Joel foretold, the Spirit poured out on all people.' },
+    { ot: 'Psalm 16:8–11', nt: 'Acts 2:25–32 · Acts 13:35–37', kind: 'quoted', note: 'Peter quotes David, “nor will You let Your Holy One see decay”, and says David “spoke about the resurrection of the Christ” (Acts 2:31). Paul quotes the same line: David decayed, but the One God raised did not (Acts 13:35–37).' },
+    { ot: 'Psalm 110:1', nt: 'Acts 2:34–36', kind: 'quoted', note: 'Peter quotes it for Jesus, raised and exalted to the right hand of God: “Sit at My right hand.”' }
+  ],
+  peace: [
+    { ot: '“the Law of Moses, the Prophets, and the Psalms”', nt: 'Luke 24:44–47', kind: 'unnamed', note: 'Jesus opens their minds to understand the Scriptures: “The Christ will suffer and rise from the dead on the third day.” Luke does not list the passages.' }
   ]
 };
 
@@ -340,6 +404,13 @@ window.WAY_TOPICS = [
     ['upper', 'The same night: “I am the way and the truth and the life” and “I am the true vine” (John 14:6; 15:1)']
   ] },
   { id: 'ot', label: 'Old Testament fulfilled', group: 'Threads through the story', intro: 'Where the Gospels themselves quote or point to the Old Testament.', items: 'ot' },
+  { id: 'rising', label: 'The resurrection and the Scriptures', group: 'Threads through the story', intro: 'Where the New Testament links Jesus’ rising to the Old Testament. Each scene’s Old Testament tab shows the passages side by side.', items: [
+    ['greatest', 'The rejected stone becomes the cornerstone: Psalm 118:22 (Mark 12:10–11; Acts 4:10–11)'],
+    ['risen', 'The sign of Jonah (Matthew 12:40), and “raised on the third day according to the Scriptures” (1 Corinthians 15:4)'],
+    ['emmaus', '“Beginning with Moses and all the Prophets, He explained to them what was written in all the Scriptures about Himself” (Luke 24:27)'],
+    ['peace', '“The Christ will suffer and rise from the dead on the third day” (Luke 24:46)'],
+    ['pentecost', 'Psalm 16:10, “nor will You let Your Holy One see decay” (Acts 2:27–31)']
+  ] },
   { id: 'spirit', label: 'The Holy Spirit', group: 'Threads through the story', intro: 'From the promise of His birth to Pentecost.', items: [
     ['zechariah', 'John “will be filled with the Holy Spirit even from his mother’s womb” (Luke 1:15)'],
     ['annunciation', '“The Holy Spirit will come upon you” (Luke 1:35)'],

@@ -1,0 +1,230 @@
+{
+ "translation": "BSB",
+ "name": "Berean Standard Bible",
+ "licence": "Public domain (dedicated April 30, 2023)",
+ "licenceUrl": "https://berean.bible/terms.htm",
+ "source": "https://github.com/BSB-publishing/bsb2usfm/releases/latest/download/BSB_usj.zip",
+ "sourceSha256": "d3681834e89fd09948c12abb5af96e0f6204f8f9574cceca9dd57183e9055f78",
+ "sourceDate": "2026-09-29",
+ "retrieved": "2026-10-12",
+ "builtBy": "tools/make-bsb.py",
+ "note": "Used only when bible.helloao.org cannot be reached. Footnotes and cross-reference lines are omitted.",
+ "books": {
+  "MAT": {
+   "chapters": 28,
+   "verses": 1068,
+   "bytes": 198071,
+   "sha256": "167d33927c42ee423f8f304d95be57b52c60c1d03ef609b9e84cf1c77669df5b"
+  },
+  "MRK": {
+   "chapters": 16,
+   "verses": 673,
+   "bytes": 120475,
+   "sha256": "ef400997ba7aa87ab96293cdb57a8bed6d52f0f3dd86ba9d82e49f295dfa6755"
+  },
+  "LUK": {
+   "chapters": 24,
+   "verses": 1149,
+   "bytes": 207605,
+   "sha256": "38bb7be75756be5818465bec6b00c65cedda4b859a63dab93db521a702df97d2"
+  },
+  "JHN": {
+   "chapters": 21,
+   "verses": 878,
+   "bytes": 153267,
+   "sha256": "673714eb45fb9bfa7db9a3ace7ccf30fdb6c14268f4f0b13ace542f579c0c286"
+  },
+  "ACT": {
+   "chapters": 28,
+   "verses": 1003,
+   "bytes": 175317,
+   "sha256": "f6c37832417a236399f165d2019d0810ecf695ee5d5c97062d440096dbe922ad"
+  },
+  "GEN": {
+   "chapters": 50,
+   "verses": 1533,
+   "bytes": 265804,
+   "sha256": "ffd11d676903e5dea38d385381394712f66f77308a2f4e6096012224046cb12f"
+  },
+  "EXO": {
+   "chapters": 40,
+   "verses": 1213,
+   "bytes": 214298,
+   "sha256": "2bf341965043dee90fdc9cc86bc3a83436f738ff57aacd8d656ddae0d9c7663f"
+  },
+  "LEV": {
+   "chapters": 27,
+   "verses": 859,
+   "bytes": 155859,
+   "sha256": "5275bed146aaa76e7950aa573f9e7f831efb9b307d3d9e74405500ac1dcf9875"
+  },
+  "NUM": {
+   "chapters": 36,
+   "verses": 1288,
+   "bytes": 219900,
+   "sha256": "3bebd88de13a87612a407308b16c3daf60c25dd9ed7b1c1ec2d92cb253ccebe7"
+  },
+  "DEU": {
+   "chapters": 34,
+   "verses": 959,
+   "bytes": 184994,
+   "sha256": "9b8d95b1184a71b6316b277098b8ab560715df33816b3745e067349f79857b7a"
+  },
+  "JOS": {
+   "chapters": 24,
+   "verses": 658,
+   "bytes": 121924,
+   "sha256": "1243f15ac04d43183edef0e79326145bd5d6d96ae69edd72ce309e4cbd7bd1f2"
+  },
+  "JDG": {
+   "chapters": 21,
+   "verses": 618,
+   "bytes": 122969,
+   "sha256": "e46d1570c197154bcf7266971f65c8d0eece8e5a5f32579a5f404fc73755f5e3"
+  },
+  "RUT": {
+   "chapters": 4,
+   "verses": 85,
+   "bytes": 17237,
+   "sha256": "abc564857c79e4861d3b9a60a2abe920ea64a42b622a671dc943f8a6b7f2b8c0"
+  },
+  "1SA": {
+   "chapters": 31,
+   "verses": 810,
+   "bytes": 161003,
+   "sha256": "2f46199ed4385a0264ba7daa9905764349e60e194960c42974b5e0413f294ab9"
+  },
+  "2SA": {
+   "chapters": 24,
+   "verses": 695,
+   "bytes": 136825,
+   "sha256": "9fda8c8944514fa50a207a03f2401a4241abe3b592c8a92e14b3a62a470367bb"
+  },
+  "1KI": {
+   "chapters": 22,
+   "verses": 816,
+   "bytes": 161372,
+   "sha256": "a8ced75f6e5ad253a7a81840fdbdb3691bade2f801b920777c652e12cc0a5e49"
+  },
+  "2KI": {
+   "chapters": 25,
+   "verses": 719,
+   "bytes": 154551,
+   "sha256": "b0f32dc1daad1cb9d9e45485b1d53c571f66122f0e61e7c029ed71b1c5f066d2"
+  },
+  "1CH": {
+   "chapters": 29,
+   "verses": 942,
+   "bytes": 155444,
+   "sha256": "e98822ea7d9cab1860e1c883b5355d69bb0ca4e6c38c3d57cacc0479acc99f28"
+  },
+  "2CH": {
+   "chapters": 36,
+   "verses": 822,
+   "bytes": 173692,
+   "sha256": "8b4a40c273384e76c53fd65e5a119b494aa6658fa458487e5bdbe002160e5c96"
+  },
+  "PSA": {
+   "chapters": 150,
+   "verses": 2461,
+   "bytes": 421607,
+   "sha256": "a3e7ccfdc5694cf09cdcd0e103002b9ec0588c6431f8a4ce1460257c534b5327"
+  },
+  "ISA": {
+   "chapters": 66,
+   "verses": 1292,
+   "bytes": 320423,
+   "sha256": "67b15f835949144ecc5f14fcc5934709f5be422cb673b5ea08aa183381911ea3"
+  },
+  "JER": {
+   "chapters": 52,
+   "verses": 1364,
+   "bytes": 326760,
+   "sha256": "19dff9b0c10f0648a27a335facd0fde1b5b8222e1a6f75eff17de0733d221108"
+  },
+  "DAN": {
+   "chapters": 12,
+   "verses": 357,
+   "bytes": 77055,
+   "sha256": "b684665fd54a64d74eafa7b44b51f8913075dbeac38ce16b26146ed37b4788e0"
+  },
+  "HOS": {
+   "chapters": 14,
+   "verses": 197,
+   "bytes": 48018,
+   "sha256": "eb80d991291503b4ff586d5a9b4131d43e00e36d6443afe4d0ca99dd185f2c22"
+  },
+  "JOL": {
+   "chapters": 3,
+   "verses": 73,
+   "bytes": 18563,
+   "sha256": "60af5fe4208de423ea63d8b8b4330537af79de2adff90f9276ceac07b06be963"
+  },
+  "JON": {
+   "chapters": 4,
+   "verses": 48,
+   "bytes": 9426,
+   "sha256": "4fd92f5af3c89c2fdfe557518927616c88a71bffbde7f265cbb3497648dff863"
+  },
+  "MIC": {
+   "chapters": 7,
+   "verses": 105,
+   "bytes": 28439,
+   "sha256": "2b2976b5bdc53b2bad123fc3cbbc5d08118715b3aa50075d0e09c2a60d10d259"
+  },
+  "ZEC": {
+   "chapters": 14,
+   "verses": 211,
+   "bytes": 44046,
+   "sha256": "e621cb091d60e74941586a923f4cc6a0ddac835713816b27e55d2d83a335b5a3"
+  },
+  "MAL": {
+   "chapters": 4,
+   "verses": 55,
+   "bytes": 12096,
+   "sha256": "52b7556bb345904f789a0bdf29da21ebbd00b45840c529c8acd02c2a5fdd5c00"
+  },
+  "ROM": {
+   "chapters": 16,
+   "verses": 432,
+   "bytes": 73597,
+   "sha256": "78d1d54ef9b70bbee79d507a0d2b9fdcd3fe9afff576959b041410e96bb9b968"
+  },
+  "1CO": {
+   "chapters": 16,
+   "verses": 437,
+   "bytes": 70047,
+   "sha256": "95895d63a99b3138c3fc4b05d3971254a337fa7db21d670b62d444ecae0691f5"
+  },
+  "GAL": {
+   "chapters": 6,
+   "verses": 149,
+   "bytes": 23802,
+   "sha256": "8016b88212b64cc302a5fa661a9d3bea3f599132eed4d4edad4f9dfcd78e4be5"
+  },
+  "2TI": {
+   "chapters": 4,
+   "verses": 83,
+   "bytes": 13488,
+   "sha256": "4033ae972c6a457515ec65fa314006bf04d41e505d0eb7bf25493e828d61b226"
+  },
+  "HEB": {
+   "chapters": 13,
+   "verses": 303,
+   "bytes": 54354,
+   "sha256": "03b61f11e9e85d34a11a385d00bc850fbd204d8908c32017792a7032d9305a59"
+  },
+  "1PE": {
+   "chapters": 5,
+   "verses": 105,
+   "bytes": 19220,
+   "sha256": "430df6bb1b59b8750794cc858bf7a782246b1ebca810f9a624dd6c2cce27d726"
+  },
+  "REV": {
+   "chapters": 22,
+   "verses": 404,
+   "bytes": 85986,
+   "sha256": "e82da3f03426b95535c40a373102b8b4ace93e972f762ef7611b9ee6d26e89c1"
+  }
+ }
+}
