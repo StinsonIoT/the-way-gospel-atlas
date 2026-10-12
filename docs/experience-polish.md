@@ -35,3 +35,18 @@ The opening, Gethsemane prayer, and resurrection receive individual caption and 
 Gold rings indicate visual focus, measured in screen pixels. Traditional and proposed sites retain their hollow blue diamonds and visible qualifiers. The resurrection highlights both the existing Holy Sepulchre tradition and the Garden Tomb proposal; this is not a new claim of certainty. Decorative edge shading creates a quiet night treatment for prayer and a warm, pale treatment for resurrection; it is not historical weather data.
 
 Review links on the isolated preview: top, `#s-pray`, and `#s-risen`. The full source and data preservation checks still pass. Physical iPhone visual review remains outstanding.
+
+## Review pass (Claude, 2026-10-11)
+
+Imported from the v2 package (bundle verified against its checksum; the ZIP's `source/` matched commit a0c4fd2 exactly). `main` was still at the baseline, so nothing needed reconciling. Browser testing at iPhone sizes found these, now fixed:
+
+- **Camera zoom collapsed after any resize or opened detail.** MapLibre's `cameraForBounds` adds the map's current padding to the padding it is given, so recomputing the cameras mid-story doubled it (the resurrection opened at zoom 9 instead of 14). The cameras are now measured with no padding set, then the current padding is restored.
+- **Sideways scroll on iPhone.** The opening's glow extended past the screen edge, widening the page to 414 px; the header, Map key and Explore button were cut off. The opening now clips its glow.
+- **Map labels missing in Explore.** Hidden story captions still counted as label obstacles while exploring; they no longer do.
+- **Opening view.** Bethlehem now appears with Jerusalem just to the north and the Dead Sea, so the first view says where we are; the pull back to John 1 still widens to the whole land.
+- **Landscape phones.** Captions sit on the left and the map on the right (as on wide screens), instead of a centred caption covering the map.
+- **Fewer competing labels on phones.** The extra stage line ("In the garden") repeated the caption's kicker and is kept for wide screens only. The floating Explore 3D button steps aside when a long caption scrolls under it. Certainty notes and kickers are at least 11–12 px.
+- **Holy Week focus.** Each caption's place carries the gold focus ring: Bethany, the temple, the Mount of Olives, the upper room, Gethsemane, and both tomb sites. The debated praetorium sites get none. The ring marks focus, not certainty.
+- **Smooth scrolling.** Per-frame writes to the page happen only when something changes.
+
+Asset versions are now `?v=50` and the app cache `the-way-v27`.

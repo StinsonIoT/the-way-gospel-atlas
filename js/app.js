@@ -410,8 +410,9 @@
       const r = control.getBoundingClientRect();if (r.width && r.height) placed.push(r);
     });
     // Verse panels and cards near the current scene hide any label behind them.
+    // (Not while exploring: the story is hidden then.)
     const near = Math.round(progress());
-    for (let k = Math.max(0, near - 1); k <= Math.min(sections.length - 1, near + 1); k++) {
+    if (!exploring) for (let k = Math.max(0, near - 1); k <= Math.min(sections.length - 1, near + 1); k++) {
       const box = sections[k].querySelector('.verse, .card, .hero');
       if (box) { const r = box.getBoundingClientRect(); if (r.bottom > 0 && r.top < window.innerHeight) placed.push(r); }
     }
@@ -444,6 +445,8 @@
   function padding() {
     const w = window.innerWidth, h = window.innerHeight;
     if (w >= 900) return { top: 90, bottom: 60, left: Math.min(560, w * 0.42), right: 48 };
+    // Landscape phones: captions sit on the left (css), the map on the right.
+    if (w > h && h <= 540 && w >= 640) return { top: 70, bottom: 20, left: Math.min(470, w * 0.56), right: 20 };
     return { top: 70, bottom: Math.round(h * 0.52), left: 22, right: 22 };
   }
   // Other city scenes keep their original orbit; the focused Holy Week
@@ -455,6 +458,10 @@
     const pad = padding();
     camPad = pad;
     let k = 0;
+    // cameraForBounds adds the map's current padding to the padding it is
+    // given, so measure with none and put the current padding back after.
+    const livePad = map.getPadding();
+    map.setPadding({ top: 0, bottom: 0, left: 0, right: 0 });
     cams = STEPS.map((s, index) => {
       const pitch = s.pitch != null ? s.pitch : (is3D(s) ? 56 : 0);
       const bearing = experience.bearing(s.id, s.bearing != null ? s.bearing : (is3D(s) ? ORBIT[(k++) % ORBIT.length] : 0));
@@ -471,6 +478,7 @@
       const m = maplibregl.MercatorCoordinate.fromLngLat(mid);
       return { x: m.x, y: m.y, zoom: c.zoom - (pitch ? 0.35 : 0), pitch, bearing, padding: scenePad };
     });
+    map.setPadding(livePad);
   }
   const lerpAngle = (a, b, t) => { let d = ((b - a + 540) % 360) - 180; return a + d * t; };
 
@@ -492,6 +500,7 @@
   const root = document.documentElement.style;
   const chapterEl = document.getElementById('chapter');
   let lastCh = '';
+  const frameState = { opening: null, moment: null };
 
   // ---------- chapters: timeline and menu ----------
   const strip = (h) => String(h || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -1729,12 +1738,19 @@
     syncElevation();
     apply(STEPS[i], STEPS[i + 1], e, p);
     // header
-    document.body.classList.toggle('opening', p < .8);
-    document.body.dataset.moment = STEPS[Math.round(p)].id;
+    // Only write to the page when something changed, so scrolling stays smooth.
+    const opening = p < .8, moment = STEPS[Math.round(p)].id;
+    if (opening !== frameState.opening) { document.body.classList.toggle('opening', opening); frameState.opening = opening; }
+    if (moment !== frameState.moment) { document.body.dataset.moment = moment; frameState.moment = moment; }
     const stage = experience.stage(STEPS[Math.round(p)].id);
     const stageEl = document.getElementById('story-stage');
-    stageEl.hidden = !stage;
+    if (stageEl.hidden !== !stage) stageEl.hidden = !stage;
     if (stageEl.textContent !== stage) stageEl.textContent = stage;
+    // When a long caption scrolls up under the floating Explore button, step
+    // the button aside so it never sits on top of the text.
+    const capEl = sections[Math.round(p)].firstElementChild;
+    const tuck = !!capEl && capEl.getBoundingClientRect().top < exploreBtn.offsetTop + exploreBtn.offsetHeight + 8;
+    if (tuck !== exploreBtn._tuck) { exploreBtn.classList.toggle('tucked', tuck); exploreBtn._tuck = tuck; }
     updateTimeline(p);
     noteStep(Math.round(p));
     const ch = p < .8 ? 'Chapters' : STEPS[Math.round(p)].ch;
