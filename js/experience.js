@@ -23,6 +23,9 @@
     hold: id => id === 'title' ? .18 : focus.has(id) ? .5 : .35,
     bearing: (id, fallback) => city.has(id) ? -16 : fallback,
     view: scene => scene.id === 'title' ? [[35.12, 31.65], [35.28, 31.77]] : scene.view,
+    artDirected: id => ['title', 'pray', 'risen'].includes(id),
+    primary: id => id === 'title' ? ['star'] : id === 'pray' ? ['gethsemane'] : id === 'risen' ? ['sepulchre', 'gardentomb'] : [],
+    visible: scene => scene.id === 'title' ? ['star'] : scene.show,
     padding, mixPadding
   };
 })();

@@ -37,5 +37,12 @@ for(const s of steps){const html=ctx.cardHTML(s),plain=html.replace(/<[^>]*>/g,'
 const title=ctx.cardHTML(steps[0]);assert(title.includes('data-story-jump="word"')&&title.includes('data-tour-start')&&title.includes('data-explore="land"')&&title.includes('id="resume"'));
 const upper=ctx.cardHTML(steps.find(s=>s.id==='upper'));assert(upper.includes('<details class="scene-context">'));assert(upper.includes('data-save="upper"')&&upper.includes('data-share="upper"')&&upper.includes('data-tour-from="upper"'));
 const hw=ctx.cardHTML(steps.find(s=>s.id==='hw'));assert(hw.includes('holyweek.html')&&hw.includes('First day of the week'));
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=48')&&index.includes('js/app.js?v=48'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v25'));
+const prayer = steps.find(s=>s.id==='pray');const prayerHtml=ctx.cardHTML(prayer);
+assert(prayer.verse.includes('Yet not what I will, but what You will.'));
+assert(prayerHtml.includes('precise prayer site unknown')&&prayerHtml.includes('The full verse'));
+assert(ctx.cardHTML(steps.find(s=>s.id==='risen')).includes('traditional and later-proposed'));
+assert.deepEqual(Array.from(ex.primary('risen')),['sepulchre','gardentomb']);
+assert.deepEqual(Array.from(ex.visible(steps[0])),['star']);
+assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=49')&&index.includes('js/app.js?v=49'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v26'));
 console.log('PASS: all 90 scenes and model/content files retained; opening contains Bethlehem; stable Holy Week orientation; valid camera padding across six screen sizes, long captions, and extra header bars; real scene markup retains readings, notes, quotations and tools; cache versions updated. Logic checks, not browser visual QA.');

@@ -154,6 +154,33 @@
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;
     }
+    if (s.id === 'pray') {
+      const excerpt = 'Yet not what I will, but what You will.';
+      return `<div class="verse moment-prayer">
+        <div class="kicker"><span>${esc(s.kicker)}</span></div>
+        <blockquote class="moment-quote">“${esc(excerpt)}”</blockquote>
+        <p class="moment-certainty">Traditional locator · precise prayer site unknown</p>
+        <div class="verse-foot">${refLink(s.ref, 'ref scene-reading')}</div>
+        <details class="moment-study"><summary>Read & study</summary>
+          <p class="moment-source-label">The full verse · BSB</p><blockquote class="full-prayer">${esc(s.verse)}</blockquote>
+          ${whenHTML(s)}${studyRow(s)}
+        </details>
+      </div>`;
+    }
+    if (s.id === 'risen') {
+      return `<article class="card card-dawn moment-resurrection">
+        <div class="kicker"><span>${esc(s.kicker)}</span></div>
+        <h2>He has <em>risen.</em></h2>
+        <p class="text">At dawn, the women find the stone rolled away. They hear that Jesus has risen.</p>
+        ${refLink(s.ref, 'ref scene-reading')}
+        <p class="moment-certainty">Tomb markers: traditional and later-proposed sites</p>
+        <details class="moment-study"><summary>Read & study</summary>
+          <h3 class="moment-original-title">${s.title}</h3><p class="text">${esc(s.text)}</p>
+          ${s.note ? `<p class="note">${linkRefs(esc(s.note))}</p>` : ''}
+          ${whenHTML(s)}${studyRow(s)}
+        </details>
+      </article>`;
+    }
     if (s.kind === 'verse') {
       return `<div class="verse">
         <div class="kicker"><span>${esc(s.kicker)}</span></div>
@@ -187,6 +214,7 @@
     sec.id = i === 0 ? 'top' : 's-' + s.id;
     if (experience.focused(s.id)) sec.classList.add('step-focus');
     sec.dataset.scene = s.id;
+    if (experience.artDirected(s.id)) sec.classList.add('step-art-directed');
     sec.innerHTML = cardHTML(s);
     story.appendChild(sec);
   });
@@ -1794,10 +1822,13 @@
     document.body.style.backgroundColor = rgb(C.land);
 
     // visibility of places, areas and routes
-    const vis = (id) => lerp(a.show.includes(id) ? 1 : 0, b.show.includes(id) ? 1 : 0, e);
+    const showA = experience.visible(a), showB = experience.visible(b);
+    const primary = new Set(experience.primary(e < .5 ? a.id : b.id));
+    const vis = (id) => lerp(showA.includes(id) ? 1 : 0, showB.includes(id) ? 1 : 0, e);
     Object.keys(markerEls).forEach((id) => {
       const v = vis(id);
       const el = markerEls[id];
+      el.classList.toggle('is-focus', primary.has(id));
       const s = v.toFixed(3);
       if (el._op !== s) { el.style.opacity = s; el._op = s; el.style.visibility = v < 0.01 ? 'hidden' : 'visible'; }
     });

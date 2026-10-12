@@ -27,3 +27,11 @@ Run `node tests/experience.cjs` and syntax checks for `js/app.js`, `js/experienc
 The JavaScript/CSS URLs and service-worker application cache were bumped. Previously cached Bible passages and terrain caches retain their existing names.
 
 No live GitHub Pages deployment is made by this branch.
+
+## Visual refinement — three moments
+
+The opening, Gethsemane prayer, and resurrection receive individual caption and atmosphere treatments. The opening shows only its existing Bethlehem locator while the title is visible. Gethsemane presents a short exact excerpt of Mark 14:36; the full original BSB verse remains under Read & study. The resurrection caption uses a brief front summary; its full original title and summary remain in the same expandable section. Neither scene adds a location, journey, or quotation to the underlying data.
+
+Gold rings indicate visual focus, measured in screen pixels. Traditional and proposed sites retain their hollow blue diamonds and visible qualifiers. The resurrection highlights both the existing Holy Sepulchre tradition and the Garden Tomb proposal; this is not a new claim of certainty. Decorative edge shading creates a quiet night treatment for prayer and a warm, pale treatment for resurrection; it is not historical weather data.
+
+Review links on the isolated preview: top, `#s-pray`, and `#s-risen`. The full source and data preservation checks still pass. Physical iPhone visual review remains outstanding.
