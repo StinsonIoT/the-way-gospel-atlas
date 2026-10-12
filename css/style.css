@@ -246,6 +246,7 @@ dialog::backdrop { background: rgba(10, 14, 15, 0.5); }
 .p-head { display: block; margin: 10px 0 4px; font: 600 12px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
 .p-ch { margin: 8px 0 4px; font: 600 13px var(--sans); color: var(--c-accent); }
 .p-status { color: var(--c-muted); font-size: 15px; }
+.p-saved { color: var(--c-muted); font-size: 13.5px; line-height: 1.45; border-left: 2px solid var(--c-line, rgba(127,127,127,.35)); padding-left: 10px; margin: 0 0 14px; }
 .p-foot { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--c-line); font-size: 12px; color: var(--c-muted); }
 
 /* ---------- continue where you left off; page links ---------- */
@@ -523,6 +524,16 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
 .dp-ask { margin: 0 0 10px; font: italic 400 21px/1.45 var(--serif); }
 .dp-ot .ot-list li { padding: 10px 0; border-top: 1px solid var(--c-line); margin: 0; font-size: 15.5px; line-height: 1.5; }
 .dp-ot .ot-refs { color: var(--c-accent); }
+.ot-kind { display: inline-block; margin: 0 0 3px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--c-line); font: 600 10.5px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--c-muted); }
+.ot-kind:empty { display: none; }
+.ot-k-quoted { color: var(--c-accent); border-color: currentColor; }
+.ot-k-compared { border-style: dashed; }
+.ot-line { display: block; }
+.ot-both { display: block; margin: 6px 0 0; padding: 0; min-height: 32px; border: 0; background: none; color: var(--c-accent); font: 500 13.5px var(--sans); text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.ot-h { margin: 18px 0 2px; font: 600 15px var(--sans); }
+.ot-sub { margin: 0 0 4px; font-size: 13px; color: var(--c-muted); }
+.dp-ot .ot-bsb li { font-size: 15px; }
+.v-focus > span { background: color-mix(in srgb, var(--c-accent, #B4532A) 14%, transparent); box-decoration-break: clone; -webkit-box-decoration-break: clone; border-radius: 3px; }
 /* calmer cards: smaller map-mark chips */
 .chips { gap: 6px; }
 .chip { padding: 3px 9px 3px 4px; font-size: 11.5px; }

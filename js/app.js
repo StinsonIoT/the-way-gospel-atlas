@@ -73,7 +73,7 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const refLink = (ref, cls) => ref ? `<a class="${cls || 'ref'}" data-ref="${esc(ref[0])}" href="https://biblehub.com/bsb/${ref[1]}/${ref[2]}.htm" target="_blank" rel="noopener">${esc(ref[0])}<span class="ref-icon" aria-hidden="true"></span></a>` : '';
   // Scripture references inside notes, e.g. "(Luke 2:44)", become tappable.
-  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Numbers|Jeremiah|Daniel|Hosea|Joel|Jonah|Micah|Isaiah|Zechariah|Malachi|Romans|Galatians|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?!\d|:\d)/g,
+  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Numbers|Jeremiah|Daniel|Hosea|Joel|Jonah|Micah|Isaiah|Zechariah|Malachi|Romans|1 Corinthians|Galatians|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?!\d|:\d)/g,
     (m) => `<button type="button" class="vref" data-ref="${m}">${m}</button>`)
     // Follow-on references in the same book: "John 2:13; 6:4" or "John 19:14; compare 18:28".
     .replace(/(data-ref="((?:[12] )?[A-Za-z]+) [^"]*">[^<]*<\/button>)((?:(?:;|,)\s+(?:compare\s+)?\d+:\d+(?:[–-]\d+)?)+)/g,
@@ -92,9 +92,85 @@
     empire: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="3" y="4" width="13" height="12" fill="#A8322D" opacity=".55"/><rect x="16" y="4" width="11" height="12" fill="#C8645A" opacity=".3"/></svg>'
   };
   const ASK = window.WAY_ASK || {};
-  const OT = window.WAY_OT || {};
-  STEPS.forEach((s) => { if (ASK[s.id]) s.ask = ASK[s.id]; if (OT[s.id]) s.ot = OT[s.id]; });
-  const otHTML = (items) => `<ul class="ot-list">${items.map(([ot, nt, note]) => `<li><span class="ot-refs">${linkRefs(esc(ot))} <span class="ot-in">in ${linkRefs(esc(nt))}</span></span>${linkRefs(esc(note))}</li>`).join('')}</ul>`;
+  // Old Testament links (js/study.js), shown only once reviewed, and the
+  // sources the BSB's own footnotes give for the verses of each scene (js/otrefs.js).
+  const OT = {};
+  Object.entries(window.WAY_OT || {}).forEach(([id, list]) => {
+    const ok = list.filter((x) => !x.status || x.status === 'reviewed');
+    if (ok.length) OT[id] = ok;
+  });
+  // "Isaiah 61:1–2; 58:6 · Luke 4:18" -> [{ book, c1, v1, c2, v2 }], keeping the book for follow-ons.
+  const plainSpans = (label) => {
+    const out = []; let book = null;
+    String(label).replace(/\s*·\s*BSB$/, '').split(/\s*[·;]\s*/).forEach((p) => {
+      let m = /^((?:[123] )?[A-Z][a-z]+)\s+(\d+)(?::(\d+))?(?:\s*[–-]\s*(\d+)(?::(\d+))?)?/.exec(p.trim());
+      let c1, v1, x, y;
+      if (m) { book = m[1].replace(/^Psalms$/, 'Psalm'); c1 = +m[2]; v1 = m[3] ? +m[3] : 0; x = m[4]; y = m[5]; }
+      else if (book && (m = /^(\d+):(\d+)(?:\s*[–-]\s*(\d+)(?::(\d+))?)?/.exec(p.trim()))) { c1 = +m[1]; v1 = +m[2]; x = m[3]; y = m[4]; }
+      else return;
+      let c2 = c1, v2 = v1 || 999;
+      if (x && y) { c2 = +x; v2 = +y; } else if (x && v1) v2 = +x; else if (x) { c2 = +x; v2 = 999; }
+      out.push({ book, c1, v1, c2, v2 });
+    });
+    return out;
+  };
+  const inSpan = (sp, book, c, v) => sp.book === book && c * 1000 + v >= sp.c1 * 1000 + sp.v1 && c * 1000 + v <= sp.c2 * 1000 + sp.v2;
+  const BSBOT = window.WAY_BSB_OT || [];
+  // The footnoted sources inside a scene's passages, one line per verse, minus
+  // those the curated links already cover.
+  function bsbOtFor(st) {
+    const own = [st.ref ? st.ref[0] : '', ...(HARM[st.id] || []).slice(0, 4)].filter(Boolean).flatMap(plainSpans);
+    if (!own.length) return [];
+    const covered = (OT[st.id] || []).flatMap((x) => plainSpans(x.ot));
+    const byVerse = new Map();
+    BSBOT.forEach(([b, c, v, kind, ots]) => {
+      if (!own.some((sp) => inSpan(sp, b, c, v))) return;
+      const key = `${b} ${c}:${v}`;
+      const row = byVerse.get(key) || { nt: key, quote: [], see: [] };
+      ots.forEach((o) => {
+        const sp = plainSpans(o)[0];
+        if (!sp || covered.some((cv) => cv.book === sp.book && cv.c1 <= sp.c1 && sp.c1 <= cv.c2)) return;
+        if (!row.quote.includes(o) && !row.see.includes(o)) row[kind === 'quote' ? 'quote' : 'see'].push(o);
+        if (kind === 'quote' && row.see.includes(o)) row.see.splice(row.see.indexOf(o), 1);
+      });
+      if (row.quote.length || row.see.length) byVerse.set(key, row);
+    });
+    return [...byVerse.values()];
+  }
+  STEPS.forEach((s) => { if (ASK[s.id]) s.ask = ASK[s.id]; });
+  // A passage with a few verses either side, for reading a quotation in its setting.
+  const withContext = (label) => plainSpans(label).map((sp) => (sp.v1 && sp.c1 === sp.c2
+    ? `${sp.book} ${sp.c1}:${Math.max(1, sp.v1 - 2)}–${sp.v2 + 2}` : `${sp.book} ${sp.c1}${sp.v1 ? ':' + sp.v1 : ''}`));
+  const bothBtn = (ot, nt, title) => {
+    const o = ot && !/^“/.test(ot) ? withContext(ot).slice(0, 2) : [];
+    const n = withContext(nt).slice(0, o.length ? 2 : 3);
+    const label = [...o, ...n].slice(0, 4).join(' · ');
+    return label ? `<button type="button" class="ot-both" data-ref="${esc(label)}" data-focus="${esc([ot && !/^“/.test(ot) ? ot : '', nt].filter(Boolean).join(' · '))}" data-title="${esc(title)}">${o.length ? 'Read both in context' : 'Read in context'}</button>` : '';
+  };
+  const OT_KIND = { quoted: 'Quoted', echoed: 'Echoed', recalled: 'Recalled', unnamed: 'Scripture not named', compared: 'Often compared' };
+  const OT_KEY = { quoted: 'the words are given.', echoed: 'close wording, not introduced as a quotation.', recalled: 'an event or person, not words.',
+    unnamed: 'the writer says Scripture is fulfilled without naming a passage.', compared: 'not cited by the New Testament; many readers set the passages side by side.' };
+  const otHTML = (st) => {
+    const items = OT[st.id] || [], bsb = bsbOtFor(st);
+    let h = '';
+    if (items.length) {
+      h += '<p class="dp-lede">Where the New Testament quotes or points to the Old.</p><ul class="ot-list">' + items.map((x) => `<li><span class="ot-kind ot-k-${x.kind}">${OT_KIND[x.kind] || ''}</span>`
+        + `<span class="ot-refs">${linkRefs(esc(x.ot))} <span class="ot-in">in ${linkRefs(esc(x.nt))}</span></span>${linkRefs(esc(x.note))}`
+        + bothBtn(x.ot, x.nt, /^“/.test(x.ot) ? x.nt : `${x.ot.split(' · ')[0]} and ${x.nt.split(' · ')[0]}`) + '</li>').join('') + '</ul>';
+    }
+    if (bsb.length) {
+      h += `<h3 class="ot-h">${items.length ? 'Also in this passage' : 'In this passage'}</h3><p class="ot-sub">Old Testament passages named in the footnotes of the Berean Standard Bible for these verses.</p><ul class="ot-list ot-bsb">`
+        + bsb.map((r) => `<li><span class="ot-refs">${linkRefs(esc(r.nt))}</span>`
+          + (r.quote.length ? `<span class="ot-line">quotes ${linkRefs(esc(r.quote.join('; ')))}</span>` : '')
+          + (r.see.length ? `<span class="ot-line">the footnote points to ${linkRefs(esc(r.see.join('; ')))}</span>` : '')
+          + bothBtn([...r.quote, ...r.see].join(' · '), r.nt, `${[...r.quote, ...r.see][0]} and ${r.nt}`) + '</li>').join('') + '</ul>';
+    }
+    const used = Object.keys(OT_KIND).filter((k) => items.some((x) => x.kind === k));
+    if (h) h += '<p class="gos-foot ot-key">' + used.map((k) => `<b>${OT_KIND[k]}</b>: ${OT_KEY[k]}`).join(' ')
+      + ' “In context” shows a few verses either side, with the verses cited marked.'
+      + (bsb.length ? ' Footnote sources: Berean Standard Bible (public domain).' : '') + '</p>';
+    return h;
+  };
 
   // Which Gospels tell each scene (js/study.js), and the bookmark button.
   const HARM = window.WAY_HARMONY || {};
@@ -146,6 +222,7 @@
   const legendHTML = '<ul class="legend">' + LEGEND.map((l) => `<li>${SYM[l[0]]}<span><b>${l[1]}</b> ${l[2]}</span></li>`).join('') + '</ul>';
   document.getElementById('key-body').innerHTML = legendHTML;
 
+  STEPS.forEach((s) => { if (OT[s.id] || bsbOtFor(s).length) s.ot = true; });
   function cardHTML(s) {
     const pal = PALETTES[s.pal];
     const kick = `<div class="kicker"><span>${esc(s.kicker || '')}</span>${s.kind !== 'verse' && s.ref && !experience.focused(s.id) ? refLink(s.ref, 'ref') : ''}</div>`;
@@ -893,7 +970,7 @@
   const BOOKS = { matthew: ['matt', 'mt'], mark: ['mk', 'mrk'], luke: ['lk', 'luk'], john: ['jn', 'jhn'], acts: ['ac'], leviticus: ['lev'], micah: ['mic'], isaiah: ['isa'], psalms: ['ps', 'psa', 'psalm'],
     genesis: ['gen'], exodus: ['ex', 'exo'], deuteronomy: ['deut', 'dt'], joshua: ['josh'], judges: ['judg', 'jdg'], ruth: ['ru'], '1 samuel': ['1sa', '1 sam'], '2 samuel': ['2sa', '2 sam'],
     '1 kings': ['1ki', '1 kgs'], '2 kings': ['2ki', '2 kgs'], '1 chronicles': ['1ch', '1 chr'], '2 chronicles': ['2ch', '2 chr'], hosea: ['hos'], zechariah: ['zech', 'zec'],
-    numbers: ['num'], jeremiah: ['jer'], daniel: ['dan'], joel: ['jl'], jonah: ['jon'], malachi: ['mal'], romans: ['rom'], galatians: ['gal'] };
+    numbers: ['num'], jeremiah: ['jer'], daniel: ['dan'], joel: ['jl'], jonah: ['jon'], malachi: ['mal'], romans: ['rom'], '1 corinthians': ['1co', '1 cor'], galatians: ['gal'] };
   const bookOf = (w) => Object.keys(BOOKS).find((b) => b.startsWith(w) && w.length >= 3 || BOOKS[b].includes(w));
   function refSpans(label) {
     // "John 4:1–42", "Mark 4:35–5:20", "Matthew 5–7", "Mark 14:26 · John 18:1"
@@ -988,8 +1065,7 @@
     + TOPICS.filter((t) => (t.group || '') === g).map((t) => `<button type="button" data-topic="${t.id}" aria-pressed="false">${esc(t.label)}</button>`).join('') + '</div>').join('');
   function topicItems(t) {
     if (t.items !== 'ot') return t.items;
-    const OTL = window.WAY_OT || {};
-    return STEPS.filter((st) => OTL[st.id]).map((st) => [st.id, OTL[st.id].map((x) => x[0]).join('; ')]);
+    return STEPS.filter((st) => OT[st.id]).map((st) => [st.id, OT[st.id].map((x) => x.ot).join('; ')]);
   }
   function showTopic(id) {
     const t = TOPICS.find((x) => x.id === id);
@@ -1038,7 +1114,7 @@
   }
   function layerHTML(st, k) {
     if (k === 'gospels') return gospelsHTML(st.id);
-    if (k === 'ot') return '<p class="dp-lede">Where the New Testament quotes or points to the Old.</p>' + otHTML(st.ot);
+    if (k === 'ot') return otHTML(st);
     if (k === 'ask') return `<p class="dp-ask">${linkRefs(esc(st.ask))}</p><p class="gos-foot">A question for personal reflection or a small group.</p>`;
     return `<p class="dp-text">${linkRefs(esc(st[k]))}</p>`;
   }
@@ -1282,6 +1358,12 @@
     };
     btn.disabled = true;
     const cache = await caches.open('the-way-bible');
+    // The saved copy of the Gospels and Acts, kept with the passages, so reading
+    // still works offline if a chapter from the API is missing.
+    for (const code of ['MAT', 'MRK', 'LUK', 'JHN', 'ACT']) {
+      const url = new URL(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`, location.href).href;
+      try { if (!(await cache.match(url))) { const res = await fetch(url); if (res.ok) await cache.put(url, res); else failed++; } } catch (err) { failed++; }
+    }
     await Promise.all([next(), next(), next(), next()]);
     btn.disabled = false;
     savingOffline = false;
@@ -1311,33 +1393,63 @@
   const API_BOOK = { matthew: 'MAT', mark: 'MRK', luke: 'LUK', john: 'JHN', acts: 'ACT', leviticus: 'LEV', micah: 'MIC', isaiah: 'ISA', psalms: 'PSA',
     genesis: 'GEN', exodus: 'EXO', deuteronomy: 'DEU', joshua: 'JOS', judges: 'JDG', ruth: 'RUT', '1 samuel': '1SA', '2 samuel': '2SA', '1 kings': '1KI', '2 kings': '2KI',
     '1 chronicles': '1CH', '2 chronicles': '2CH', hosea: 'HOS', zechariah: 'ZEC',
-    numbers: 'NUM', jeremiah: 'JER', daniel: 'DAN', joel: 'JOL', jonah: 'JON', malachi: 'MAL', romans: 'ROM', galatians: 'GAL' };
+    numbers: 'NUM', jeremiah: 'JER', daniel: 'DAN', joel: 'JOL', jonah: 'JON', malachi: 'MAL', romans: 'ROM', '1 corinthians': '1CO', galatians: 'GAL' };
   const HUB_BOOK = Object.fromEntries(Object.keys(API_BOOK).map((b) => [b, b.replace(' ', '_')]));
   const chapterCache = new Map();
+  // A chapter is used only if it really is the BSB and has verses in it.
+  const isBSB = (j) => j && j.chapter && Array.isArray(j.chapter.content) && j.chapter.content.some((x) => x && x.type === 'verse')
+    && (!j.translation || j.translation.id === 'BSB');
+  // The saved copy (data/bsb, built by tools/make-bsb.py from the official BSB
+  // release) is used only when the Free Use Bible API can't be reached. It is
+  // the same translation; it has no audio and no footnotes.
+  const BSB_LOCAL_V = 1;
+  const localBooks = new Map();
+  function loadLocalChapter(book, c) {
+    const code = API_BOOK[book];
+    if (!localBooks.has(code)) {
+      const pr = fetch(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      pr.catch(() => localBooks.delete(code));
+      localBooks.set(code, pr);
+    }
+    return localBooks.get(code).then((b) => {
+      const content = b.translation === 'BSB' && b.chapters && b.chapters[String(c)];
+      if (!content) throw new Error('not in the saved copy');
+      return { translation: { id: 'BSB' }, book: { commonName: b.commonName }, chapter: { number: c, content }, savedCopy: true };
+    });
+  }
   function loadChapter(book, c) {
     const key = book + c;
     if (!chapterCache.has(key)) {
-      const pr = fetch(`https://bible.helloao.org/api/BSB/${API_BOOK[book]}/${c}.json`)
-        .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => ctl.abort(), 9000) : 0;
+      const pr = fetch(`https://bible.helloao.org/api/BSB/${API_BOOK[book]}/${c}.json`, ctl ? { signal: ctl.signal } : undefined)
+        .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then((j) => { if (!isBSB(j)) throw new Error('unexpected reply'); return j; })
+        .finally(() => clearTimeout(timer))
+        .catch(() => loadLocalChapter(book, c));
       pr.catch(() => chapterCache.delete(key));
+      // A saved-copy chapter is not kept, so the next opening tries the API again.
+      pr.then((j) => { if (j.savedCopy) chapterCache.delete(key); }, () => {});
       chapterCache.set(key, pr);
     }
     return chapterCache.get(key);
   }
-  function verseHTML(v) {
+  function verseHTML(v, focused) {
     let h = '';
+    // no space before punctuation that closes a run (", he said" after quoted words)
+    const add = (s) => { if (!s) return; h += (h && !/^[,.;:?!’”)]/.test(s) ? ' ' : '') + s; };
     v.content.forEach((x) => {
-      if (typeof x === 'string') h += esc(x) + ' ';
-      else if (x.text != null) h += x.wordsOfJesus ? `<span class="woj">${esc(x.text)}</span> ` : esc(x.text) + ' ';
+      if (typeof x === 'string') add(esc(x.trim()));
+      else if (x.text != null) add(x.wordsOfJesus ? `<span class="woj">${esc(x.text.trim())}</span>` : esc(x.text.trim()));
       else if (x.heading) h += `</span><span class="p-head">${esc(x.heading)}</span><span>`;
       else if (x.lineBreak) h += '<br>';
     });
-    return `<span class="v"><sup>${v.number}</sup><span>${h.trim()}</span></span> `;
+    return `<span class="v${focused ? ' v-focus' : ''}"><sup>${v.number}</sup><span>${h.trim()}</span></span> `;
   }
-  function sectionHTML(json, from, to) {
+  function sectionHTML(json, from, to, hit) {
     let h = ''; let open = false;
     json.chapter.content.forEach((it) => {
-      if (it.type === 'verse' && it.number >= from && it.number <= to) { h += verseHTML(it); open = true; }
+      if (it.type === 'verse' && it.number >= from && it.number <= to) { h += verseHTML(it, hit && hit(it.number)); open = true; }
       else if (it.type === 'heading' && open !== null) {
         // keep headings that fall inside the range
         const next = json.chapter.content.slice(json.chapter.content.indexOf(it)).find((x) => x.type === 'verse');
@@ -1413,12 +1525,16 @@
   }
   ptText.addEventListener('click', () => showPassageTab('text'));
   ptNotes.addEventListener('click', () => showPassageTab('notes'));
-  async function openPassage(label) {
+  // opts.title replaces the heading; opts.focus marks the verses that matter
+  // when a passage is shown with the verses around it.
+  async function openPassage(label, opts) {
+    opts = opts || {};
     if (tour) tourPause();
     const spans = refSpans(label).filter((sp) => API_BOOK[sp.book]);
     if (!spans.length) return false;
+    const focus = opts.focus ? refSpans(opts.focus) : [];
     const first = spans[0];
-    pTitle.textContent = label.replace(/\s*·\s*BSB$/, '');
+    pTitle.textContent = opts.title || label.replace(/\s*·\s*BSB$/, '');
     pHub.href = `https://biblehub.com/bsb/${HUB_BOOK[first.book]}/${first.c1}.htm`;
     pBody.innerHTML = '<p class="p-status">Loading…</p>';
     notesFor = spans; notesToken++;
@@ -1432,21 +1548,23 @@
     try {
       const parts = [];
       const segs = [];
-      for (const sp of spans.slice(0, 3)) {
+      for (const sp of spans.slice(0, 4)) {
         const last = Math.min(sp.c2, sp.c1 + 2);
         for (let c = sp.c1; c <= last; c++) {
           const json = await loadChapter(sp.book, c);
           const from = c === sp.c1 && sp.v1 ? sp.v1 : 1;
           const to = c === sp.c2 ? sp.v2 : 999;
           const head = spans.length > 1 || sp.c1 !== sp.c2 ? `<h3 class="p-ch">${esc(json.book && json.book.commonName ? json.book.commonName : label.split(' ')[0])} ${c}</h3>` : '';
-          parts.push(head + `<p class="p-text">${sectionHTML(json, from, to)}</p>`);
+          const hit = (n) => focus.some((f) => f.book === sp.book && c * 1000 + n >= f.c1 * 1000 + (f.v1 || 1) && c * 1000 + n <= f.c2 * 1000 + f.v2);
+          parts.push(head + `<p class="p-text">${sectionHTML(json, from, to, focus.length ? hit : null)}</p>`);
           segs.push({ json, from, to });
         }
         if (sp.c2 > last) parts.push(`<p class="p-status">The passage continues to chapter ${sp.c2}. <a href="${pHub.href}" target="_blank" rel="noopener">Read on</a>.</p>`);
       }
+      if (segs.some((sg) => sg.json.savedCopy)) parts.unshift('<p class="p-saved">The Bible service couldn’t supply this passage, so this is the atlas’s saved copy of the Berean Standard Bible (the same text, without footnotes or audio).</p>');
       if (token === passageToken) { pBody.innerHTML = parts.join(''); prepareAudio(segs, label, token); }
     } catch (err) {
-      if (token === passageToken) pBody.innerHTML = `<p class="p-status">The passage couldn’t be loaded right now. You can read it on <a href="${pHub.href}" target="_blank" rel="noopener">BibleHub</a> instead.</p>`;
+      if (token === passageToken) pBody.innerHTML = `<p class="p-status">The passage couldn’t be loaded right now (it isn’t in the atlas’s saved copy either). You can read it on <a href="${pHub.href}" target="_blank" rel="noopener">BibleHub</a> instead.</p>`;
     }
     return true;
   }
@@ -1542,7 +1660,7 @@
     const label = a.getAttribute('data-ref');
     if (!refSpans(label).some((sp) => API_BOOK[sp.book])) return; // e.g. "Four Gospels": follow the link
     ev.preventDefault();
-    openPassage(label);
+    openPassage(label, { title: a.dataset.title, focus: a.dataset.focus });
   });
 
   // ---------- Listen through the story ----------

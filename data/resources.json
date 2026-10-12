@@ -1,0 +1,69 @@
+{
+  "about": "Every outside source The Way uses or has considered, with what it may be used for. Reviewed 2026-10-12. 'status': in use / not added (and why).",
+  "resources": [
+    {
+      "id": "bsb-api", "provider": "AO Lab Free Use Bible API (bible.helloao.org)", "type": "Bible text (JSON), chapter audio and verse timings",
+      "translation": "BSB", "licence": "Free to use; BSB text public domain", "licenceUrl": "https://github.com/HelloAOLab/bible-api",
+      "attribution": "Passages load from the Free Use Bible API (bible.helloao.org)", "offline": "Chapters the reader opens or saves are kept in the browser cache",
+      "status": "in use", "notes": "Replies are checked: used only if they are BSB and contain verses."
+    },
+    {
+      "id": "bsb-local", "provider": "Berean Bible (official BSB release, BSB-publishing/bsb2usfm)", "type": "Bible text, saved in the site (data/bsb)",
+      "translation": "BSB", "licence": "Public domain (dedicated April 30, 2023)", "licenceUrl": "https://berean.bible/terms.htm",
+      "source": "https://github.com/BSB-publishing/bsb2usfm/releases/latest/download/BSB_usj.zip",
+      "attribution": "Berean Standard Bible (public domain)", "offline": "Yes",
+      "status": "in use", "notes": "Fallback only. Provenance and checksums in data/bsb/manifest.json. Footnotes omitted; text verified verse by verse against the release."
+    },
+    {
+      "id": "bsb-footnotes", "provider": "Berean Bible (official BSB release)", "type": "Old Testament sources named in BSB footnotes (js/otrefs.js)",
+      "licence": "Public domain", "licenceUrl": "https://berean.bible/terms.htm", "attribution": "Footnote sources: Berean Standard Bible (public domain)",
+      "offline": "Yes", "status": "in use"
+    },
+    {
+      "id": "bsb-audio", "provider": "OpenBible.com recordings via the Free Use Bible API", "type": "Audio of the BSB",
+      "translation": "BSB", "licence": "As published by the API; check before storing offline", "licenceUrl": "https://bible.helloao.org/docs/",
+      "attribution": "Audio via the Free Use Bible API; narrator named in the player", "offline": "No (streamed)",
+      "status": "in use", "notes": "Plays only when the reader presses play."
+    },
+    {
+      "id": "tyndale-notes", "provider": "Tyndale Open Study Notes (via the Free Use Bible API)", "type": "Study notes",
+      "licence": "CC BY-SA 4.0, © 2022 Tyndale House Publishers", "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "attribution": "Shown with the notes, unchanged", "offline": "Saved with the Gospels when the reader chooses",
+      "status": "in use", "notes": "Shown only in the Study notes tab, apart from Scripture."
+    },
+    {
+      "id": "openbible-xref", "provider": "OpenBible.info cross references", "type": "Cross-reference dataset with votes",
+      "licence": "CC BY", "licenceUrl": "https://openbible.info/labs/", "attribution": "OpenBible.info",
+      "status": "not added", "notes": "The download could not be reached from the build environment. The BSB's own footnotes are used instead. Votes would not show fulfilment or certainty."
+    },
+    {
+      "id": "bible-brain", "provider": "Faith Comes By Hearing, Bible Brain", "type": "Audio and video API",
+      "licence": "Developer key and licence agreement", "licenceUrl": "https://www.faithcomesbyhearing.com/bible-brain/license",
+      "status": "not added", "notes": "Needs an approved key, and a check of which recordings and translations may be used and stored."
+    },
+    {
+      "id": "bibleproject", "provider": "BibleProject", "type": "Video embeds",
+      "licence": "Embedding terms", "licenceUrl": "https://bibleproject.com/terms/",
+      "status": "not added", "notes": "Phase 2: a few chosen videos, loaded only on tap, with credit."
+    },
+    {
+      "id": "licensed-translations", "provider": "API.Bible, Crossway ESV API", "type": "Other translations (NIV, ESV)",
+      "licence": "Keys and per-translation terms", "licenceUrl": "https://docs.api.bible/",
+      "status": "not added", "notes": "Needs keys, quotas and caching terms checked. Never shown as BSB."
+    },
+    {
+      "id": "awmc", "provider": "Ancient World Mapping Center", "type": "Map data: Rome's empire, Herod's kingdom",
+      "licence": "ODbL", "licenceUrl": "https://opendatacommons.org/licenses/odbl/", "attribution": "Roman Empire outline adapted from the AWMC",
+      "offline": "Yes", "status": "in use"
+    },
+    {
+      "id": "natural-earth", "provider": "Natural Earth", "type": "Land, lakes, rivers", "licence": "Public domain",
+      "licenceUrl": "https://www.naturalearthdata.com/about/terms-of-use/", "offline": "Yes", "status": "in use"
+    },
+    {
+      "id": "terrain", "provider": "Terrain Tiles on AWS (Mapzen); USGS SRTM and GMTED2010, NOAA ETOPO1", "type": "Elevation tiles",
+      "licence": "Public sources; see the Sources page", "licenceUrl": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
+      "offline": "Recently viewed tiles kept", "status": "in use"
+    }
+  ]
+}

@@ -27,7 +27,7 @@ Many scenes carry two optional notes, opened with a tap: **Life in Jesus' day** 
 
 ## Reading the passage
 
-Tapping a Scripture reference (on a card, under a verse, or inside a note) opens the passage in a panel over the map, so the reader stays on the scene. The text is the Berean Standard Bible (public domain), loaded in the browser from the [Free Use Bible API](https://bible.helloao.org); if it can't be reached, the panel offers the passage on BibleHub instead. A **Listen** button plays the BSB audio recording of just the verses shown (using the API's per-verse timings), continuing across chapter breaks, with lock-screen controls on iPhone.
+Tapping a Scripture reference (on a card, under a verse, or inside a note) opens the passage in a panel over the map, so the reader stays on the scene. The text is the Berean Standard Bible (public domain), loaded in the browser from the [Free Use Bible API](https://bible.helloao.org). If the API can't be reached, or answers with anything other than BSB text, the panel uses the atlas's own saved copy of the BSB (`data/bsb/`, the same text without footnotes or audio) and says so; only if a passage is in neither does it offer BibleHub. A cited passage can also be opened **in context**: a few verses either side, with the cited verses marked. A **Listen** button plays the BSB audio recording of just the verses shown (using the API's per-verse timings), continuing across chapter breaks, with lock-screen controls on iPhone.
 
 ## Exploring the map
 
@@ -59,7 +59,7 @@ The menu's **Topics** tab gathers scenes by theme. What He did: Miracles, Resurr
 
 ## Old Testament links
 
-Scenes where a Gospel writer, or Jesus, quotes or points to the Old Testament have an **Old Testament** button listing the passage and where it is cited (`WAY_OT` in `js/study.js`). Later Christian readings that the Gospels do not themselves make are left out. The story now ends with Pentecost (Acts 2) before the closing scene.
+Scenes where a Gospel writer, Jesus, or the apostles in Acts quote or point to the Old Testament have an **Old Testament** tab (`WAY_OT` in `js/study.js`). Each link says what kind it is: **Quoted**, **Echoed**, **Recalled** (an event, not words), **Scripture not named**, or **Often compared** (not cited by the New Testament, and labelled as such). Links are shown only once reviewed (an entry with any `status` other than `reviewed` stays hidden). Each has **Read both in context**, which opens both passages with the verses around them. Below the curated links, the tab lists the Old Testament passages that the BSB's own footnotes give for the scene's verses (`js/otrefs.js`, built from the official BSB release by `tools/make-otrefs.py`). The topic **The resurrection and the Scriptures** gathers the links about Jesus' rising. Commentary is not imported, and later Christian readings that the New Testament does not itself make are left out. The story now ends with Pentecost (Acts 2) before the closing scene.
 
 ## Go deeper
 
@@ -108,9 +108,19 @@ then visit `http://localhost:8000`. It is published with GitHub Pages from the `
 - `js/app.js`: the scroll engine (camera, light, route drawing, markers)
 - `css/style.css`: layout and type
 - `data/`: Natural Earth land, lakes and rivers clipped to the region, the simplified Jerusalem plan, `jerusalem3d.json` and `capernaum3d.json` (the 3D models: heights in metres, `illustrative: true` on houses)
+- `data/bsb/`: the saved copy of the Berean Standard Bible for every book the atlas links to, with `manifest.json` (source URL, release date, SHA-256 of the source and of each file); built by `tools/make-bsb.py`
+- `js/otrefs.js`: Old Testament sources named in the BSB footnotes for the Gospels and Acts; built by `tools/make-otrefs.py`
+- `data/rome.json`, `data/land-wide.json`, `tools/make-rome.py`: Rome's empire (AWMC, ODbL) and the wide land outline
+- `data/resources.json`: every outside source the atlas uses, with licence, attribution, what may be stored offline, and status
 - `vendor/`: MapLibre GL JS 4.7.1 and maplibre-contour 0.1.0 (both BSD-3-Clause; licences included)
 
 To add or edit a scene, change `js/scenes.js` only.
+
+## Updating the Bible data
+
+Download the official release (`BSB_usj.zip` from https://github.com/BSB-publishing/bsb2usfm/releases/latest), then run `python3 tools/make-bsb.py BSB_usj.zip` and `python3 tools/make-otrefs.py BSB_usj.zip`. Raise `BSB_LOCAL_V` in `js/app.js` (and the `?v=` in `js/reader-lite.js`) when the files change. No keys or accounts are needed: the atlas has no secrets, so there is no `.env`.
+
+Not yet added (they need an approved key, licence or catalogue check first): audio from Bible Brain, BibleProject video embeds, and other translations such as the NIV or ESV.
 
 ## Credits
 
