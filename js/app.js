@@ -154,7 +154,7 @@
         <p class="lede">Walk through the life, ministry, death and resurrection of Jesus.</p>
         <div id="resume" class="resume" hidden></div>
         <p class="hero-meta">The Gospel accounts · Berean Standard Bible</p><a class="hero-begin" href="#s-word" data-story-jump="word">Begin the journey <span aria-hidden="true">↓</span></a>
-        <details class="hero-options"><summary>Listen or explore instead</summary><div class="hero-acts"><button type="button" class="hero-listen" data-tour-start>${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 L13 8 L4.5 13.2 Z"/></svg>'}Listen to the story</button><button type="button" class="hero-explore" data-explore="land">Explore the map</button></div></details>
+        <div class="hero-second"><button type="button" class="hero-play" data-tour-setup aria-haspopup="dialog"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 L13 8 L4.5 13.2 Z"/></svg>Play the story</button><button type="button" class="hero-maplink" data-explore="land">or explore the map</button></div>
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;
     }
@@ -1543,7 +1543,14 @@
   const tFill = document.getElementById('t-fill');
   const tPlay = document.getElementById('t-play');
   const TOUR_REF = { trials: 'Mark 14:53–15:15' };
+  const KEY = window.WAY_KEY || {};
+  // Tour settings, kept on this device.
+  const TS_DEFAULT = { how: 'listen', len: 'key', reader: '', rate: 1, pace: 1, where: 'start', sleep: '0' };
+  const TS = (() => { try { return Object.assign({}, TS_DEFAULT, JSON.parse(localStorage.getItem('the-way:tour') || '{}')); } catch (err) { return Object.assign({}, TS_DEFAULT); } })();
+  const saveTS = () => { try { localStorage.setItem('the-way:tour', JSON.stringify(TS)); } catch (err) { /* private mode */ } };
+  let tourEnd = N - 1, sleepAt = 0;
   function tourRef(st) {
+    if (TS.len === 'key' && KEY[st.id]) return KEY[st.id];
     if (TOUR_REF[st.id]) return TOUR_REF[st.id];
     const l = st.ref && st.ref[0];
     return l && refSpans(l).some((sp) => API_BOOK[sp.book]) ? l.replace(/\s*·\s*BSB$/, '') : null;
@@ -1558,7 +1565,7 @@
       for (let c = sp.c1; c <= last; c++) {
         const json = await loadChapter(sp.book, c);
         const links = json.thisChapterAudioLinks || {};
-        if (!reader) reader = READERS.find((r) => links[r]) || Object.keys(links)[0];
+        if (!reader) reader = (TS.reader && links[TS.reader] ? TS.reader : null) || READERS.find((r) => links[r]) || Object.keys(links)[0];
         const url = links[reader];
         if (!url) continue;
         const from = c === sp.c1 && sp.v1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
@@ -1594,9 +1601,20 @@
   }
   let tour = null, tourToken = 0, tourDwell = 0, glideTouch = false;
   window.addEventListener('touchstart', () => { glideTouch = true; }, { passive: true });
-  const tourNext = (i) => { if (follow) { const n = followList.find((x) => x > i); return n == null ? -1 : n; } return i + 1 < N ? i + 1 : -1; };
+  const tourNext = (i) => {
+    const n = follow ? followList.find((x) => x > i) : (i + 1 < N ? i + 1 : null);
+    return n == null || n > tourEnd ? -1 : n;
+  };
+  // Keep the screen awake during a silent tour (it has no sound to keep going).
+  let wakeLock = null;
+  function holdAwake(on) {
+    if (on && !wakeLock && navigator.wakeLock) navigator.wakeLock.request('screen').then((l) => { wakeLock = l; l.addEventListener('release', () => { wakeLock = null; }); }).catch(() => {});
+    if (!on && wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && tour && tour.playing && tour.silent) holdAwake(true); });
   function setTourPlaying(on) {
     if (tour) tour.playing = on;
+    holdAwake(on && !!tour && tour.silent);
     tourBar.classList.toggle('playing', on);
     tPlay.setAttribute('aria-label', on ? 'Pause' : 'Play');
     if ('mediaSession' in navigator) { try { navigator.mediaSession.playbackState = on ? 'playing' : 'paused'; } catch (err) { /* optional */ } }
@@ -1631,16 +1649,17 @@
     if (tourEl.dataset.kind === 'tour') { tourEl.dataset.kind = 'idle'; tourEl.pause(); }
     resetAudio();
     const st = STEPS[i];
-    const label = tourRef(st);
-    tour = { i, segs: [], k: 0, label, playing: true, ended: false };
+    const silent = TS.how === 'silent';
+    const label = silent ? null : tourRef(st);
+    tour = { i, segs: [], k: 0, label, playing: true, ended: false, silent };
     document.documentElement.classList.add('touring');
     tourBar.hidden = false;
     tTitle.textContent = stepLabel(st);
-    tSub.textContent = label ? 'Loading ' + label + '…' : 'A moment with this scene';
+    tSub.textContent = silent ? 'Reading at your pace' : label ? 'Loading ' + label + '…' : 'A moment with this scene';
     tFill.style.width = '0%';
     setTourPlaying(true);
     queueDeclutter();
-    if ('mediaSession' in navigator) {
+    if ('mediaSession' in navigator && !silent) {
       try { navigator.mediaSession.metadata = new MediaMetadata({ title: stepLabel(st), artist: label ? label + ' · Berean Standard Bible' : 'The Way', album: 'The Way', artwork: [{ src: 'icon-512.png', sizes: '512x512', type: 'image/png' }] }); } catch (err) { /* optional */ }
     }
     const loading = label ? buildAudio(label).catch(() => ({ segs: [] })) : null;
@@ -1656,6 +1675,7 @@
       if (label) tSub.textContent = label + ' · audio unavailable';
       dwell(token);
     }
+    if (silent) return;
     // Fetch the next passage while this one plays.
     const n = tourNext(i);
     const nl = n >= 0 ? tourRef(STEPS[n]) : null;
@@ -1666,6 +1686,7 @@
     tour.k = k;
     tourEl.dataset.kind = 'tour';
     if (tourEl.getAttribute('src') !== sg.url) tourEl.src = sg.url;
+    tourEl.defaultPlaybackRate = +TS.rate || 1; tourEl.playbackRate = +TS.rate || 1;
     const seek = () => { try { tourEl.currentTime = sg.start; } catch (err) { /* ignore */ } };
     if (tourEl.readyState >= 1) seek(); else tourEl.addEventListener('loadedmetadata', seek, { once: true });
     const pr = tourEl.play();
@@ -1673,8 +1694,9 @@
   }
   function dwell(token) {
     const st = STEPS[tour.i];
-    const words = strip([st.title, st.text, st.verse, st.note].filter(Boolean).join(' ')).split(' ').length;
-    const ms = clamp(words * 300, 6000, 14000), t0 = Date.now();
+    const words = strip([st.title, st.text, st.verse, st.after, (st.items || []).map((x) => x[0]).join(' ')].filter(Boolean).join(' ')).split(' ').length;
+    // Silent tour: time to read the caption (about 180 words a minute), at the chosen pace.
+    const ms = tour.silent ? clamp(words * 330 / (+TS.pace || 1), 7000, 60000) : clamp(words * 300, 6000, 14000), t0 = Date.now();
     tour.dwellLeft = ms;
     const tick = () => {
       if (token !== tourToken || !tour.playing) return;
@@ -1684,8 +1706,19 @@
     };
     tourDwell = setTimeout(tick, 250);
   }
+  function sleepOver() {
+    if (!sleepAt || Date.now() < sleepAt) return false;
+    sleepAt = 0;
+    tourEl.pause();
+    clearTimeout(tourDwell);
+    if (tour) tour.ended = true;
+    setTourPlaying(false);
+    tSub.textContent = 'Sleep timer ended · tap play to continue';
+    return true;
+  }
   function sceneDone() {
     if (!tour) return;
+    if (sleepOver()) return;
     // If the reader scrolled away, stop here and let them pick up from there.
     if (Math.round(progress()) !== tour.i) { tour.ended = true; setTourPlaying(false); tSub.textContent = 'Paused · tap play to listen from here'; return; }
     const n = tourNext(tour.i);
@@ -1719,6 +1752,7 @@
     if (!tour || tourEl.dataset.kind !== 'tour') return;
     const sg = tour.segs[tour.k]; if (!sg) return;
     if (sg.end != null && tourEl.currentTime >= sg.end - 0.05) { tourSegEnd(); return; }
+    if (sleepAt && Date.now() >= sleepAt + 60000) { sleepOver(); return; } // a long passage: stop within a minute
     const end = sg.end != null ? sg.end : tourEl.duration;
     const span = Math.max(0.1, (end || sg.start + 1) - sg.start);
     tFill.style.width = (100 * (tour.k + clamp((tourEl.currentTime - sg.start) / span, 0, 1)) / tour.segs.length).toFixed(1) + '%';
@@ -1732,12 +1766,65 @@
   }
   tourEl.addEventListener('pause', () => { if (tour && tour.playing && tourEl.dataset.kind === 'tour' && !tourEl.ended) setTourPlaying(false); });
   tourEl.addEventListener('play', () => { if (tour && tourEl.dataset.kind === 'tour') setTourPlaying(true); });
-  function startTourAt(i) {
-    unlockTour();
+  const groupEnd = (i) => { const g = groups.find((gg) => gg.steps.includes(i)); return g ? g.steps[g.steps.length - 1] : N - 1; };
+  function startTourAt(i, end) {
+    const from = Math.max(1, i);
+    tourEnd = end != null ? end : N - 1;
+    if (TS.sleep === 'chapter') tourEnd = Math.min(tourEnd, groupEnd(from));
+    sleepAt = /^\d+$/.test(TS.sleep) && +TS.sleep > 0 ? Date.now() + (+TS.sleep) * 60000 : 0;
+    if (TS.how !== 'silent') unlockTour();
     if (exploring) closeExplore();
     if (toc.open) toc.close();
-    tourPlay(Math.max(1, i));
+    tourPlay(from);
   }
+
+  // ---------- Play the story: the settings sheet ----------
+  const tsDlg = document.getElementById('tourset');
+  const tsForm = document.getElementById('ts-form');
+  const tsWhere = document.getElementById('ts-where');
+  const tsReader = document.getElementById('ts-reader');
+  const nameReader = (r) => r.charAt(0).toUpperCase() + r.slice(1);
+  function fillReaders(list) {
+    const cur = TS.reader || list[0];
+    tsReader.innerHTML = list.map((r) => `<option value="${esc(r)}"${r === cur ? ' selected' : ''}>${esc(nameReader(r))}</option>`).join('');
+  }
+  fillReaders(READERS);
+  let tsOpener = null;
+  function openTourSet() {
+    const r = Math.round(progress());
+    const here = r >= 1 ? groups.find((g) => g.steps.includes(r)) : null;
+    tsWhere.innerHTML = '<option value="start">The whole story, from the beginning</option>'
+      + (r >= 1 ? `<option value="here">From here: ${esc(stepLabel(STEPS[r]))}</option>` : '')
+      + groups.filter((g) => g.num).map((g) => `<option value="g:${g.num}">Only ${esc(g.num + ' · ' + g.title)}</option>`).join('');
+    const want = TS.where === 'here' && r < 1 ? 'start' : TS.where;
+    tsWhere.value = [...tsWhere.options].some((o) => o.value === want) ? want : (here && tour ? 'here' : 'start');
+    if (tour && r >= 1) tsWhere.value = 'here';
+    ['how', 'len', 'rate', 'pace', 'sleep'].forEach((k) => { const f = tsForm.elements[k]; if (f) f.value = String(TS[k]); });
+    tsForm.dataset.how = TS.how;
+    document.getElementById('ts-start').querySelector('span').textContent = tour ? 'Play with these settings' : 'Play';
+    // The narrators who have recorded this translation, from a chapter's audio links.
+    loadChapter('john', 1).then((json) => { const l = Object.keys(json.thisChapterAudioLinks || {}); if (l.length) fillReaders([...READERS.filter((x) => l.includes(x)), ...l.filter((x) => !READERS.includes(x))]); }).catch(() => {});
+    tsOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+    if (tsOpener && tsOpener.blur) tsOpener.blur();
+    if (exploring) closeExplore();
+    if (toc.open) toc.close();
+    tsDlg.showModal();
+  }
+  tsForm.addEventListener('change', () => { tsForm.dataset.how = tsForm.elements.how.value; });
+  tsForm.addEventListener('submit', () => {
+    const f = tsForm.elements;
+    Object.assign(TS, { how: f.how.value, len: f.len.value, reader: f.reader.value, rate: +f.rate.value, pace: +f.pace.value, where: f.where.value, sleep: f.sleep.value });
+    saveTS();
+    const r = Math.round(progress());
+    let start = 1, end = null;
+    if (TS.where === 'here') start = Math.max(1, r);
+    else if (TS.where.startsWith('g:')) { const g = groups.find((gg) => gg.num === TS.where.slice(2)); if (g) { start = g.start; end = g.steps[g.steps.length - 1]; } }
+    startTourAt(start, end);
+  });
+  document.getElementById('ts-close').addEventListener('click', () => tsDlg.close());
+  tsDlg.addEventListener('click', (ev) => { if (ev.target === tsDlg) tsDlg.close(); });
+  tsDlg.addEventListener('close', () => { if (tsOpener && tsOpener.focus && !touchedSinceJump) { try { tsOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } } tsOpener = null; });
+  document.getElementById('t-set').addEventListener('click', () => { if (tour) tourPause(); openTourSet(); });
   tPlay.addEventListener('click', () => {
     if (!tour) return;
     if (tour.playing) { tourPause(); return; }
@@ -1746,18 +1833,21 @@
     setTourPlaying(true);
     if (tour.segs.length) { const pr = tourEl.play(); if (pr && pr.catch) pr.catch(() => setTourPlaying(false)); }
     else dwell(tourToken);
+    if (sleepAt === 0 && TS.sleep !== '0' && TS.sleep !== 'chapter') sleepAt = Date.now() + (+TS.sleep) * 60000;
   });
   document.getElementById('t-next').addEventListener('click', () => {
     if (!tour) return;
     const n = tourNext(Math.max(tour.i, Math.round(progress()) - 1));
     if (n < 0) { endTour(true); return; }
-    unlockTour();
+    if (TS.how !== 'silent') unlockTour();
     tourPlay(n);
   });
   document.getElementById('t-x').addEventListener('click', () => endTour(false));
   document.addEventListener('click', (ev) => {
     const s = ev.target.closest('[data-tour-start]');
     if (s) { startTourAt(1); return; }
+    const setup = ev.target.closest('[data-tour-setup]');
+    if (setup) { openTourSet(); return; }
     const f = ev.target.closest('[data-tour-from]');
     if (f) startTourAt(STEPS.findIndex((st) => st.id === f.dataset.tourFrom));
   });
