@@ -1,0 +1,17 @@
+{
+  "name": "the-way-ios",
+  "private": true,
+  "description": "The Way — A Gospel Atlas, as an iPhone and iPad app (Capacitor).",
+  "scripts": {
+    "build": "node build.mjs",
+    "sync": "node build.mjs && npx cap sync ios",
+    "open": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

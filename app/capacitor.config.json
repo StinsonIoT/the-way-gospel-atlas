@@ -1,0 +1,12 @@
+{
+  "appId": "io.github.stinsoniot.theway",
+  "appName": "The Way",
+  "webDir": "www",
+  "backgroundColor": "#0F1A1C",
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": true,
+    "allowsLinkPreview": false,
+    "preferredContentMode": "mobile"
+  }
+}

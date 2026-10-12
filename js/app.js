@@ -1058,7 +1058,7 @@
     const b = ev.target.closest('[data-share]');
     if (!b) return;
     const st = STEPS.find((x) => x.id === b.dataset.share);
-    const url = new URL('s/' + st.id + '.html', location.origin + location.pathname).href;
+    const url = new URL('s/' + st.id + '.html', window.WAY_SITE || location.origin + location.pathname).href;
     const title = stepLabel(st);
     if (navigator.share) {
       try { await navigator.share({ title: title + ' · The Way', text: title + (st.ref ? ' (' + st.ref[0].replace(/\s*·\s*BSB$/, '') + ')' : ''), url }); } catch (err) { /* cancelled */ }
@@ -1134,6 +1134,7 @@
       html += `<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">Save the text of all four Gospels and their study notes to this phone, so every passage opens without a signal (a few megabytes). Map areas you have viewed are kept as well. Listening needs a connection.</p>
         <button type="button" class="plan-offline"${when ? ' data-done="1"' : ''}>${when ? 'Saved for offline ✓ · Save again' : 'Save the Gospels for offline'}</button>`;
     }
+    if (window.WAY_NATIVE) html += '<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">The whole Berean Standard Bible is built into the app, so every passage opens without a signal. Study notes you have opened are kept too. Listening and the terrain need a connection.</p>';
     html += `<p class="plan-note">Your progress and saved scenes stay on this device.</p>${read || saved.size ? '<button type="button" class="plan-reset">Reset reading progress</button>' : ''}`;
     planBody.innerHTML = html;
   }
