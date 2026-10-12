@@ -771,3 +771,8 @@ html.og .hero-second { display: none !important; }
 #t-set svg { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
 #t-set circle { fill: var(--m-land, #1B2624); }
 .ts-listen, .ts-silent { display: flex; flex-direction: column; gap: 14px; }
+/* Explore: Rome's empire layer */
+.explore-ui .rome-toggle { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid #DDD2BC; background: #FBF7EF; color: #1C2A25; font: 500 13px var(--sans); }
+.explore-ui .rome-toggle[aria-pressed="true"] { background: #7E2420; border-color: #7E2420; color: #FBF7EF; }
+.rome-swatch { width: 14px; height: 10px; border-radius: 2px; background: linear-gradient(90deg, #A8322D 55%, #E3A29B 55%); }
+.explore-ui p.rome-note { font-size: 12.5px; }
