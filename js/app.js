@@ -11,6 +11,7 @@
   if (OG) document.documentElement.classList.add('og');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HOLD = 0.35;
+  const experience = window.WAY_EXPERIENCE;
 
   // ---------- small helpers ----------
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -112,7 +113,7 @@
     const deeper = layers.length
       ? `<button type="button" class="deep-btn" data-deep="${s.id}" aria-haspopup="dialog">${dots}<span class="deep-say">Go deeper</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 L8 6 L4.5 9.5"/></svg><span class="vh">: ${esc(what)}${told.length ? '. Told in ' + esc(told.join(', ')) : ''}</span></button>`
       : '<span></span>';
-    return `<div class="study">${deeper}${acts}</div>`;
+    return `<div class="study">${deeper}${experience.focused(s.id) ? `<details class="scene-tools"><summary>More options</summary>${acts}</details>` : acts}</div>`;
   }
 
   const LEGEND = [
@@ -141,16 +142,44 @@
 
   function cardHTML(s) {
     const pal = PALETTES[s.pal];
-    const kick = `<div class="kicker"><span>${esc(s.kicker || '')}</span>${s.kind !== 'verse' && s.ref ? refLink(s.ref, 'ref') : ''}</div>`;
+    const kick = `<div class="kicker"><span>${esc(s.kicker || '')}</span>${s.kind !== 'verse' && s.ref && !experience.focused(s.id) ? refLink(s.ref, 'ref') : ''}</div>`;
     if (s.kind === 'title') {
       return `<div class="hero">
         <p class="eyebrow">A journey through the Gospels</p>
         <h1>Follow<br>the <em>Way.</em></h1>
-        <p class="lede">From a manger in Bethlehem to the Mount of Olives: the life, death and resurrection of Jesus, read in the Berean Standard Bible.</p>
+        <p class="lede">Walk through the life, ministry, death and resurrection of Jesus.</p>
         <div id="resume" class="resume" hidden></div>
-        <div class="hero-acts"><button type="button" class="hero-listen" data-tour-start>${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 L13 8 L4.5 13.2 Z"/></svg>'}Listen to the story</button><button type="button" class="hero-explore" data-explore="land">Explore the map</button></div>
+        <p class="hero-meta">The Gospel accounts · Berean Standard Bible</p><a class="hero-begin" href="#s-word" data-story-jump="word">Begin the journey <span aria-hidden="true">↓</span></a>
+        <details class="hero-options"><summary>Listen or explore instead</summary><div class="hero-acts"><button type="button" class="hero-listen" data-tour-start>${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 L13 8 L4.5 13.2 Z"/></svg>'}Listen to the story</button><button type="button" class="hero-explore" data-explore="land">Explore the map</button></div></details>
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;
+    }
+    if (s.id === 'pray') {
+      const excerpt = 'Yet not what I will, but what You will.';
+      return `<div class="verse moment-prayer">
+        <div class="kicker"><span>${esc(s.kicker)}</span></div>
+        <blockquote class="moment-quote">“${esc(excerpt)}”</blockquote>
+        <p class="moment-certainty">Traditional locator · precise prayer site unknown</p>
+        <div class="verse-foot">${refLink(s.ref, 'ref scene-reading')}</div>
+        <details class="moment-study"><summary>Read & study</summary>
+          <p class="moment-source-label">The full verse · BSB</p><blockquote class="full-prayer">${esc(s.verse)}</blockquote>
+          ${whenHTML(s)}${studyRow(s)}
+        </details>
+      </div>`;
+    }
+    if (s.id === 'risen') {
+      return `<article class="card card-dawn moment-resurrection">
+        <div class="kicker"><span>${esc(s.kicker)}</span></div>
+        <h2>He has <em>risen.</em></h2>
+        <p class="text">At dawn, the women find the stone rolled away. They hear that Jesus has risen.</p>
+        ${refLink(s.ref, 'ref scene-reading')}
+        <p class="moment-certainty">Tomb markers: traditional and later-proposed sites</p>
+        <details class="moment-study"><summary>Read & study</summary>
+          <h3 class="moment-original-title">${s.title}</h3><p class="text">${esc(s.text)}</p>
+          ${s.note ? `<p class="note">${linkRefs(esc(s.note))}</p>` : ''}
+          ${whenHTML(s)}${studyRow(s)}
+        </details>
+      </article>`;
     }
     if (s.kind === 'verse') {
       return `<div class="verse">
@@ -163,9 +192,10 @@
     }
     let body = '';
     if (s.text) body += `<p class="text">${esc(s.text)}</p>`;
-    if (s.note) body += `<p class="note">${linkRefs(esc(s.note))}</p>`;
+    if (experience.focused(s.id) && s.ref) body += refLink(s.ref, 'ref scene-reading');
+    if (s.note) body += experience.focused(s.id) ? `<details class="scene-context"><summary>Location & Gospel context</summary><p class="note">${linkRefs(esc(s.note))}</p></details>` : `<p class="note">${linkRefs(esc(s.note))}</p>`;
     if (s.kind === 'legend') body += legendHTML;
-    if (s.kind === 'chapter') body += `<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>`;
+    if (s.kind === 'chapter') body += `${experience.focused(s.id) ? '<details class="scene-context chapter-context"><summary>Gospel time markers</summary>' : ''}<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>${experience.focused(s.id) ? '</details>' : ''}`;
     if (s.guide) body += `<a class="guide-link" href="${esc(s.guide[0])}">${esc(s.guide[1])}<span aria-hidden="true">→</span></a>`;
     if (s.kind === 'list') body = `<ol class="steps-list">${s.items.map((m, i) => `<li><b>${i + 1}</b><span>${esc(m[0])}</span><span>${linkRefs(esc(m[1]))}</span></li>`).join('')}</ol>` + body;
     if (s.chips) body += `<div class="chips">${s.chips.map((c) => `<span class="chip">${SYM[c]}${esc(CHIPS[c])}</span>`).join('')}</div>`;
@@ -182,6 +212,9 @@
     const sec = document.createElement('section');
     sec.className = 'step step-' + (s.kind || 'scene');
     sec.id = i === 0 ? 'top' : 's-' + s.id;
+    if (experience.focused(s.id)) sec.classList.add('step-focus');
+    sec.dataset.scene = s.id;
+    if (experience.artDirected(s.id)) sec.classList.add('step-art-directed');
     sec.innerHTML = cardHTML(s);
     story.appendChild(sec);
   });
@@ -372,10 +405,15 @@
     const marks = [];
     live.forEach((v) => { const sym = v.el.querySelector('.dot, .dia, .star'); if (sym) marks.push({ id: v.id, r: sym.getBoundingClientRect() }); });
     const placed = [{ left: -1e4, right: 1e4, top: -1e4, bottom: top.bottom }];
+    document.querySelectorAll('.story-stage, .explore-open').forEach(control => {
+      if (control.hidden || getComputedStyle(control).visibility === 'hidden') return;
+      const r = control.getBoundingClientRect();if (r.width && r.height) placed.push(r);
+    });
     // Verse panels and cards near the current scene hide any label behind them.
+    // (Not while exploring: the story is hidden then.)
     const near = Math.round(progress());
-    for (let k = Math.max(0, near - 1); k <= Math.min(sections.length - 1, near + 1); k++) {
-      const box = sections[k].querySelector('.verse, .card');
+    if (!exploring) for (let k = Math.max(0, near - 1); k <= Math.min(sections.length - 1, near + 1); k++) {
+      const box = sections[k].querySelector('.verse, .card, .hero');
       if (box) { const r = box.getBoundingClientRect(); if (r.bottom > 0 && r.top < window.innerHeight) placed.push(r); }
     }
     const hits = (r, q) => r.left < q.right + pad && r.right > q.left - pad && r.top < q.bottom + pad && r.bottom > q.top - pad;
@@ -407,10 +445,12 @@
   function padding() {
     const w = window.innerWidth, h = window.innerHeight;
     if (w >= 900) return { top: 90, bottom: 60, left: Math.min(560, w * 0.42), right: 48 };
+    // Landscape phones: captions sit on the left (css), the map on the right.
+    if (w > h && h <= 540 && w >= 640) return { top: 70, bottom: 20, left: Math.min(470, w * 0.56), right: 20 };
     return { top: 70, bottom: Math.round(h * 0.52), left: 22, right: 22 };
   }
-  // Jerusalem scenes tilt into 3D; the bearing shifts a little each time so the
-  // camera circles the city across the story.
+  // Other city scenes keep their original orbit; the focused Holy Week
+  // sequence holds its orientation so the reader can follow the geography.
   const ORBIT = [-28, -12, 6, 22, 34, 18, 0, -18];
   const is3D = (s) => (s.plan || 0) >= 0.5;
   let camPad = null;
@@ -418,19 +458,27 @@
     const pad = padding();
     camPad = pad;
     let k = 0;
-    cams = STEPS.map((s) => {
+    // cameraForBounds adds the map's current padding to the padding it is
+    // given, so measure with none and put the current padding back after.
+    const livePad = map.getPadding();
+    map.setPadding({ top: 0, bottom: 0, left: 0, right: 0 });
+    cams = STEPS.map((s, index) => {
       const pitch = s.pitch != null ? s.pitch : (is3D(s) ? 56 : 0);
-      const bearing = s.bearing != null ? s.bearing : (is3D(s) ? ORBIT[(k++) % ORBIT.length] : 0);
+      const bearing = experience.bearing(s.id, s.bearing != null ? s.bearing : (is3D(s) ? ORBIT[(k++) % ORBIT.length] : 0));
+      const caption = sections[index].firstElementChild;
+      const scenePad = experience.focused(s.id) ? experience.padding(window.innerWidth, window.innerHeight, caption.offsetHeight, caption.offsetWidth, document.querySelector('.top').getBoundingClientRect().bottom) : pad;
+      const view = experience.view(s);
       // Zoom that fits the bounds in the padded area; the centre is the middle of
       // the bounds, and the map's padding keeps it centred in the free space even
       // when the camera is tilted.
       // (cameraForBounds gives nothing when the padding leaves no room, e.g.
       // mid-resize; fall back to no padding.)
-      const c = map.cameraForBounds(s.view, { padding: pad, bearing }) || map.cameraForBounds(s.view, { bearing }) || { zoom: map.getZoom() };
-      const mid = [(s.view[0][0] + s.view[1][0]) / 2, (s.view[0][1] + s.view[1][1]) / 2];
+      const c = map.cameraForBounds(view, { padding: scenePad, bearing }) || map.cameraForBounds(view, { bearing }) || { zoom: map.getZoom() };
+      const mid = [(view[0][0] + view[1][0]) / 2, (view[0][1] + view[1][1]) / 2];
       const m = maplibregl.MercatorCoordinate.fromLngLat(mid);
-      return { x: m.x, y: m.y, zoom: c.zoom - (pitch ? 0.35 : 0), pitch, bearing };
+      return { x: m.x, y: m.y, zoom: c.zoom - (pitch ? 0.35 : 0), pitch, bearing, padding: scenePad };
     });
+    map.setPadding(livePad);
   }
   const lerpAngle = (a, b, t) => { let d = ((b - a + 540) % 360) - 180; return a + d * t; };
 
@@ -439,7 +487,7 @@
   function measure() { tops = sections.map((s) => s.offsetTop); }
   if ('ResizeObserver' in window) {
     let rq = 0;
-    new ResizeObserver(() => { cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { if (started) { measure(); queue(); } }); }).observe(story);
+    new ResizeObserver(() => { cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { if (started) { measure(); computeCams(); queue(); } }); }).observe(story);
   }
   function progress() {
     const y = window.scrollY;
@@ -452,6 +500,7 @@
   const root = document.documentElement.style;
   const chapterEl = document.getElementById('chapter');
   let lastCh = '';
+  const frameState = { opening: null, moment: null };
 
   // ---------- chapters: timeline and menu ----------
   const strip = (h) => String(h || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -546,6 +595,8 @@
       }, ms));
     }));
   }
+  story.addEventListener('click', ev => { const b = ev.target.closest('[data-story-jump]'); if (b) { ev.preventDefault(); goTo(STEPS.findIndex(st => st.id === b.dataset.storyJump)); } });
+  story.addEventListener('toggle', () => { if (started) { measure(); computeCams(); queue(); } }, true);
   segBtns.forEach((b) => b.addEventListener('click', () => goTo(groups[+b.dataset.g].start)));
 
   const toc = document.getElementById('toc');
@@ -1678,17 +1729,31 @@
     const p = progress();
     const i = Math.min(N - 2, Math.floor(p));
     const f = p - i;
-    let e = smooth(clamp((f - HOLD) / (1 - HOLD), 0, 1));
+    const hold = experience.hold(STEPS[i].id);
+    let e = smooth(clamp((f - hold) / (1 - hold), 0, 1));
     if (reduceMotion) e = f < 0.5 ? 0 : 1;
     const ca = cams[i], cb = cams[i + 1];
     const merc = new maplibregl.MercatorCoordinate(lerp(ca.x, cb.x, e), lerp(ca.y, cb.y, e));
-    map.jumpTo({ center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: camPad });
+    map.jumpTo({ center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: experience.mixPadding(ca.padding, cb.padding, e) });
     syncElevation();
     apply(STEPS[i], STEPS[i + 1], e, p);
     // header
+    // Only write to the page when something changed, so scrolling stays smooth.
+    const opening = p < .8, moment = STEPS[Math.round(p)].id;
+    if (opening !== frameState.opening) { document.body.classList.toggle('opening', opening); frameState.opening = opening; }
+    if (moment !== frameState.moment) { document.body.dataset.moment = moment; frameState.moment = moment; }
+    const stage = experience.stage(STEPS[Math.round(p)].id);
+    const stageEl = document.getElementById('story-stage');
+    if (stageEl.hidden !== !stage) stageEl.hidden = !stage;
+    if (stageEl.textContent !== stage) stageEl.textContent = stage;
+    // When a long caption scrolls up under the floating Explore button, step
+    // the button aside so it never sits on top of the text.
+    const capEl = sections[Math.round(p)].firstElementChild;
+    const tuck = !!capEl && capEl.getBoundingClientRect().top < exploreBtn.offsetTop + exploreBtn.offsetHeight + 8;
+    if (tuck !== exploreBtn._tuck) { exploreBtn.classList.toggle('tucked', tuck); exploreBtn._tuck = tuck; }
     updateTimeline(p);
     noteStep(Math.round(p));
-    const ch = STEPS[Math.round(p)].ch;
+    const ch = p < .8 ? 'Chapters' : STEPS[Math.round(p)].ch;
     if (ch !== lastCh) { chapterEl.textContent = ch; lastCh = ch; }
   }
 
@@ -1773,10 +1838,13 @@
     document.body.style.backgroundColor = rgb(C.land);
 
     // visibility of places, areas and routes
-    const vis = (id) => lerp(a.show.includes(id) ? 1 : 0, b.show.includes(id) ? 1 : 0, e);
+    const showA = experience.visible(a), showB = experience.visible(b);
+    const primary = new Set(experience.primary(e < .5 ? a.id : b.id));
+    const vis = (id) => lerp(showA.includes(id) ? 1 : 0, showB.includes(id) ? 1 : 0, e);
     Object.keys(markerEls).forEach((id) => {
       const v = vis(id);
       const el = markerEls[id];
+      el.classList.toggle('is-focus', primary.has(id));
       const s = v.toFixed(3);
       if (el._op !== s) { el.style.opacity = s; el._op = s; el.style.visibility = v < 0.01 ? 'hidden' : 'visible'; }
     });
@@ -1793,7 +1861,8 @@
       const op = vis(id);
       if (op < 0.01) return;
       const k = routeStart[id];
-      let d = p == null || k <= 0 ? 1 : clamp((p - (k - 1) - HOLD) / (1 - HOLD), 0, 1);
+      const routeHold = k > 0 ? experience.hold(STEPS[k - 1].id) : HOLD;
+      let d = p == null || k <= 0 ? 1 : clamp((p - (k - 1) - routeHold) / (1 - routeHold), 0, 1);
       if (reduceMotion) d = p >= k - 0.5 ? 1 : 0;
       feats.push({ type: 'Feature', properties: { kind: ROUTES[id].kind, op }, geometry: { type: 'LineString', coordinates: slicePts(routePts[id], d) } });
     });
