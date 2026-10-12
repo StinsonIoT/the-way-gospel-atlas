@@ -5,7 +5,7 @@
 //   URLs carry a version number, so a new version is a new file.
 // - Bible passages and terrain tiles: kept in their own caches, which survive
 //   app updates. Terrain keeps the most recent tiles only.
-const APP = 'the-way-preview-v31';
+const APP = 'the-way-v32';
 const BIBLE = 'the-way-bible';
 const TILES = 'the-way-tiles';
 const TILE_LIMIT = 900;
@@ -18,7 +18,7 @@ self.addEventListener('install', (e) => {
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys()
-    .then((ks) => Promise.all(ks.filter((k) => k.startsWith('the-way-preview-v') && k !== APP).map((k) => caches.delete(k))))
+    .then((ks) => Promise.all(ks.filter((k) => k.startsWith('the-way-v') && k !== APP).map((k) => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
 

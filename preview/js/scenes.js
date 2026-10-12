@@ -78,6 +78,8 @@ window.WAY = (function () {
     phoenicia:  { lng: 35.42, lat: 33.38, label: 'Phoenicia', type: 'region' },
     egypt:      { lng: 31.4, lat: 30.3, label: 'Egypt', type: 'region' },
     syria:      { lng: 36.8, lat: 34.0, label: 'Province of Syria', type: 'region' },
+    rome:       { lng: 12.4964, lat: 41.9028, label: 'Rome', note: 'capital of the empire', type: 'hist', side: 'left' },
+    romelbl:    { lng: 2.6, lat: 46.2, label: 'Roman Empire', type: 'region' },
     wildlabel:  { lng: 35.33, lat: 31.70, label: 'Wilderness', type: 'area' },
     antonia:    { lng: 35.2335, lat: 31.7814, label: 'Antonia', type: 'area' },
     colonnade:  { lng: 35.2373, lat: 31.7781, label: 'Solomon’s Colonnade', type: 'area' },
@@ -236,12 +238,13 @@ window.WAY = (function () {
       note: 'Luke names only “a town in the hill country of Judah”. Ein Karem, west of Jerusalem, marks a later tradition.',
       chips: ['region', 'trad'] },
 
-    { id: 'decree', ch: 'I · Origins', pal: 'day', view: [[31.6, 29.6], [38.4, 35.2]],
-      show: ['nazareth', 'bethlehem', 'syria', 'judea', 'galilee'],
+    { id: 'decree', ch: 'I · Origins', pal: 'day', view: [[-9.5, 25.5], [41.5, 51.5]], empire: 'birth',
+      show: ['rome', 'romelbl', 'bethlehem'],
       kicker: 'A decree from Rome', ref: ['Luke 2:1–3', 'luke', 2],
       title: 'A census of <em>the whole empire.</em>',
       text: 'Caesar Augustus orders a registration, and everyone goes to his own town to be registered. The decree comes from Rome, far to the west.',
-      note: 'Luke ties this to a census taken while Quirinius governed Syria. How to date that census against other records is still debated.' },
+      note: 'Luke ties this to a census taken while Quirinius governed Syria. How to date that census against other records is still debated. The red shows Rome’s empire around the time of Jesus’ birth: deep red for provinces Rome governed, light red for kingdoms ruled for Rome by allied kings, such as Herod’s. The borders are approximate.',
+      chips: ['empire'] },
 
     { id: 'journey', ch: 'I · Origins', pal: 'day', view: [[34.95, 31.62], [35.65, 32.78]],
       show: ['nazareth', 'bethlehem', 'jerusalem', 'naz-beth', 'galilee', 'samaria', 'sog', 'deadsea'],
@@ -310,13 +313,13 @@ window.WAY = (function () {
       chips: ['recon'] },
 
     // ---------- II · Beginnings ----------
-    { id: 'rulers', ch: 'II · Beginnings', chapter: 'II', pal: 'day', view: [[34.55, 31.25], [36.55, 33.45]], kind: 'list',
+    { id: 'rulers', ch: 'II · Beginnings', chapter: 'II', pal: 'day', view: [[34.55, 31.25], [36.55, 33.45]], kind: 'list', empire: 'ministry',
       show: ['z-galilee', 'z-perea', 'z-philip', 'z-judea', 'z-deca', 'r-antipas-g', 'r-antipas-p', 'r-philip', 'r-pilate', 'r-deca', 'jerusalem', 'sog', 'deadsea'],
       kicker: 'II · Beginnings · who ruled where', ref: ['Luke 3:1–2', 'luke', 3],
       title: 'The fifteenth year <em>of Tiberius.</em>',
       items: [['Tiberius, emperor', 'AD 14–37'], ['Pilate, Judea', 'AD 26–36'], ['Antipas, Galilee · Perea', '4 BC–AD 39'], ['Philip, the north-east', '4 BC–AD 34'], ['Lysanias, Abilene', 'farther north'], ['Annas and Caiaphas', 'high priests']],
       text: 'Luke dates John’s preaching by the rulers of the day, usually placed around AD 28–29. Jesus was about thirty (Luke 3:23).',
-      chips: ['rule'] },
+      chips: ['rule', 'empire'] },
 
     { id: 'baptism', ch: 'II · Beginnings', pal: 'day', view: [[35.25, 31.78], [35.68, 32.74]],
       found: 'The Jewish historian Josephus, writing around AD 93, describes John the Baptist as a good man who urged the Jews to live righteously and to be baptized (Antiquities 18.116–119).',
@@ -913,7 +916,8 @@ window.WAY = (function () {
     trad: 'Traditional or proposed site',
     region: 'Exact site unknown',
     rule: 'Approximate territory',
-    hist: 'Historical site, not named in the Gospels'
+    hist: 'Historical site, not named in the Gospels',
+    empire: 'Rome’s empire, approximate borders'
   };
 
   return { PALETTES, PLACES, AREAS, ZONES, ROUTES, STEPS, CHIPS };

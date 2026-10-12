@@ -88,7 +88,8 @@
     recon: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="6" y="4" width="18" height="12" class="s-recon"/></svg>',
     trad: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="10" y="5" width="10" height="10" transform="rotate(45 15 10)" class="s-trad"/></svg>',
     rule: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="4" y="4" width="22" height="12" rx="2" class="s-rule"/></svg>',
-    hist: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="4.2" class="s-hist"/></svg>'
+    hist: '<svg viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="4.2" class="s-hist"/></svg>',
+    empire: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect x="3" y="4" width="13" height="12" fill="#A8322D" opacity=".55"/><rect x="16" y="4" width="11" height="12" fill="#C8645A" opacity=".3"/></svg>'
   };
   const ASK = window.WAY_ASK || {};
   const OT = window.WAY_OT || {};
@@ -128,7 +129,8 @@
     ['recon', 'Reconstruction.', 'Simplified historical features, such as the temple courts.'],
     ['trad', 'Traditional site.', 'Identified by later tradition, not by the text.'],
     ['hist', 'Historical site.', 'Known from history and archaeology; the Gospels do not name it.'],
-    ['rule', 'Territory.', 'Who ruled where. Boundaries are approximate.']
+    ['rule', 'Territory.', 'Who ruled where. Boundaries are approximate.'],
+    ['empire', 'Rome’s empire.', 'Deep red: provinces Rome governed. Light red: kingdoms ruled for Rome by allied kings. Approximate.']
   ];
   // When: each scene's period (js/guide.js), shown as a small line on the card.
   const WHEN = window.WAY_WHEN || { periods: [], timeline: [] };
@@ -313,6 +315,8 @@
     style: {
       version: 8,
       sources: {
+        landwide: { type: 'geojson', data: 'data/land-wide.json?v=1' },
+        rome: { type: 'geojson', data: 'data/rome.json?v=1' },
         land: { type: 'geojson', data: 'data/land.json?v=9' },
         lakes: { type: 'geojson', data: 'data/lakes.json?v=11' },
         rivers: { type: 'geojson', data: 'data/rivers.json?v=9' },
@@ -326,14 +330,23 @@
       },
       layers: [
         { id: 'sea', type: 'background', paint: { 'background-color': '#0F1A1C' } },
+        // Natural Earth outline for the views that show the whole Mediterranean.
+        { id: 'land-wide', type: 'fill', source: 'landwide', maxzoom: 6.5, paint: { 'fill-color': '#1B2624' } },
         { id: 'land', type: 'fill', source: 'land', paint: { 'fill-color': '#1B2624' } },
         { id: 'hillshade', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.45, 'hillshade-illumination-direction': 315 } },
         ...(hasContours ? [{ id: 'contours', type: 'line', source: 'contours', 'source-layer': 'contours', minzoom: 10,
           paint: { 'line-color': '#000', 'line-opacity': 0.5, 'line-width': ['match', ['get', 'level'], 1, 1, 0.5] } }] : []),
+        // Rome's empire (data/rome.json, tools/make-rome.py): shown on the census
+        // and 'who ruled where' scenes, and as a layer in Explore.
+        { id: 'rome-fill', type: 'fill', source: 'rome', filter: ['==', ['get', 'era'], 'birth'],
+          paint: { 'fill-color': ['match', ['get', 'kind'], 'province', '#A8322D', '#C8645A'], 'fill-opacity': 0 } },
+        { id: 'rome-line', type: 'line', source: 'rome', filter: ['==', ['get', 'era'], 'birth'], layout: { 'line-join': 'round' },
+          paint: { 'line-color': '#7E2420', 'line-width': 0.8, 'line-opacity': 0 } },
         { id: 'zone-fill', type: 'fill', source: 'zones', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['*', 0.24, ['get', 'op']] } },
         { id: 'zone-line', type: 'line', source: 'zones', layout: { 'line-join': 'round' },
           paint: { 'line-color': ['get', 'color'], 'line-opacity': ['*', 0.75, ['get', 'op']], 'line-width': 1.2, 'line-dasharray': [5, 3] } },
-        { id: 'coast', type: 'line', source: 'land', paint: { 'line-color': '#3E504B', 'line-width': 1 } },
+        { id: 'coast-wide', type: 'line', source: 'landwide', maxzoom: 5.5, paint: { 'line-color': '#3E504B', 'line-width': 0.8 } },
+        { id: 'coast', type: 'line', source: 'land', minzoom: 5, paint: { 'line-color': '#3E504B', 'line-width': 1 } },
         { id: 'valley-band', type: 'line', source: 'jeru', filter: ['in', ['get', 'kind'], ['literal', ['valley', 'valley-minor']]],
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: { 'line-color': '#000', 'line-opacity': 0, 'line-blur': 4, 'line-width': ['interpolate', ['exponential', 2], ['zoom'], 12, 3, 17, 30] } },
@@ -1913,6 +1926,15 @@
   }
 
   // Territory colours, one per ruler.
+  let romeOn = false, romeEra = 'birth', romeOp = -1;
+  function setRome(era, op) {
+    if (era !== romeEra) { romeEra = era; ['rome-fill', 'rome-line'].forEach((l) => map.setFilter(l, ['==', ['get', 'era'], era])); }
+    const o = Math.round(op * 100) / 100;
+    if (o === romeOp) return;
+    romeOp = o;
+    map.setPaintProperty('rome-fill', 'fill-opacity', ['match', ['get', 'kind'], 'province', 0.34 * o, 0.2 * o]);
+    map.setPaintProperty('rome-line', 'line-opacity', 0.5 * o);
+  }
   const RULER = { antipas: '#B8863B', philip: '#4F8A5F', rome: '#9C3D52', archelaus: '#8A5A8E', deca: '#4E7C99' };
   let lastZoneKey = '';
   function apply(a, b, e, p) {
@@ -1926,6 +1948,13 @@
     map.setPaintProperty('sea', 'background-color', rgb(C.sea));
     map.setPaintProperty('land', 'fill-color', rgb(C.land));
     map.setPaintProperty('coast', 'line-color', rgb(C.coast));
+    map.setPaintProperty('land-wide', 'fill-color', rgb(C.land));
+    map.setPaintProperty('coast-wide', 'line-color', rgb(C.coast));
+    // Rome's empire: fades with the scenes that show it.
+    const ea = a.empire ? 1 : 0, eb = b.empire ? 1 : 0;
+    const eOp = exploring ? (romeOn ? 1 : 0) : lerp(ea, eb, e);
+    const era = exploring ? 'ministry' : (e < 0.5 ? a.empire || b.empire : b.empire || a.empire) || 'birth';
+    setRome(era, eOp * (exploring ? 0.8 : (era === 'ministry' && !exploring ? 0.6 : 1)));
     map.setPaintProperty('lakes', 'fill-color', rgb(C.lake));
     map.setPaintProperty('lakes-line', 'line-color', rgb(C.coast));
     map.setPaintProperty('rivers', 'line-color', rgb(C.river));
@@ -2129,6 +2158,22 @@
   };
   const jumps = document.querySelector('.explore-jumps');
   jumps.innerHTML = Object.keys(VIEWS).map((k) => `<button type="button" data-view="${k}">${esc(VIEWS[k].label)}</button>`).join('');
+  // A layer toggle: Rome's empire in Jesus' ministry (about AD 28).
+  const romeBtn = document.createElement('button');
+  romeBtn.type = 'button'; romeBtn.className = 'rome-toggle'; romeBtn.setAttribute('aria-pressed', 'false');
+  romeBtn.innerHTML = '<span class="rome-swatch" aria-hidden="true"></span>Rome’s empire';
+  jumps.parentNode.insertBefore(romeBtn, jumps.nextSibling);
+  const romeNote = document.createElement('p');
+  romeNote.className = 'rome-note'; romeNote.hidden = true;
+  romeNote.textContent = 'Rome’s empire in Jesus’ ministry, about AD 28: provinces in deep red, kingdoms ruled by allied kings in light red. Approximate.';
+  romeBtn.parentNode.insertBefore(romeNote, romeBtn.nextSibling);
+  romeBtn.addEventListener('click', () => {
+    romeOn = !romeOn;
+    romeBtn.setAttribute('aria-pressed', romeOn ? 'true' : 'false');
+    romeNote.hidden = !romeOn;
+    setRome('ministry', romeOn ? 0.8 : 0);
+    if (romeOn && map.getZoom() > 7.5) flyView({ center: [20, 39], zoom: window.innerWidth < 600 ? 2.9 : 3.6, pitch: 0, bearing: 0 });
+  });
   // On a long flight (e.g. Capernaum, 200 m below sea level, to Jerusalem,
   // 750 m above) a tilted camera keeps the ground height of where it started
   // and lands aimed at the wrong spot. So fly in looking straight down, where
@@ -2191,6 +2236,7 @@
   }
   function closeExplore() {
     setHandlers(false);
+    romeOn = false; romeBtn.setAttribute('aria-pressed', 'false'); romeNote.hidden = true;
     exploring = false;
     document.documentElement.classList.remove('exploring');
     queue();
