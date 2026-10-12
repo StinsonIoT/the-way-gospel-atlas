@@ -169,15 +169,15 @@ window.WAY_WHEN = {
     { from: 'nazareth', label: 'Childhood in Nazareth', years: 'from about 4 BC' },
     { from: 'twelve', label: 'Jesus at twelve', years: 'about AD 7–9' },
     { from: 'rulers', label: 'The ministry begins', years: 'about AD 27–29' },
-    { from: 'synagogue', label: 'Ministry in Galilee', years: '' },
+    { from: 'synagogue', label: 'The ministry', years: '' },
     { from: 'tyre', label: 'Beyond Galilee', years: '' },
     { from: 'samaritan', label: 'The final months', years: '' },
     { from: 'hw', label: 'Holy Week', years: 'AD 30 or 33' },
-    { from: 'golgotha', label: 'Friday', years: 'AD 30 or 33' },
+    { from: 'trials', label: 'Friday', years: 'AD 30 or 33' },
     { from: 'guard', label: 'Saturday, the Sabbath', years: '' },
     { from: 'risen', label: 'Sunday, the third day', years: '' },
     { from: 'thomas', label: 'The forty days', years: '' },
-    { from: 'ascension', label: 'Forty days after Easter', years: '' },
+    { from: 'ascension', label: 'After forty days', years: '' },
     { from: 'pentecost', label: 'The day of Pentecost', years: '' },
     { from: 'close', label: '', years: '' }
   ],
@@ -192,7 +192,7 @@ window.WAY_WHEN = {
     ['soon after', 'Jesus’ ministry begins', 'He was “about thirty years old” (Luke 3:23).'],
     ['two to three years', 'The ministry', 'John mentions at least three Passovers (John 2:13; John 6:4; John 11:55), so most date the ministry to two or three years. Matthew, Mark and Luke mention only the last one.'],
     ['AD 30 or 33', 'The crucifixion and resurrection', 'Under Pilate, on Preparation Day before the Sabbath (Mark 15:42). If Jesus died on 14 Nisan, the day the Passover lambs were killed, as John’s timing suggests (John 19:14), that day fell on a Friday in AD 30 and AD 33, so 7 April AD 30 and 3 April AD 33 are the dates most often given. AD 30 fits the earlier count of Tiberius’s years; AD 33 fits the later one.'],
-    ['forty days later', 'The ascension', 'Acts 1:3.'],
+    ['about forty days later', 'The ascension', 'He appeared to them “over a span of forty days” (Acts 1:3).'],
     ['about fifty days later', 'Pentecost', 'The Holy Spirit comes (Acts 2:1).']
   ]
 };
