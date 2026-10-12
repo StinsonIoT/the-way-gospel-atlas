@@ -48,5 +48,5 @@ assert.deepEqual(Array.from(ex.visible(steps[0])),['star','jerusalem']);
 for (const id of ex.visible(steps[0])) assert(steps[0].show.includes(id) || id==='jerusalem', id+' is an existing place');
 assert(ctx.window.WAY.PLACES.jerusalem, 'opening labels are existing places');
 assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=51')&&index.includes('js/app.js?v=51'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v28'));
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=52')&&index.includes('js/app.js?v=52'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v29'));
 console.log('PASS: all 90 scenes and model/content files retained; opening contains Bethlehem; stable Holy Week orientation; valid camera padding across six screen sizes, long captions, and extra header bars; real scene markup retains readings, notes, quotations and tools; cache versions updated. Logic checks, not browser visual QA.');
