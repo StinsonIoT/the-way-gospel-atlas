@@ -41,7 +41,7 @@ vm.runInContext(app.slice(app.indexOf('const HARM ='),app.indexOf('const LEGEND 
 ctx.whenHTML=()=>'';ctx.legendHTML='legend';
 vm.runInContext(app.slice(app.indexOf('function cardHTML('),app.indexOf('STEPS.forEach((s, i) =>')),ctx);
 for(const s of steps){const html=ctx.cardHTML(s),plain=html.replace(/<[^>]*>/g,'').replaceAll('&amp;','&').replaceAll('&quot;','"').replaceAll('&lt;','<').replaceAll('&gt;','>');if(s.text)assert(plain.includes(s.text),s.id+' summary retained');if(s.note)assert(plain.includes(s.note),s.id+' note retained');if(s.verse)assert(plain.includes(s.verse),s.id+' quote retained');}
-const title=ctx.cardHTML(steps[0]);assert(title.includes('data-story-jump="word"')&&title.includes('data-tour-start')&&title.includes('data-explore="land"')&&title.includes('id="resume"'));
+const title=ctx.cardHTML(steps[0]);assert(title.includes('data-story-jump="word"')&&title.includes('data-tour-setup')&&title.includes('data-explore="land"')&&title.includes('id="resume"'));
 const upper=ctx.cardHTML(steps.find(s=>s.id==='upper'));assert(upper.includes('<details class="scene-context">'));assert(upper.includes('data-save="upper"')&&upper.includes('data-share="upper"')&&upper.includes('data-tour-from="upper"'));
 const hw=ctx.cardHTML(steps.find(s=>s.id==='hw'));assert(hw.includes('holyweek.html')&&hw.includes('First day of the week'));
 const prayer = steps.find(s=>s.id==='pray');const prayerHtml=ctx.cardHTML(prayer);
@@ -55,5 +55,5 @@ assert.deepEqual(Array.from(ex.visible(steps[0])),['star','jerusalem']);
 for (const id of ex.visible(steps[0])) assert(steps[0].show.includes(id) || id==='jerusalem', id+' is an existing place');
 assert(ctx.window.WAY.PLACES.jerusalem, 'opening labels are existing places');
 assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=52')&&index.includes('js/app.js?v=52'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v30'));
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=53')&&index.includes('js/app.js?v=53'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v31'));
 console.log('PASS: all 90 scenes and model/content files retained; opening contains Bethlehem; stable Holy Week orientation; valid camera padding across six screen sizes, long captions, and extra header bars; real scene markup retains readings, notes, quotations and tools; cache versions updated. Logic checks, not browser visual QA.');

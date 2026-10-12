@@ -738,3 +738,36 @@ html.following .step:not(.step-title), html.touring .step:not(.step-title) { pad
 /* Topic results: the note sits under the scene button so its references can be tapped. */
 .results .topic-item .topic-note { margin: -4px 6px 10px; }
 .results .topic-item .topic-note .vref { display: inline; width: auto; min-height: 0; padding: 0; border-radius: 0; font: inherit; color: inherit; background: none; }
+
+/* ---------- Play the story ---------- */
+.hero-second { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 12px; }
+.hero-play { display: inline-flex; align-items: center; gap: 9px; min-height: 46px; padding: 0 18px 0 15px; border-radius: 4px; border: 1px solid color-mix(in srgb, #E0A458 70%, transparent); background: transparent; color: #F1E9DA; font: 600 14px var(--sans); cursor: pointer; }
+.hero-play svg { width: 12px; height: 12px; fill: #E0A458; }
+.hero-play:hover { background: color-mix(in srgb, #E0A458 14%, transparent); }
+.hero-maplink { min-height: 44px; padding: 0 2px; border: 0; background: none; color: #C9CFC6; font: 400 13px var(--sans); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); cursor: pointer; }
+html.og .hero-second { display: none !important; }
+#tourset { width: min(520px, 100vw); max-height: min(88vh, 760px); margin: auto auto 0; border-radius: 20px 20px 0 0; padding: 18px 22px calc(16px + env(safe-area-inset-bottom)); }
+#tourset[open] { display: flex; flex-direction: column; }
+@media (min-width: 700px) { #tourset { margin: auto; border-radius: 20px; } }
+#tourset .dlg-head { align-items: flex-start; margin-bottom: 4px; }
+#ts-title { font-size: 26px; line-height: 1.15; }
+.ts-form { overflow: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 14px; padding-right: 2px; }
+.ts-lede { margin: 0; font-size: 14px; line-height: 1.5; color: var(--c-muted); }
+.ts-seg { border: 0; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ts-seg legend, .ts-field > span { font: 600 10.5px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--c-accent); margin-bottom: 6px; padding: 0; }
+.ts-seg label { position: relative; cursor: pointer; }
+.ts-seg input { position: absolute; opacity: 0; inset: 0; }
+.ts-seg label > span { display: flex; flex-direction: column; gap: 2px; min-height: 56px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--c-line); font-size: 14px; }
+.ts-seg label > span small { font-size: 12px; color: var(--c-muted); line-height: 1.35; }
+.ts-seg input:checked + span { border-color: var(--c-fg); box-shadow: inset 0 0 0 1px var(--c-fg); background: color-mix(in srgb, var(--c-fg) 5%, transparent); }
+.ts-seg input:focus-visible + span { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+.ts-row { display: flex; gap: 10px; }
+.ts-row > .ts-field { flex: 1; }
+.ts-field { display: flex; flex-direction: column; min-width: 0; }
+.ts-field select { min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--c-line); background: #fff; color: var(--c-fg); font: 15px var(--sans); }
+.ts-form[data-how="silent"] .ts-listen, .ts-form[data-how="listen"] .ts-silent { display: none; }
+.ts-start { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; margin-top: 2px; border: 0; border-radius: 12px; background: var(--c-fg); color: var(--c-bg); font: 600 15px var(--sans); cursor: pointer; }
+.ts-start svg { width: 12px; height: 12px; fill: currentColor; }
+#t-set svg { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+#t-set circle { fill: var(--m-land, #1B2624); }
+.ts-listen, .ts-silent { display: flex; flex-direction: column; gap: 14px; }
