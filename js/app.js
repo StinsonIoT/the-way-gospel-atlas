@@ -502,7 +502,7 @@
     const marks = [];
     live.forEach((v) => { const sym = v.el.querySelector('.dot, .dia, .star'); if (sym) marks.push({ id: v.id, r: sym.getBoundingClientRect() }); });
     const placed = [{ left: -1e4, right: 1e4, top: -1e4, bottom: top.bottom }];
-    document.querySelectorAll('.story-stage, .explore-open').forEach(control => {
+    document.querySelectorAll('.story-stage, .explore-open, .back-pill').forEach(control => {
       if (control.hidden || getComputedStyle(control).visibility === 'hidden') return;
       const r = control.getBoundingClientRect();if (r.width && r.height) placed.push(r);
     });
@@ -668,6 +668,7 @@
   // Keep the address on the current scene, so a link opens where you are.
   let hashTimer = 0, lastHashStep = -1;
   function noteStep(r) {
+    checkBack(r);
     if (r === lastHashStep) return;
     lastHashStep = r;
     updateFollow(r);
@@ -709,7 +710,61 @@
     window.scrollTo(0, y);
     if (document.scrollingElement) document.scrollingElement.scrollTop = y;
   }
-  function goTo(i) {
+  // ---------- Back: return to where you were before a jump ----------
+  // Every jump (Chapters, Search, Topics, Places, People, a story link) adds a
+  // page to the browser's history, so the Back pill, the phone's back button and
+  // the back swipe all return to the scene the reader left, one jump at a time.
+  const backPill = document.getElementById('back-pill');
+  const backName = document.getElementById('back-name');
+  let backTrail = [];          // [{ i, off }] where each jump started
+  let backLanded = -1;         // the scene the last jump landed on
+  function showBack() {
+    const b = backTrail[backTrail.length - 1];
+    if (!b || exploring) { backPill.hidden = true; return; }
+    backName.textContent = b.i === 0 ? 'the beginning' : stepLabel(STEPS[b.i]).replace(/[.!]$/, '');
+    const eb = exploreBtn.getBoundingClientRect(); // line up with Explore 3D when it shows
+    backPill.style.top = Math.round(eb.height && eb.top > headBottom() ? eb.top : headBottom() + 10) + 'px';
+    backPill.hidden = false;
+  }
+  function noteJump(from, to) {
+    const r = Math.round(from);
+    if (!started || Math.abs(r - to) < 2) return;
+    clearTimeout(hashTimer);
+    const off = window.scrollY - (tops[r] || 0);
+    // Pin the current address to the scene being left, then add the new one.
+    try {
+      history.replaceState({ way: 'scene', i: r, off }, '', r === 0 ? location.pathname + location.search : '#' + sections[r].id);
+      history.pushState({ way: 'scene', i: to }, '', '#' + sections[to].id);
+    } catch (err) { /* ignore */ }
+    backTrail.push({ i: r, off });
+    if (backTrail.length > 30) backTrail.shift();
+    backLanded = to;
+    showBack();
+  }
+  window.addEventListener('popstate', (ev) => {
+    const st = ev.state;
+    let i = st && st.way === 'scene' ? st.i : STEPS.findIndex((x) => '#' + x.id === location.hash || '#s-' + x.id === location.hash);
+    if (i == null || i < 0) i = sections.findIndex((sec) => '#' + sec.id === location.hash);
+    if (i < 0) i = 0;
+    ['passage', 'deeper', 'explain'].forEach((id) => { const d = document.getElementById(id); if (d && d.open) d.close(); });
+    const last = backTrail[backTrail.length - 1];
+    if (last && last.i === i) backTrail.pop();
+    else backTrail = [];
+    backLanded = backTrail.length ? i : -1;
+    goTo(i, { quiet: true, off: st && st.off != null ? st.off : 0 });
+    showBack();
+  });
+  backPill.addEventListener('click', () => { if (backTrail.length) history.back(); else backPill.hidden = true; });
+  // Reading on from where you landed: after two scenes the pill steps aside
+  // (the phone's back button still returns).
+  function checkBack(r) {
+    if (backPill.hidden || backLanded < 0) return;
+    if (Math.abs(r - backLanded) >= 2) backPill.hidden = true;
+  }
+
+  function goTo(i, opts) {
+    opts = opts || {};
+    if (!opts.quiet) noteJump(progress(), i);
     if (exploring) closeExplore();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     tocOpener = null;
@@ -717,10 +772,10 @@
     const ex = document.getElementById('explain');
     if (ex && ex.open) ex.close();
     touchedSinceJump = false;
-    aim = i;
+    aim = opts.off > 2 ? -1 : i;
     requestAnimationFrame(() => requestAnimationFrame(() => {
       measure();
-      const y = tops[i] + 2;
+      const y = tops[i] + 2 + (opts.off > 2 ? opts.off - 2 : 0);
       setScroll(y);
       queue();
       [180, 450].forEach((ms) => setTimeout(() => {
@@ -1178,8 +1233,8 @@
     document.getElementById('f-next').disabled = !followList.some((i) => i > r);
     followBar.classList.toggle('off-path', !here);
   }
-  document.getElementById('f-next').addEventListener('click', () => { const r = Math.round(progress()); const n = followList.find((i) => i > r); if (n != null) goTo(n); });
-  document.getElementById('f-prev').addEventListener('click', () => { const r = Math.round(progress()); const p = followList.filter((i) => i < r).pop(); if (p != null) goTo(p); });
+  document.getElementById('f-next').addEventListener('click', () => { const r = Math.round(progress()); const n = followList.find((i) => i > r); if (n != null) goTo(n, { quiet: true }); });
+  document.getElementById('f-prev').addEventListener('click', () => { const r = Math.round(progress()); const p = followList.filter((i) => i < r).pop(); if (p != null) goTo(p, { quiet: true }); });
   document.getElementById('f-x').addEventListener('click', () => setFollow(null));
   document.getElementById('f-info').addEventListener('click', () => { gFilter = follow; showTab('chapters'); openToc(); });
 

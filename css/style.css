@@ -142,6 +142,17 @@ body.ready #map { opacity: 1; }
 .explore-open { position: fixed; z-index: 9; right: 12px; top: calc(76px + env(safe-area-inset-top)); min-height: 44px; display: inline-flex; align-items: center; gap: 8px;
   padding: 0 14px; border-radius: 999px; border: 0; background: var(--m-txt); color: var(--m-land); font: 600 13px var(--sans); cursor: pointer;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); opacity: 0; visibility: hidden; transition: opacity 0.25s ease; }
+.back-pill { position: fixed; z-index: 9; left: 12px; top: calc(76px + env(safe-area-inset-top)); max-width: calc(100vw - 168px); min-height: 44px; display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 14px 0 10px; border-radius: 999px; border: 0; background: var(--m-txt); color: var(--m-land); font: 500 13px var(--sans); cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); animation: back-in .25s ease; }
+.back-pill[hidden] { display: none; }
+.back-pill span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.back-pill b { font-weight: 600; }
+.back-pill svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+html.exploring .back-pill { display: none; }
+@keyframes back-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .back-pill { animation: none; } }
+@media (min-width: 900px) { .back-pill { max-width: 420px; } }
 .explore-open svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
 .explore-ui { position: fixed; z-index: 12; left: 12px; right: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); max-width: 520px; margin: 0 auto;
   display: none; flex-direction: column; gap: 12px; padding: 16px 18px; border-radius: 18px; background: #F4EEE2; color: #1C2A25; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); }
