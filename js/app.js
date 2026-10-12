@@ -397,7 +397,7 @@
         land: { type: 'geojson', data: 'data/land.json?v=9' },
         lakes: { type: 'geojson', data: 'data/lakes.json?v=11' },
         rivers: { type: 'geojson', data: 'data/rivers.json?v=9' },
-        jeru: { type: 'geojson', data: 'data/jerusalem.json?v=9' },
+        jeru: { type: 'geojson', data: 'data/jerusalem.json?v=10' },
         // The two 3D models load once the map has first drawn (see start()).
         city3d: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         village3d: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
@@ -2132,7 +2132,7 @@
     map.setPaintProperty('lakes-line', 'line-color', rgb(C.coast));
     map.setPaintProperty('rivers', 'line-color', rgb(C.river));
     map.setPaintProperty('valley-band', 'line-color', rgb(mixA(C.land, BLACK, 0.12)));
-    map.setPaintProperty('valley-band', 'line-opacity', plan * 0.4);
+    map.setPaintProperty('valley-band', 'line-opacity', plan * 0.55);
     map.setPaintProperty('valley-line', 'line-color', rgb(C.river));
     map.setPaintProperty('valley-line', 'line-opacity', plan);
     const WHITE3 = [255, 255, 255];
@@ -2150,6 +2150,10 @@
       'altar', rgb(mixA(stone, BLACK, 0.12)),
       'house', rgb(mixA(stone, C.land, 0.35)),
       'court', rgb(mixA(stone, WHITE3, 0.1)),
+      'gate', rgb(mixA(stone, hx('#C9A45C'), 0.18 + 0.2 * temple)),
+      'barrier', rgb(mixA(stone, C.accent, 0.35)),
+      'stair', rgb(mixA(stone, BLACK, 0.06)), 'arch', rgb(mixA(stone, BLACK, 0.1)),
+      'street', rgb(mixA(stone, C.land, 0.15)),
       'platform', rgb(mixA(stone, C.accent, temple * 0.18)),
       'wall', rgb(shadowStone), 'tower', rgb(mixA(shadowStone, stone, 0.5)),
       rgb(stone)]);
@@ -2270,7 +2274,7 @@
     let late = false;
     const loadLate = () => {
       if (late) return; late = true;
-      map.getSource('city3d').setData('data/jerusalem3d.json?v=9');
+      map.getSource('city3d').setData('data/jerusalem3d.json?v=10');
       map.getSource('village3d').setData('data/capernaum3d.json?v=12');
     };
     map.once('idle', loadLate);
@@ -2294,9 +2298,11 @@
     show: Object.keys(PLACES).filter((id) => !['ring', 'rule'].includes(PLACES[id].type) && !EXPLORE_SKIP.includes(id)) };
   const IN_JERU = (p) => p.lng > 35.222 && p.lng < 35.25 && p.lat > 31.765 && p.lat < 31.79;
   const IN_CAP = ['capsyn', 'peterhouse'];
+  const CLOSE_UP = ['womencourt', 'nicanor', 'soreg', 'southsteps', 'huldah', 'robinson', 'wilson', 'caiaphas', 'steppedst'];
   function minZoomFor(id) {
     const p = PLACES[id];
     if (IN_CAP.includes(id)) return 14.2;
+    if (CLOSE_UP.includes(id)) return 15.3; // temple details and other close-up labels
     if (id === 'jerusalem') return 0;
     if (IN_JERU(p)) return 13.4;
     if (p.type === 'region' || p.type === 'water') return 0;

@@ -3,6 +3,61 @@
 // then: the place in Jesus' day. today: what is there now. sure: how certain
 // the identification is. Keep each to a few plain sentences.
 window.WAY_INFO = {
+  tyropoeon: {
+    then: 'The valley through the middle of the city, between the Upper City on the west and the temple and Lower City on the east. Josephus calls it the valley of the cheesemakers. A bridge crossed it to the temple, and a great stairway came down into it.',
+    today: 'Largely filled in with the debris of later centuries. The Western Wall plaza lies in it.',
+    sure: 'Certain.'
+  },
+  hinnom: {
+    then: 'The valley curving around the west and south of the city. In the Old Testament it was a place of child sacrifice (Jeremiah 7:31). Its name, Gehenna in Greek, became the word Jesus used for hell (Mark 9:43).',
+    today: 'Still an open valley below the Old City walls and Mount Zion.',
+    sure: 'Certain.'
+  },
+  womencourt: {
+    then: 'The court east of the inner court, open to Israelite women as well as men. Scholars usually place the offering chests here, so this is probably where Jesus watched the widow give two small coins (Mark 12:41–44).',
+    today: 'Nothing survives above ground. The Temple Mount is now the Haram al-Sharif.',
+    sure: 'Described by Josephus and the Mishnah; the layout is a reconstruction.'
+  },
+  nicanor: {
+    then: 'A great bronze gate at the top of fifteen curved steps, between the Court of Women and the inner court (Mishnah, Middot 2). Some identify it with the “Beautiful Gate” of Acts 3:2; others place that gate elsewhere.',
+    today: 'Gone. An ossuary found on Mount Scopus in 1902 holds “the bones of the sons of Nicanor the Alexandrian, who made the doors”.',
+    sure: 'Named in the Mishnah (Middot 1:4; 2:3, 6). Josephus’ great bronze gate (Jewish War 5.201) is often identified with it. Its position is reconstructed.'
+  },
+  soreg: {
+    then: 'A low stone barrier, about 1.5 m high, around the inner courts. Notices in Greek and Latin warned Gentiles not to go past it (Josephus, Jewish War 5.193–194); the stones themselves threaten death.',
+    today: 'Two of the Greek warning stones have been found: a complete one in 1871, now in Istanbul, and a fragment in 1935, now in the Israel Museum.',
+    sure: 'Certain that it existed; its line is reconstructed.'
+  },
+  southsteps: {
+    then: 'A broad stairway up to the gates in the southern wall, the main way in for crowds of pilgrims.',
+    today: 'Excavated from 1968 and partly restored, below the Al-Aqsa Mosque.',
+    sure: 'Excavated. The model shows their extent only roughly.'
+  },
+  huldah: {
+    then: 'Two gates in the southern wall, the Double Gate and the Triple Gate, which the Mishnah calls the Huldah Gates (Middot 1:3). Passages led up through them to the temple courts.',
+    today: 'Both are blocked. Part of the Double Gate’s passage survives beneath the Al-Aqsa Mosque.',
+    sure: 'The gates are certain; the link with the Mishnah’s name is widely accepted.'
+  },
+  robinson: {
+    then: 'A great arch at the south-west corner carried a stairway from the street below up to the Royal Stoa.',
+    today: 'The stub of the arch still juts from the wall. It is named after Edward Robinson, who described it in 1838.',
+    sure: 'Excavated; the stairway was confirmed in the excavations from 1968.'
+  },
+  wilson: {
+    then: 'A bridge across the Tyropoeon Valley joined the Upper City to the temple. Josephus mentions a bridge between them.',
+    today: 'The arch named after Charles Wilson is in the covered area at the north end of the Western Wall prayer plaza.',
+    sure: 'A 2020 study dated a narrower bridge here to Herod’s time or soon after (about 20 BC to AD 20), doubled in width about AD 30–60; the arch seen today is that widened bridge. The model shows the narrower one.'
+  },
+  steppedst: {
+    then: 'A paved street about 600 m long and 8 m wide that climbed from the Pool of Siloam up the Tyropoeon Valley to the temple.',
+    today: 'Excavated in tunnels beneath Silwan, a Palestinian neighbourhood; the excavation is politically contested. Parts are open to visitors.',
+    sure: 'Excavated. A coin of about AD 30/31 under the paving means it was finished no earlier than then: new in Jesus’ last years, or just after.'
+  },
+  caiaphas: {
+    then: 'The high priest’s house, where Jesus was taken at night after His arrest. Matthew names the high priest as Caiaphas (Matthew 26:57; John 18:24). Its location is not known.',
+    today: 'Two traditions: the Church of St Peter in Gallicantu on the east slope of Mount Zion, shown here, and an Armenian site near the Zion Gate.',
+    sure: 'Unlocated. Both sites are traditions.'
+  },
   nazareth: {
     then: 'A small farming village in the hills of lower Galilee, probably a few hundred people, with houses, cisterns and rock-cut storage caves. It is not mentioned in the Old Testament or by Josephus.',
     today: 'The largest Arab city in Israel. The Basilica of the Annunciation (completed 1969) stands over earlier churches and a cave venerated as Mary’s home.',
@@ -253,6 +308,29 @@ window.WAY_INFO = {
 // Good to know: three or four short facts per place, biblical and historical.
 // References are to the Berean Standard Bible; outside sources are named.
 window.WAY_KNOW = {
+  tyropoeon: [
+    'Excavations show the valley floor was many metres lower than today’s streets.',
+    'The stepped street from the Pool of Siloam ran up the valley floor to the temple.'
+  ],
+  hinnom: [
+    '“Gehenna” is the Greek form of the Hebrew name, the valley of Hinnom.',
+    'Many tombs of Jesus’ time were cut into its slopes.'
+  ],
+  womencourt: [
+    'Mark says Jesus sat “opposite the treasury” to watch the giving (Mark 12:41).',
+    'John says Jesus taught “near the treasury” in the temple courts (John 8:20).'
+  ],
+  soreg: [
+    'Paul was accused of bringing Greeks into the temple, and a riot followed (Acts 21:28–30).',
+    'Ephesians 2:14 speaks of Christ tearing down a dividing wall; many readers see an allusion to this barrier.'
+  ],
+  robinson: [
+    'A stone from the top of the wall, inscribed “to the place of trumpeting”, was found below this corner.'
+  ],
+  caiaphas: [
+    'Matthew and Mark place Peter’s denials in the high priest’s courtyard (Matthew 26:57–75; Mark 14:66–72).',
+    'An ossuary inscribed “Joseph son of Caiaphas” was found in 1990 in a tomb south of the city. Many scholars connect it with the high priest.'
+  ],
   nazareth: [
     'Nathanael asked, “Can anything good come from Nazareth?” (John 1:46), a sign of how obscure it was.',
     'Jesus was known as “Jesus of Nazareth”, and His followers were later called Nazarenes (Acts 24:5).',
