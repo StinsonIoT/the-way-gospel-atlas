@@ -15,7 +15,14 @@ assert.equal(steps.length, 90);
   vm.runInContext(cp.execFileSync('git', ['show', '4b074cce54e39b69467c76a90ca086824de3b7e3:js/scenes.js']).toString(), base);
   assert.equal(JSON.stringify(steps.map(s => s.id)), JSON.stringify(base.window.WAY.STEPS.map(s => s.id)), 'all 90 scenes keep their ids and order');
 }
-for (const file of ['data/jerusalem3d.json', 'data/capernaum3d.json']) {
+// Jerusalem may gain reviewed detail (tools/add-temple-detail.py): every original
+// structure must stay as it was, and only illustrative houses may be cleared.
+{const was=JSON.parse(cp.execFileSync('git',['show','4b074cce54e39b69467c76a90ca086824de3b7e3:data/jerusalem3d.json']).toString()),now=JSON.parse(fs.readFileSync('data/jerusalem3d.json','utf8'));
+const key=(f)=>JSON.stringify([f.properties.kind,f.properties.height,f.properties.base,f.geometry]);const have=new Set(now.features.map(key));
+for(const f of was.features){if(f.properties.kind!=='house')assert(have.has(key(f)),'Jerusalem keeps '+(f.properties.name||f.properties.kind));}
+const old=new Set(was.features.map(key));for(const f of now.features){if(!old.has(key(f)))assert.equal(f.properties.added,'temple-detail','new Jerusalem features are marked');}
+const houses=now.features.filter(f=>f.properties.kind==='house').length;assert(houses>=was.features.filter(f=>f.properties.kind==='house').length-60,'houses kept');}
+for (const file of ['data/capernaum3d.json']) {
   assert.equal(Buffer.compare(fs.readFileSync(file), cp.execFileSync('git', ['show', '4b074cce54e39b69467c76a90ca086824de3b7e3:' + file])), 0, file + ' must retain the original content');
 }
 // Expanded captions and additional header bars leave valid camera space.
@@ -55,7 +62,7 @@ assert.deepEqual(Array.from(ex.visible(steps[0])),['star','jerusalem']);
 for (const id of ex.visible(steps[0])) assert(steps[0].show.includes(id) || id==='jerusalem', id+' is an existing place');
 assert(ctx.window.WAY.PLACES.jerusalem, 'opening labels are existing places');
 assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=57')&&index.includes('js/app.js?v=57'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v35'));
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=57')&&index.includes('js/app.js?v=58'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v36'));
 // Saved BSB copy: every book the reader links to is there, checksums match the manifest, and it is labelled BSB.
 {const crypto=require('crypto');const m=JSON.parse(fs.readFileSync('data/bsb/manifest.json','utf8'));assert.equal(m.translation,'BSB');
 const apiBlock=app.slice(app.indexOf('const API_BOOK ='),app.indexOf('const HUB_BOOK'));
