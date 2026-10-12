@@ -305,7 +305,7 @@ page = f'''<!doctype html>
 <a class="btn" href="./#s-hw">Walk through Holy Week on the map</a>
 <footer>Scripture quotations: Berean Standard Bible (public domain). Josephus is quoted from William Whiston’s translation; Tacitus from Church and Brodribb. Corrections are welcome on <a href="https://github.com/StinsonIoT/the-way-gospel-atlas/issues">GitHub</a>.</footer>
 </main>
-<script src="js/reader-lite.js?v=1"></script>
+<script src="js/reader-lite.js?v=2"></script>
 </body>
 </html>
 '''

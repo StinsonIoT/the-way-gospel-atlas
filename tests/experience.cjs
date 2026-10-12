@@ -55,5 +55,11 @@ assert.deepEqual(Array.from(ex.visible(steps[0])),['star','jerusalem']);
 for (const id of ex.visible(steps[0])) assert(steps[0].show.includes(id) || id==='jerusalem', id+' is an existing place');
 assert(ctx.window.WAY.PLACES.jerusalem, 'opening labels are existing places');
 assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=54')&&index.includes('js/app.js?v=54'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v32'));
-console.log('PASS: all 90 scenes and model/content files retained; opening contains Bethlehem; stable Holy Week orientation; valid camera padding across six screen sizes, long captions, and extra header bars; real scene markup retains readings, notes, quotations and tools; cache versions updated. Logic checks, not browser visual QA.');
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=56')&&index.includes('js/app.js?v=56'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v34'));
+// Saved BSB copy: every book the reader links to is there, checksums match the manifest, and it is labelled BSB.
+{const crypto=require('crypto');const m=JSON.parse(fs.readFileSync('data/bsb/manifest.json','utf8'));assert.equal(m.translation,'BSB');
+const apiBlock=app.slice(app.indexOf('const API_BOOK ='),app.indexOf('const HUB_BOOK'));
+for(const [,code] of apiBlock.matchAll(/'([1-3A-Z]{3})'/g)){assert(m.books[code],code+' saved');const buf=fs.readFileSync('data/bsb/'+code+'.json');assert.equal(crypto.createHash('sha256').update(buf).digest('hex'),m.books[code].sha256,code+' checksum');assert.equal(JSON.parse(buf).translation,'BSB');}
+// Curated Old Testament links: valid kinds and statuses.
+const kinds=['quoted','echoed','recalled','unnamed','compared'];for(const [id,list] of Object.entries(ctx.window.WAY_OT||{}))for(const x of list){assert(kinds.includes(x.kind),id+' kind');assert(x.ot&&x.nt&&x.note,id+' fields');assert(steps.some(s=>s.id===id),id+' is a scene');}}
+console.log('PASS: saved BSB copy complete and checksummed; Old Testament links well-formed; all 90 scenes and model/content files retained; opening contains Bethlehem; stable Holy Week orientation; valid camera padding across six screen sizes, long captions, and extra header bars; real scene markup retains readings, notes, quotations and tools; cache versions updated. Logic checks, not browser visual QA.');
