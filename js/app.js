@@ -73,8 +73,11 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const refLink = (ref, cls) => ref ? `<a class="${cls || 'ref'}" data-ref="${esc(ref[0])}" href="https://biblehub.com/bsb/${ref[1]}/${ref[2]}.htm" target="_blank" rel="noopener">${esc(ref[0])}<span class="ref-icon" aria-hidden="true"></span></a>` : '';
   // Scripture references inside notes, e.g. "(Luke 2:44)", become tappable.
-  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Numbers|Jeremiah|Daniel|Hosea|Joel|Jonah|Micah|Isaiah|Zechariah|Malachi|Romans|Galatians|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?![\d:])/g,
+  const linkRefs = (html) => html.replace(/\b((?:Matthew|Mark|Luke|John|Acts|Genesis|Exodus|Leviticus|Deuteronomy|Joshua|Judges|Ruth|[12] Samuel|[12] Kings|[12] Chronicles|Numbers|Jeremiah|Daniel|Hosea|Joel|Jonah|Micah|Isaiah|Zechariah|Malachi|Romans|Galatians|Psalms?)\s+\d+(?::\d+(?:[–-]\d+(?::\d+)?)?|[–-]\d+)?)(?!\d|:\d)/g,
     (m) => `<button type="button" class="vref" data-ref="${m}">${m}</button>`)
+    // Follow-on references in the same book: "John 2:13; 6:4" or "John 19:14; compare 18:28".
+    .replace(/(data-ref="((?:[12] )?[A-Za-z]+) [^"]*">[^<]*<\/button>)((?:(?:;|,)\s+(?:compare\s+)?\d+:\d+(?:[–-]\d+)?)+)/g,
+      (m, first, book, rest) => first + rest.replace(/(\d+:\d+(?:[–-]\d+)?)/g, (r) => `<button type="button" class="vref" data-ref="${book} ${r}">${r}</button>`))
     // Keep "(" and ")" with the reference, so a line never starts with ")".
     .replace(/(\()?(<button type="button" class="vref"[^>]*>[^<]*<\/button>)([).,;:]*)/g, (m, o, b, c) => (o || c ? `<span class="nw">${o || ''}${b}${c}</span>` : b));
   const SYM = {
@@ -176,7 +179,7 @@
         ${refLink(s.ref, 'ref scene-reading')}
         <p class="moment-certainty">Tomb markers: traditional and later-proposed sites</p>
         <details class="moment-study"><summary>Read & study</summary>
-          <h3 class="moment-original-title">${s.title}</h3><p class="text">${esc(s.text)}</p>
+          <h3 class="moment-original-title">${s.title}</h3><p class="text">${linkRefs(esc(s.text))}</p>
           ${s.note ? `<p class="note">${linkRefs(esc(s.note))}</p>` : ''}
           ${whenHTML(s)}${studyRow(s)}
         </details>
@@ -192,7 +195,7 @@
       </div>`;
     }
     let body = '';
-    if (s.text) body += `<p class="text">${esc(s.text)}</p>`;
+    if (s.text) body += `<p class="text">${linkRefs(esc(s.text))}</p>`;
     if (experience.focused(s.id) && s.ref) body += refLink(s.ref, 'ref scene-reading');
     if (s.note) body += experience.focused(s.id) ? `<details class="scene-context"><summary>Location & Gospel context</summary><p class="note">${linkRefs(esc(s.note))}</p></details>` : `<p class="note">${linkRefs(esc(s.note))}</p>`;
     if (s.kind === 'legend') body += legendHTML;
@@ -982,7 +985,8 @@
     const items = topicItems(t).map(([sid, note]) => [STEPS.findIndex((st) => st.id === sid), note]).filter(([i]) => i >= 0);
     topicResults.innerHTML = `<li class="topic-head"><b>${esc(t.label)}</b> <span>${esc(t.intro)} ${items.length} scenes.</span></li>` + items.map(([i, note]) => {
       const st = STEPS[i];
-      return `<li><button type="button" data-i="${i}"><span class="r-title">${esc(stepLabel(st))}</span><span class="snip">${esc(note)}</span><small>${esc(st.ref ? st.ref[0].replace(/\s*·\s*BSB$/, '') : '')}</small></button></li>`;
+      // The note sits outside the scene button, so its Scripture references can be tapped.
+      return `<li class="topic-item"><button type="button" data-i="${i}"><span class="r-title">${esc(stepLabel(st))}</span><small>${esc(st.ref ? st.ref[0].replace(/\s*·\s*BSB$/, '') : '')}</small></button><p class="snip topic-note">${linkRefs(esc(note))}</p></li>`;
     }).join('');
     topicResults.scrollIntoView({ block: 'nearest' });
   }

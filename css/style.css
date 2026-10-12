@@ -735,3 +735,6 @@ html.following .step:not(.step-title), html.touring .step:not(.step-title) { pad
 .step:not(.step-title) > :first-child { position: sticky; top: 40vh; z-index: 1; }
 .step-hold { flex: none; width: 1px; height: var(--scene-hold); pointer-events: none; }
 .step:last-child .step-hold { height: 0; }
+/* Topic results: the note sits under the scene button so its references can be tapped. */
+.results .topic-item .topic-note { margin: -4px 6px 10px; }
+.results .topic-item .topic-note .vref { display: inline; width: auto; min-height: 0; padding: 0; border-radius: 0; font: inherit; color: inherit; background: none; }
