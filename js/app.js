@@ -265,13 +265,13 @@
       </article>`;
     }
     if (s.kind === 'verse') {
-      return `<div class="verse">
+      return `<article class="verse verse-story card-${pal.card}">
         <div class="kicker"><span>${esc(s.kicker)}</span></div>
         <blockquote>${esc(s.verse)}</blockquote>
         <div class="verse-foot">${refLink(s.ref, 'ref')}</div>
         ${s.after ? `<p class="after">${linkRefs(esc(s.after))}</p>` : ''}
         ${whenHTML(s)}${studyRow(s)}
-      </div>`;
+      </article>`;
     }
     let body = '';
     if (s.text) body += `<p class="text">${linkRefs(esc(s.text))}</p>`;

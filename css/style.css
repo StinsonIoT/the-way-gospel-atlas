@@ -135,6 +135,14 @@ body.ready #map { opacity: 1; }
 .verse blockquote { margin: 0; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(27px, 7.4vw, 44px); line-height: 1.22; letter-spacing: -0.01em;
   text-shadow: 0 0 18px var(--m-land); }
 .verse .ref { font-size: 13px; color: var(--m-muted); }
+.verse-story { max-width: 520px; margin-bottom: 0; padding: 22px; gap: 12px;
+  border-radius: 20px; background: var(--c-bg); color: var(--c-fg);
+  -webkit-backdrop-filter: none; backdrop-filter: none; overflow: hidden; isolation: isolate;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18); }
+.verse-story .kicker { color: var(--c-accent); }
+.verse-story .ref { color: var(--c-muted); }
+.verse-story blockquote { min-width: 0; overflow-wrap: break-word; text-shadow: none; }
+.verse-story .after { color: var(--c-muted); }
 .after { margin: 0; font-family: var(--serif); font-size: 17px; line-height: 1.5; color: color-mix(in srgb, var(--m-txt) 82%, var(--m-land)); }
 
 /* ---------- Explore Jerusalem ---------- */

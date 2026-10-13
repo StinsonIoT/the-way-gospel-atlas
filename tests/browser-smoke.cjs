@@ -128,7 +128,7 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v44').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has('the-way-v45').then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
@@ -138,6 +138,42 @@ async function navigate(url) {
   }
   console.log('PASS: main page loads without horizontal overflow at three phone sizes.');
   await waitFor(`document.body.classList.contains('ready')`);
+  if (process.argv.includes('--inspect-cards')) {
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await evaluate(`(() => {
+      document.documentElement.classList.add('touring');
+      document.querySelector('#tour').hidden = false;
+      document.querySelector('#t-title').textContent = 'At the Jordan';
+      document.querySelector('#t-sub').textContent = 'Mark 1:11 · read by Souer';
+      const step = [...document.querySelectorAll('.step')].find(s => s.dataset.scene === 'voice');
+      const i = [...document.querySelectorAll('.step')].indexOf(step);
+      document.querySelector('#toc-body [data-i="' + i + '"]').click();
+    })()`);
+    await sleep(1500);
+    for (const [width, height] of [[320, 568], [375, 667], [390, 844], [844, 390]]) {
+      await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
+      await sleep(250);
+      const cards = await evaluate(`[...document.querySelectorAll('.verse-story')].map(card => {
+        const r = card.getBoundingClientRect(), s = getComputedStyle(card), quote = card.querySelector('blockquote');
+        const range = document.createRange(); range.selectNodeContents(quote);
+        const textInside = [...range.getClientRects()].every(t => t.left >= r.left && t.right <= r.right);
+        return { scene: card.parentElement.dataset.scene, background: s.backgroundColor, blur: s.backdropFilter, textInside, right: r.right, left: r.left };
+      })`);
+      assert(cards.length > 0);
+      for (const card of cards) {
+        assert.equal(card.blur, 'none', card.scene + ' uses a solid card without blur');
+        assert(card.textInside, card.scene + ' keeps quotation text inside its card at ' + width);
+        assert(card.left >= 0 && card.right <= width + 1, card.scene + ' fits the viewport');
+        assert(!card.background.includes('rgba') && !card.background.includes(' / '), card.scene + ' has an opaque background');
+      }
+      console.log('PASS: ' + cards.length + ' verse cards contain their text and fit at ' + width + 'x' + height);
+    }
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await sleep(500);
+    const shot = await send('Page.captureScreenshot', { format: 'png' });
+    fs.writeFileSync(path.join(os.tmpdir(), 'the-way-jordan-card.png'), Buffer.from(shot.data, 'base64'));
+    return;
+  }
   if (process.argv.includes('--profile-scroll')) {
     const profile = await evaluate(`(async () => {
       const stats = { cameraUpdates: 0, layoutReads: 0, overlayUpdates: 0, frames: 0, slowFrames: 0, maxFrameMs: 0 };
