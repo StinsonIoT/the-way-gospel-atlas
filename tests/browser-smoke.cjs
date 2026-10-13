@@ -69,16 +69,24 @@ async function navigate(url) {
   });
   handlers.set('Runtime.exceptionThrown', p => errors.push(p.exceptionDetails));
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
-  if (process.argv.includes('--inspect-opening')) {
-    const chapter = await (await fetch('https://bible.helloao.org/api/BSB/JHN/1.json', { signal: AbortSignal.timeout(15000) })).json();
+  if (process.argv.includes('--inspect-tour')) {
+    await require('../tools/audio-waveform.cjs')(evaluate);
+    return;
+  }
+  if (process.argv.includes('--inspect-opening') || process.argv.includes('--inspect-origins')) {
+    const origins = process.argv.includes('--inspect-origins');
+    const chapter = await (await fetch('https://bible.helloao.org/api/BSB/' + (origins ? 'LUK' : 'JHN') + '/1.json', { signal: AbortSignal.timeout(15000) })).json();
     const reader = 'souer';
     const timing = await (await fetch(new URL(chapter.thisChapterAudioTimings[reader], 'https://bible.helloao.org/'), { signal: AbortSignal.timeout(15000) })).json();
     const recording = await (await fetch(chapter.thisChapterAudioLinks[reader], { signal: AbortSignal.timeout(20000) })).arrayBuffer();
     const encoded = Buffer.from(recording).toString('base64');
-    const endTimes = [timing.verses[1], timing.verses[5]];
+    const lastVerses = origins ? [17, 38, 55] : [1, 5];
+    const endTimes = lastVerses.map(v => timing.verses[v]);
     const appSource = fs.readFileSync('js/app.js', 'utf8');
+    const gapSource = fs.readFileSync('js/audio-boundaries.js', 'utf8');
     const audioHelpers = appSource.slice(appSource.indexOf('function audioBounds('), appSource.indexOf('async function prepareAudio('));
     const result = await evaluate(`(async () => {
+      ${gapSource}
       ${audioHelpers}
       const context = new AudioContext();
       const raw = Uint8Array.from(atob(${JSON.stringify(encoded)}), c => c.charCodeAt(0));
@@ -88,13 +96,13 @@ async function navigate(url) {
       const rms = (t, width) => { let sum = 0, count = 0; for(let i = Math.floor(t*rate); i < Math.min(samples.length, Math.floor((t+width)*rate)); i++) { sum += samples[i]*samples[i]; count++; } return Math.sqrt(sum/Math.max(1,count)); };
       const results = ${JSON.stringify(endTimes)}.map(end => {
         const windows = [];
-        for(let offset = -0.5; offset <= 1.5; offset += 0.05) windows.push({ t: +(end+offset).toFixed(3), rms: +rms(end+offset,0.05).toFixed(5) });
+        for(let offset = -1.5; offset <= 0.5; offset += 0.05) windows.push({ t: +(end+offset).toFixed(3), rms: +rms(end+offset,0.05).toFixed(5) });
         return { end, atBoundary: +rms(end,0.05).toFixed(5), windows };
       });
       const actualStops = [];
       let rangeIndex = 0;
       for (const providerBoundary of ${JSON.stringify(endTimes)}) {
-        const { end } = audioBounds(${JSON.stringify(chapter)}, ${JSON.stringify(timing)}, 1, rangeIndex++ === 0 ? 1 : 5);
+        const { end } = audioBounds(${JSON.stringify(chapter)}, ${JSON.stringify(timing)}, 1, ${JSON.stringify(lastVerses)}[rangeIndex++]);
         const media = new Audio(recordingUrl);
         await new Promise((resolve, reject) => { media.onloadedmetadata = resolve; media.onerror = reject; media.load(); });
         await new Promise(resolve => { media.onseeked = resolve; media.currentTime = end - 1.3; });
@@ -106,7 +114,7 @@ async function navigate(url) {
       }
       URL.revokeObjectURL(recordingUrl); await context.close(); return { waveform: results, actualStops };
     })()`);
-    for (const stop of result.actualStops) assert(stop.pausedAt < stop.providerBoundary - 0.02, 'opening stops in silence before the next verse begins');
+    for (const stop of result.actualStops) assert(stop.pausedAt < stop.providerBoundary - 0.02, 'playback stops before the next verse begins');
     console.log(JSON.stringify({ reader, durationBytes: recording.byteLength, actualStops: result.actualStops }, null, 2));
     return;
   }
@@ -120,7 +128,7 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v43').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has('the-way-v44').then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
@@ -190,17 +198,23 @@ async function navigate(url) {
     window.originalTourFetch = original;
     window.fetch = (url, options) => String(url).endsWith('/BSB/JHN/5.json') ? Promise.resolve(new Response(JSON.stringify(chapter)))
       : String(url).endsWith('/fixture.audioTimings.json') ? Promise.resolve(new Response(JSON.stringify({ verses: content.filter(v => v.type === 'verse').map((_, i) => i + 1) })))
+      : String(url).endsWith('/BSB/MRK/2.json') ? original('data/bsb/MRK.json?v=1').then(r => r.json()).then(b => new Response(JSON.stringify({ ...chapter, chapter: { number: 2, content: b.chapters['2'] }, thisChapterAudioTimings: { souer: '/fixture.markTimings.json' } })))
+      : String(url).endsWith('/fixture.markTimings.json') ? Promise.resolve(new Response(JSON.stringify({ verses: Array.from({ length: 28 }, (_, i) => i + 1) })))
       : original(url, options);
     document.querySelector('[data-tour-from="bethesda"]').click();
   })()`);
   await waitFor(`document.querySelector('#t-audio').dataset.kind === 'tour' && document.querySelector('#t-audio').readyState >= 1 && document.querySelector('#t-audio').currentTime >= 4`);
   assert(await evaluate(`document.querySelector('#t-audio').currentTime < 5`), 'John 5:5 starts at its actual compact-array timestamp');
-  await evaluate(`(() => { document.querySelector('#t-play').click(); const a = document.querySelector('#t-audio'); a.currentTime = 8.96; a.dispatchEvent(new Event('timeupdate')); })()`);
+  await evaluate(`(() => { document.querySelector('#t-play').click(); const a = document.querySelector('#t-audio'); a.currentTime = 9.96; a.dispatchEvent(new Event('timeupdate')); })()`);
   assert.equal(await evaluate(`document.querySelector('#t-audio').dataset.kind`), 'tour', 'last fraction of final verse remains in the segment');
-  await evaluate(`(() => { const a = document.querySelector('#t-audio'); a.currentTime = 9; a.dispatchEvent(new Event('timeupdate')); })()`);
+  await evaluate(`(() => { const a = document.querySelector('#t-audio'); a.currentTime = 10; a.dispatchEvent(new Event('timeupdate')); })()`);
   assert.equal(await evaluate(`document.querySelector('#t-audio').dataset.kind`), 'done', 'tour completes at the actual next-verse boundary');
+  // Resume during the between-card pause must advance, not replay a clipped tail.
+  await evaluate(`document.querySelector('#t-play').click()`);
+  await waitFor(`document.querySelector('#t-title').textContent.includes('Authority') && document.querySelector('#t-audio').dataset.kind === 'tour'`);
+  assert(await evaluate(`document.querySelector('#tour').classList.contains('playing')`), 'next card retains automatic playback after the internal pause');
   await evaluate(`document.querySelector('#t-x').click(); window.fetch = window.originalTourFetch; URL.revokeObjectURL(window.tourTestAudio)`);
-  console.log('PASS: Play the story seeks correctly across a verse-number gap and preserves the final fraction of the selected verse.');
+  console.log('PASS: Play the story preserves the verse ending, resumes between cards, and advances to the next card with playback active.');
   await evaluate(`(() => {
     document.querySelector('#chapter-btn').click(); document.querySelector('#tab-plan').click();
     window.testOpenCache = caches.open;

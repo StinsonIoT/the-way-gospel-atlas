@@ -7,7 +7,7 @@ async function json(url) {
   return response.json();
 }
 (async () => {
-  if (process.argv.includes('--tour')) {
+  if (process.argv.includes('--tour') || process.argv.includes('--tour-all')) {
     const app = fs.readFileSync('js/app.js', 'utf8');
     const chapters = new Map(), timingFiles = new Map();
     const ctx = { window: {}, norm: s => String(s).toLowerCase(), URL,
@@ -23,7 +23,7 @@ async function json(url) {
       }
     };
     vm.createContext(ctx);
-    for (const name of ['scenes', 'tour']) vm.runInContext(fs.readFileSync('js/' + name + '.js', 'utf8'), ctx);
+    for (const name of ['scenes', 'tour', 'audio-boundaries']) vm.runInContext(fs.readFileSync('js/' + name + '.js', 'utf8'), ctx);
     vm.runInContext(app.slice(app.indexOf('const BOOKS ='), app.indexOf('const stepSpans =')), ctx);
     vm.runInContext(app.slice(app.indexOf('const API_BOOK ='), app.indexOf('const HUB_BOOK')) + '; globalThis.codes = API_BOOK;', ctx);
     // Include a shared bounds helper if the application has one.
@@ -32,26 +32,39 @@ async function json(url) {
     ctx.KEY = ctx.window.WAY_KEY; ctx.TOUR_REF = { trials: 'Mark 14:53–15:15' };
     vm.runInContext(app.slice(app.indexOf('function tourRef('), app.indexOf('// iPhone only lets audio start')), ctx);
     const cases = [];
-    for (const id of ['word', 'bethesda', 'tyre', 'sayings', 'torn', 'trials']) {
+    const all = process.argv.includes('--tour-all');
+    const ids = all ? ctx.window.WAY.STEPS.map(s => s.id) : ['word', 'bethesda', 'tyre', 'sayings', 'torn', 'trials'];
+    for (const length of (all ? ['key', 'full'] : ['key'])) for (const chosenReader of (all ? ['souer', 'hays', 'david', 'gilbert'] : ['souer'])) for (const id of ids) {
+      ctx.TS.len = length; ctx.TS.reader = chosenReader;
       const scene = ctx.window.WAY.STEPS.find(s => s.id === id);
-      const label = ctx.tourRef(scene), audio = await ctx.buildAudio(label);
+      const label = ctx.tourRef(scene);
+      if (!label) { cases.push({ scene: id, length, chosenReader, silent: true, matches: true }); continue; }
+      const audio = await ctx.buildAudio(label);
       const expected = [];
+      const boundaries = [];
       for (const sp of ctx.refSpans(label)) for (let c = sp.c1; c <= sp.c2; c++) {
         const chapter = await ctx.loadChapter(sp.book, c);
-        const timing = await json(new URL(chapter.thisChapterAudioTimings[audio.reader], 'https://bible.helloao.org/').href);
+        const timingLink = chapter.thisChapterAudioTimings?.[audio.reader];
+        if (!timingLink) { expected.push({ start: 0, end: null }); boundaries.push({ book: ctx.codes[sp.book], chapter: c, wholeChapterFallback: true }); continue; }
+        const timingUrl = new URL(timingLink, 'https://bible.helloao.org/').href;
+        if (!timingFiles.has(timingUrl)) timingFiles.set(timingUrl, json(timingUrl));
+        const timing = await timingFiles.get(timingUrl);
         const numbers = chapter.chapter.content.filter(v => v.type === 'verse').map(v => v.number);
         const from = c === sp.c1 ? sp.v1 || 1 : 1, to = c === sp.c2 ? sp.v2 : 999;
         const first = numbers.findIndex(n => n >= from), next = numbers.findIndex(n => n > to);
-        let end = next < 0 ? null : timing.verses[next];
-        // Independently checked silent-gap correction for the opening recording.
-        if (audio.reader === 'souer' && ctx.codes[sp.book] === 'JHN' && c === 1 && to === 5 && Math.abs(end - 28.725) < 0.001) end = 28.575;
-        expected.push({ start: timing.verses[first], end });
+        const corrected = (verse, original) => {
+          const entry = ctx.window.WAY_AUDIO_GAPS[[audio.reader, ctx.codes[sp.book], c, verse].join(':')];
+          return entry && Math.abs(entry[0] - original) < .001 ? entry[1] : original;
+        };
+        expected.push({ start: corrected(numbers[first], timing.verses[first]), end: next < 0 ? null : corrected(numbers[next], timing.verses[next]) });
+        boundaries.push({ book: ctx.codes[sp.book], chapter: c, from, to: Math.min(to, Math.max(...numbers)), url: chapter.thisChapterAudioLinks[audio.reader], providerStart: timing.verses[first], providerEnd: next < 0 ? null : timing.verses[next] });
       }
       const actual = audio.segs.map(({ start, end }) => ({ start, end }));
-      cases.push({ scene: id, label, reader: audio.reader, actual, expected, matches: JSON.stringify(actual) === JSON.stringify(expected) });
+      cases.push({ scene: id, length, chosenReader, label, reader: audio.reader, actual, expected, boundaries, matches: JSON.stringify(actual) === JSON.stringify(expected) });
+      if (all && cases.length % 90 === 0) console.log('Checked', cases.length, 'scene/settings combinations');
     }
-    fs.writeFileSync('docs/audio-tour-check.json', JSON.stringify({ checkedAt: new Date().toISOString(), cases }, null, 2) + '\n');
-    console.log(JSON.stringify(cases, null, 2));
+    fs.writeFileSync(all ? 'docs/audio-tour-full-audit.json' : 'docs/audio-tour-check.json', JSON.stringify({ checkedAt: new Date().toISOString(), cases }, null, 2) + '\n');
+    console.log(all ? JSON.stringify({ combinations: cases.length, mismatches: cases.filter(c => !c.matches).length, wholeChapterFallbacks: cases.filter(c => c.boundaries?.some(b => b.wholeChapterFallback)).length }) : JSON.stringify(cases, null, 2));
     if (cases.some(test => !test.matches)) process.exitCode = 1;
     return;
   }

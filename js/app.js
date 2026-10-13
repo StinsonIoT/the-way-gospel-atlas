@@ -1686,15 +1686,13 @@
     const index = verse => compact ? verses.indexOf(verse) : verse.number - 1;
     const first = selected[0], last = selected[selected.length - 1];
     const next = verses.find(v => v.number > last.number);
-    let end = next ? starts[index(next)] : null;
-    // Souer's John 1 recording has a verified silent gap before verses 2 and
-    // 6. Stop there instead of including the next verse's first consonant.
-    // Apply only to the inspected recording/timestamps; updated timings win.
-    if (timing.translationId === 'BSB' && timing.bookId === 'JHN' && timing.chapterNumber === 1 && timing.reader === 'souer') {
-      const reviewed = { 1: [10.993, 10.85], 5: [28.725, 28.575] }[last.number];
-      if (reviewed && end != null && Math.abs(end - reviewed[0]) < 0.001) end = reviewed[1];
-    }
-    return { start: starts[index(first)], end };
+    const adjusted = (verse, time) => {
+      if (timing.translationId !== 'BSB' || !verse || time == null) return time;
+      const key = [timing.reader, timing.bookId, timing.chapterNumber, verse.number].join(':');
+      const gap = (window.WAY_AUDIO_GAPS || {})[key];
+      return gap && Math.abs(time - gap[0]) < .001 ? gap[1] : time;
+    };
+    return { start: adjusted(first, starts[index(first)]), end: adjusted(next, next ? starts[index(next)] : null) };
   }
   function watchAudioEnd(media, segment, finish) {
     let timer = 0;
@@ -1817,6 +1815,7 @@
   // from the first verse's start time to the start of the verse after the last.
   async function buildAudio(label) {
     const segs = [];
+    let wholeChapter = false, partial = false;
     let reader = null;
     for (const sp of refSpans(label).filter((x) => API_BOOK[x.book]).slice(0, 3)) {
       const last = Math.min(sp.c2, sp.c1 + 2);
@@ -1825,7 +1824,7 @@
         const links = json.thisChapterAudioLinks || {};
         if (!reader) reader = (TS.reader && links[TS.reader] ? TS.reader : null) || READERS.find((r) => links[r]) || Object.keys(links)[0];
         const url = links[reader];
-        if (!url) continue;
+        if (!url) { partial = true; continue; }
         const from = c === sp.c1 && sp.v1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
         let start = 0, end = null;
         const tl = (json.thisChapterAudioTimings || {})[reader];
@@ -1833,14 +1832,14 @@
           try {
             const t = await fetch(new URL(tl, 'https://bible.helloao.org/').href).then((r) => (r.ok ? r.json() : null));
             const bounds = audioBounds(json, t, from, to);
-            if (!bounds) continue;
+            if (!bounds) { partial = true; continue; }
             ({ start, end } = bounds);
-          } catch (err) { /* whole chapter */ }
-        }
+          } catch (err) { wholeChapter = true; }
+        } else wholeChapter = true;
         segs.push({ url, start, end });
       }
     }
-    return { reader, segs };
+    return { reader, segs, wholeChapter, partial };
   }
   // iPhone only lets audio start from a tap, so the first tap plays a moment of
   // silence; after that the same player may move from passage to passage.
@@ -1929,6 +1928,8 @@
     tour.segs = a.segs;
     if (tour.segs.length) {
       tSub.textContent = label + (a.reader ? ' · read by ' + a.reader.charAt(0).toUpperCase() + a.reader.slice(1) : '');
+      if (a.wholeChapter) tSub.textContent += ' · whole chapter audio (verse timing unavailable)';
+      if (a.partial) tSub.textContent += ' · some passage audio unavailable';
       playTourSeg(0);
     } else {
       if (label) tSub.textContent = label + ' · audio unavailable';
@@ -2018,9 +2019,10 @@
   });
   tourEl.addEventListener('ended', () => { if (tour && tourEl.dataset.kind === 'tour') tourSegEnd(); });
   function tourSegEnd() {
+    if (!tour || tourEl.dataset.kind !== 'tour') return;
     if (tour.k < tour.segs.length - 1) { playTourSeg(tour.k + 1); return; }
-    tourEl.pause();
     tourEl.dataset.kind = 'done';
+    tourEl.pause();
     sceneDone();
   }
   watchAudioEnd(tourEl, () => tour && tour.playing && tourEl.dataset.kind === 'tour' ? tour.segs[tour.k] : null, tourSegEnd);
@@ -2091,7 +2093,8 @@
     const r = Math.round(progress());
     if (tour.ended || r !== tour.i) { startTourAt(r); return; }
     setTourPlaying(true);
-    if (tour.segs.length) { const pr = tourEl.play(); if (pr && pr.catch) pr.catch(() => setTourPlaying(false)); }
+    if (tourEl.dataset.kind === 'done') sceneDone();
+    else if (tour.segs.length) { const pr = tourEl.play(); if (pr && pr.catch) pr.catch(() => setTourPlaying(false)); }
     else dwell(tourToken);
     if (sleepAt === 0 && TS.sleep !== '0' && TS.sleep !== 'chapter') sleepAt = Date.now() + (+TS.sleep) * 60000;
   });

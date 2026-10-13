@@ -1,0 +1,5321 @@
+{
+  "checkedAt": "2026-10-13T17:26:11.679Z",
+  "reader": "souer",
+  "complete": true,
+  "chapters": 49,
+  "bytes": 299854712,
+  "results": [
+    {
+      "scene": "word",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 1,
+      "from": 1,
+      "to": 5,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/1/audio/souer.mp3",
+      "providerStart": 5.368,
+      "providerEnd": 28.725,
+      "duration": 364.5088333333333,
+      "startScan": {
+        "time": 5.368,
+        "inSpeech": true,
+        "rms": 0.26029,
+        "gap": {
+          "from": 4.768,
+          "to": 5.308
+        },
+        "candidate": 5.228
+      },
+      "endScan": {
+        "time": 28.725,
+        "inSpeech": true,
+        "rms": 0.01298,
+        "gap": {
+          "from": 28.125,
+          "to": 28.725
+        },
+        "candidate": 28.625
+      }
+    },
+    {
+      "scene": "followers",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 1,
+      "from": 35,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/1/audio/souer.mp3",
+      "providerStart": 231.495,
+      "providerEnd": 292.143,
+      "duration": 364.5088333333333,
+      "startScan": {
+        "time": 231.495,
+        "inSpeech": true,
+        "rms": 0.07723,
+        "gap": {
+          "from": 230.895,
+          "to": 231.435
+        },
+        "candidate": 231.355
+      },
+      "endScan": {
+        "time": 292.143,
+        "inSpeech": true,
+        "rms": 0.06962,
+        "gap": {
+          "from": 291.543,
+          "to": 292.123
+        },
+        "candidate": 292.043
+      }
+    },
+    {
+      "scene": "word",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 1,
+      "from": 1,
+      "to": 1,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/1/audio/souer.mp3",
+      "providerStart": 5.368,
+      "providerEnd": 10.993,
+      "duration": 364.5088333333333,
+      "startScan": {
+        "time": 5.368,
+        "inSpeech": true,
+        "rms": 0.26029,
+        "gap": {
+          "from": 4.768,
+          "to": 5.308
+        },
+        "candidate": 5.228
+      },
+      "endScan": {
+        "time": 10.993,
+        "inSpeech": true,
+        "rms": 0.04791,
+        "gap": {
+          "from": 10.393,
+          "to": 10.963
+        },
+        "candidate": 10.883
+      }
+    },
+    {
+      "scene": "followers",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 1,
+      "from": 35,
+      "to": 51,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/1/audio/souer.mp3",
+      "providerStart": 231.495,
+      "providerEnd": null,
+      "duration": 364.5088333333333,
+      "startScan": {
+        "time": 231.495,
+        "inSpeech": true,
+        "rms": 0.07723,
+        "gap": {
+          "from": 230.895,
+          "to": 231.435
+        },
+        "candidate": 231.355
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "zechariah",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 1,
+      "from": 11,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/1/audio/souer.mp3",
+      "providerStart": 72.851,
+      "providerEnd": 126.12,
+      "duration": 495.25839583333334,
+      "startScan": {
+        "time": 72.851,
+        "inSpeech": true,
+        "rms": 0.06855,
+        "gap": {
+          "from": 72.591,
+          "to": 72.781
+        },
+        "candidate": 72.701
+      },
+      "endScan": {
+        "time": 126.12,
+        "inSpeech": false,
+        "rms": 0.00726,
+        "gap": {
+          "from": 125.52,
+          "to": 126.11
+        },
+        "candidate": 126.02
+      }
+    },
+    {
+      "scene": "annunciation",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 1,
+      "from": 30,
+      "to": 38,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/1/audio/souer.mp3",
+      "providerStart": 212.914,
+      "providerEnd": 270.381,
+      "duration": 495.25839583333334,
+      "startScan": {
+        "time": 212.914,
+        "inSpeech": true,
+        "rms": 0.06849,
+        "gap": {
+          "from": 212.314,
+          "to": 212.734
+        },
+        "candidate": 212.654
+      },
+      "endScan": {
+        "time": 270.381,
+        "inSpeech": true,
+        "rms": 0.1808,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "visitation",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 1,
+      "from": 41,
+      "to": 55,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/1/audio/souer.mp3",
+      "providerStart": 278.843,
+      "providerEnd": 358.229,
+      "duration": 495.25839583333334,
+      "startScan": {
+        "time": 278.843,
+        "inSpeech": false,
+        "rms": 0.00318,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 358.229,
+        "inSpeech": true,
+        "rms": 0.14518,
+        "gap": {
+          "from": 357.629,
+          "to": 358.209
+        },
+        "candidate": 358.129
+      }
+    },
+    {
+      "scene": "zechariah",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 1,
+      "from": 5,
+      "to": 25,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/1/audio/souer.mp3",
+      "providerStart": 30.109,
+      "providerEnd": 187.42,
+      "duration": 495.25839583333334,
+      "startScan": {
+        "time": 30.109,
+        "inSpeech": true,
+        "rms": 0.20109,
+        "gap": {
+          "from": 29.509,
+          "to": 30.059
+        },
+        "candidate": 29.979
+      },
+      "endScan": {
+        "time": 187.42,
+        "inSpeech": true,
+        "rms": 0.16613,
+        "gap": {
+          "from": 186.82,
+          "to": 187.39
+        },
+        "candidate": 187.31
+      }
+    },
+    {
+      "scene": "annunciation",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 1,
+      "from": 26,
+      "to": 38,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/1/audio/souer.mp3",
+      "providerStart": 187.42,
+      "providerEnd": 270.381,
+      "duration": 495.25839583333334,
+      "startScan": {
+        "time": 187.42,
+        "inSpeech": true,
+        "rms": 0.16613,
+        "gap": {
+          "from": 186.82,
+          "to": 187.39
+        },
+        "candidate": 187.31
+      },
+      "endScan": {
+        "time": 270.381,
+        "inSpeech": true,
+        "rms": 0.1808,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "visitation",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 1,
+      "from": 39,
+      "to": 80,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/1/audio/souer.mp3",
+      "providerStart": 270.381,
+      "providerEnd": null,
+      "duration": 495.25839583333334,
+      "startScan": {
+        "time": 270.381,
+        "inSpeech": true,
+        "rms": 0.1808,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "decree",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 1,
+      "to": 3,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 4.782,
+      "providerEnd": 18.851,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 4.782,
+        "inSpeech": true,
+        "rms": 0.09913,
+        "gap": {
+          "from": 4.182,
+          "to": 4.772
+        },
+        "candidate": 4.682
+      },
+      "endScan": {
+        "time": 18.851,
+        "inSpeech": true,
+        "rms": 0.09081,
+        "gap": {
+          "from": 18.251,
+          "to": 18.551
+        },
+        "candidate": 18.471
+      }
+    },
+    {
+      "scene": "journey",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 4,
+      "to": 5,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 18.851,
+      "providerEnd": 33.401,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 18.851,
+        "inSpeech": true,
+        "rms": 0.09081,
+        "gap": {
+          "from": 18.251,
+          "to": 18.551
+        },
+        "candidate": 18.471
+      },
+      "endScan": {
+        "time": 33.401,
+        "inSpeech": false,
+        "rms": 0.00708,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "birth",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 6,
+      "to": 7,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 33.401,
+      "providerEnd": 46.225,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 33.401,
+        "inSpeech": false,
+        "rms": 0.00708,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 46.225,
+        "inSpeech": true,
+        "rms": 0.11356,
+        "gap": {
+          "from": 45.625,
+          "to": 46.205
+        },
+        "candidate": 46.125
+      }
+    },
+    {
+      "scene": "shepherds",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 8,
+      "to": 14,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 46.225,
+      "providerEnd": 92.946,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 46.225,
+        "inSpeech": true,
+        "rms": 0.11356,
+        "gap": {
+          "from": 45.625,
+          "to": 46.205
+        },
+        "candidate": 46.125
+      },
+      "endScan": {
+        "time": 92.946,
+        "inSpeech": true,
+        "rms": 0.01453,
+        "gap": {
+          "from": 92.346,
+          "to": 92.956
+        },
+        "candidate": 92.846
+      }
+    },
+    {
+      "scene": "present",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 25,
+      "to": 32,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 160.333,
+      "providerEnd": 204.156,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 160.333,
+        "inSpeech": true,
+        "rms": 0.06607,
+        "gap": {
+          "from": 159.733,
+          "to": 160.333
+        },
+        "candidate": 160.233
+      },
+      "endScan": {
+        "time": 204.156,
+        "inSpeech": false,
+        "rms": 0.00539,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "twelve",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 46,
+      "to": 49,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 292.725,
+      "providerEnd": 321.424,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 292.725,
+        "inSpeech": true,
+        "rms": 0.02376,
+        "gap": {
+          "from": 292.125,
+          "to": 292.495
+        },
+        "candidate": 292.415
+      },
+      "endScan": {
+        "time": 321.424,
+        "inSpeech": false,
+        "rms": 0.00761,
+        "gap": {
+          "from": 320.824,
+          "to": 321.424
+        },
+        "candidate": 321.324
+      }
+    },
+    {
+      "scene": "decree",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 1,
+      "to": 3,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 4.782,
+      "providerEnd": 18.851,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 4.782,
+        "inSpeech": true,
+        "rms": 0.09913,
+        "gap": {
+          "from": 4.182,
+          "to": 4.772
+        },
+        "candidate": 4.682
+      },
+      "endScan": {
+        "time": 18.851,
+        "inSpeech": true,
+        "rms": 0.09081,
+        "gap": {
+          "from": 18.251,
+          "to": 18.551
+        },
+        "candidate": 18.471
+      }
+    },
+    {
+      "scene": "journey",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 4,
+      "to": 5,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 18.851,
+      "providerEnd": 33.401,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 18.851,
+        "inSpeech": true,
+        "rms": 0.09081,
+        "gap": {
+          "from": 18.251,
+          "to": 18.551
+        },
+        "candidate": 18.471
+      },
+      "endScan": {
+        "time": 33.401,
+        "inSpeech": false,
+        "rms": 0.00708,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "birth",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 6,
+      "to": 7,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 33.401,
+      "providerEnd": 46.225,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 33.401,
+        "inSpeech": false,
+        "rms": 0.00708,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 46.225,
+        "inSpeech": true,
+        "rms": 0.11356,
+        "gap": {
+          "from": 45.625,
+          "to": 46.205
+        },
+        "candidate": 46.125
+      }
+    },
+    {
+      "scene": "shepherds",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 11,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 67.177,
+      "providerEnd": 73.559,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 67.177,
+        "inSpeech": true,
+        "rms": 0.0529,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 73.559,
+        "inSpeech": true,
+        "rms": 0.14095,
+        "gap": {
+          "from": 72.959,
+          "to": 73.289
+        },
+        "candidate": 73.209
+      }
+    },
+    {
+      "scene": "present",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 22,
+      "to": 38,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 139.149,
+      "providerEnd": 250.616,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 139.149,
+        "inSpeech": true,
+        "rms": 0.11326,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 250.616,
+        "inSpeech": false,
+        "rms": 0.0022,
+        "gap": {
+          "from": 250.016,
+          "to": 250.636
+        },
+        "candidate": 250.516
+      }
+    },
+    {
+      "scene": "twelve",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 2,
+      "from": 41,
+      "to": 52,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/2/audio/souer.mp3",
+      "providerStart": 264.306,
+      "providerEnd": null,
+      "duration": 338.95775,
+      "startScan": {
+        "time": 264.306,
+        "inSpeech": true,
+        "rms": 0.21125,
+        "gap": {
+          "from": 263.706,
+          "to": 264.216
+        },
+        "candidate": 264.136
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "magi",
+      "length": "key",
+      "book": "MAT",
+      "chapter": 2,
+      "from": 9,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/2/audio/souer.mp3",
+      "providerStart": 67.007,
+      "providerEnd": 93.162,
+      "duration": 203.30310416666666,
+      "startScan": {
+        "time": 67.007,
+        "inSpeech": true,
+        "rms": 0.14073,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 93.162,
+        "inSpeech": true,
+        "rms": 0.10437,
+        "gap": {
+          "from": 92.562,
+          "to": 93.112
+        },
+        "candidate": 93.032
+      }
+    },
+    {
+      "scene": "egypt",
+      "length": "key",
+      "book": "MAT",
+      "chapter": 2,
+      "from": 13,
+      "to": 15,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/2/audio/souer.mp3",
+      "providerStart": 100.308,
+      "providerEnd": 131.578,
+      "duration": 203.30310416666666,
+      "startScan": {
+        "time": 100.308,
+        "inSpeech": true,
+        "rms": 0.01376,
+        "gap": {
+          "from": 99.708,
+          "to": 100.298
+        },
+        "candidate": 100.208
+      },
+      "endScan": {
+        "time": 131.578,
+        "inSpeech": false,
+        "rms": 0.00719,
+        "gap": {
+          "from": 130.978,
+          "to": 131.368
+        },
+        "candidate": 131.288
+      }
+    },
+    {
+      "scene": "nazareth",
+      "length": "key",
+      "book": "MAT",
+      "chapter": 2,
+      "from": 19,
+      "to": 23,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/2/audio/souer.mp3",
+      "providerStart": 162.205,
+      "providerEnd": null,
+      "duration": 203.30310416666666,
+      "startScan": {
+        "time": 162.205,
+        "inSpeech": true,
+        "rms": 0.17854,
+        "gap": {
+          "from": 161.605,
+          "to": 162.095
+        },
+        "candidate": 162.015
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "magi",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 2,
+      "from": 1,
+      "to": 12,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/2/audio/souer.mp3",
+      "providerStart": 4.608,
+      "providerEnd": 100.308,
+      "duration": 203.30310416666666,
+      "startScan": {
+        "time": 4.608,
+        "inSpeech": true,
+        "rms": 0.17026,
+        "gap": {
+          "from": 4.008,
+          "to": 4.498
+        },
+        "candidate": 4.418
+      },
+      "endScan": {
+        "time": 100.308,
+        "inSpeech": true,
+        "rms": 0.01376,
+        "gap": {
+          "from": 99.708,
+          "to": 100.298
+        },
+        "candidate": 100.208
+      }
+    },
+    {
+      "scene": "egypt",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 2,
+      "from": 13,
+      "to": 18,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/2/audio/souer.mp3",
+      "providerStart": 100.308,
+      "providerEnd": 162.205,
+      "duration": 203.30310416666666,
+      "startScan": {
+        "time": 100.308,
+        "inSpeech": true,
+        "rms": 0.01376,
+        "gap": {
+          "from": 99.708,
+          "to": 100.298
+        },
+        "candidate": 100.208
+      },
+      "endScan": {
+        "time": 162.205,
+        "inSpeech": true,
+        "rms": 0.17854,
+        "gap": {
+          "from": 161.605,
+          "to": 162.095
+        },
+        "candidate": 162.015
+      }
+    },
+    {
+      "scene": "nazareth",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 2,
+      "from": 19,
+      "to": 23,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/2/audio/souer.mp3",
+      "providerStart": 162.205,
+      "providerEnd": null,
+      "duration": 203.30310416666666,
+      "startScan": {
+        "time": 162.205,
+        "inSpeech": true,
+        "rms": 0.17854,
+        "gap": {
+          "from": 161.605,
+          "to": 162.095
+        },
+        "candidate": 162.015
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "rulers",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 3,
+      "from": 1,
+      "to": 2,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/3/audio/souer.mp3",
+      "providerStart": 4.789,
+      "providerEnd": 26.76,
+      "duration": 287.410125,
+      "startScan": {
+        "time": 4.789,
+        "inSpeech": true,
+        "rms": 0.18523,
+        "gap": {
+          "from": 4.189,
+          "to": 4.759
+        },
+        "candidate": 4.679
+      },
+      "endScan": {
+        "time": 26.76,
+        "inSpeech": false,
+        "rms": 0.00619,
+        "gap": {
+          "from": 26.16,
+          "to": 26.73
+        },
+        "candidate": 26.65
+      }
+    },
+    {
+      "scene": "rulers",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 3,
+      "from": 1,
+      "to": 2,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/3/audio/souer.mp3",
+      "providerStart": 4.789,
+      "providerEnd": 26.76,
+      "duration": 287.410125,
+      "startScan": {
+        "time": 4.789,
+        "inSpeech": true,
+        "rms": 0.18523,
+        "gap": {
+          "from": 4.189,
+          "to": 4.759
+        },
+        "candidate": 4.679
+      },
+      "endScan": {
+        "time": 26.76,
+        "inSpeech": false,
+        "rms": 0.00619,
+        "gap": {
+          "from": 26.16,
+          "to": 26.73
+        },
+        "candidate": 26.65
+      }
+    },
+    {
+      "scene": "baptism",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 9,
+      "to": 10,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 63.513,
+      "providerEnd": 78.308,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 63.513,
+        "inSpeech": true,
+        "rms": 0.20288,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 78.308,
+        "inSpeech": true,
+        "rms": 0.07891,
+        "gap": {
+          "from": 77.828,
+          "to": 78.268
+        },
+        "candidate": 78.188
+      }
+    },
+    {
+      "scene": "voice",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 11,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 78.308,
+      "providerEnd": 85.075,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 78.308,
+        "inSpeech": true,
+        "rms": 0.07891,
+        "gap": {
+          "from": 77.828,
+          "to": 78.268
+        },
+        "candidate": 78.188
+      },
+      "endScan": {
+        "time": 85.075,
+        "inSpeech": true,
+        "rms": 0.11596,
+        "gap": {
+          "from": 84.475,
+          "to": 84.855
+        },
+        "candidate": 84.775
+      }
+    },
+    {
+      "scene": "fishers",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 14,
+      "to": 18,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 97.305,
+      "providerEnd": 128.957,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 97.305,
+        "inSpeech": true,
+        "rms": 0.13377,
+        "gap": {
+          "from": 96.705,
+          "to": 97.185
+        },
+        "candidate": 97.105
+      },
+      "endScan": {
+        "time": 128.957,
+        "inSpeech": true,
+        "rms": 0.0583,
+        "gap": {
+          "from": 128.357,
+          "to": 128.877
+        },
+        "candidate": 128.797
+      }
+    },
+    {
+      "scene": "firstday",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 29,
+      "to": 34,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 202.952,
+      "providerEnd": 242.895,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 202.952,
+        "inSpeech": true,
+        "rms": 0.12647,
+        "gap": {
+          "from": 202.352,
+          "to": 202.902
+        },
+        "candidate": 202.822
+      },
+      "endScan": {
+        "time": 242.895,
+        "inSpeech": true,
+        "rms": 0.10708,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "baptism",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 9,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 63.513,
+      "providerEnd": 85.075,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 63.513,
+        "inSpeech": true,
+        "rms": 0.20288,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 85.075,
+        "inSpeech": true,
+        "rms": 0.11596,
+        "gap": {
+          "from": 84.475,
+          "to": 84.855
+        },
+        "candidate": 84.775
+      }
+    },
+    {
+      "scene": "voice",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 11,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 78.308,
+      "providerEnd": 85.075,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 78.308,
+        "inSpeech": true,
+        "rms": 0.07891,
+        "gap": {
+          "from": 77.828,
+          "to": 78.268
+        },
+        "candidate": 78.188
+      },
+      "endScan": {
+        "time": 85.075,
+        "inSpeech": true,
+        "rms": 0.11596,
+        "gap": {
+          "from": 84.475,
+          "to": 84.855
+        },
+        "candidate": 84.775
+      }
+    },
+    {
+      "scene": "fishers",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 14,
+      "to": 20,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 97.305,
+      "providerEnd": 144.895,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 97.305,
+        "inSpeech": true,
+        "rms": 0.13377,
+        "gap": {
+          "from": 96.705,
+          "to": 97.185
+        },
+        "candidate": 97.105
+      },
+      "endScan": {
+        "time": 144.895,
+        "inSpeech": true,
+        "rms": 0.04317,
+        "gap": {
+          "from": 144.525,
+          "to": 144.845
+        },
+        "candidate": 144.765
+      }
+    },
+    {
+      "scene": "firstday",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 1,
+      "from": 21,
+      "to": 34,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/1/audio/souer.mp3",
+      "providerStart": 144.895,
+      "providerEnd": 242.895,
+      "duration": 320.8054375,
+      "startScan": {
+        "time": 144.895,
+        "inSpeech": true,
+        "rms": 0.04317,
+        "gap": {
+          "from": 144.525,
+          "to": 144.845
+        },
+        "candidate": 144.765
+      },
+      "endScan": {
+        "time": 242.895,
+        "inSpeech": true,
+        "rms": 0.10708,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "wilderness",
+      "length": "key",
+      "book": "MAT",
+      "chapter": 4,
+      "from": 1,
+      "to": 4,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/4/audio/souer.mp3",
+      "providerStart": 4.924,
+      "providerEnd": 30.62,
+      "duration": 196.54575,
+      "startScan": {
+        "time": 4.924,
+        "inSpeech": true,
+        "rms": 0.03591,
+        "gap": {
+          "from": 4.324,
+          "to": 4.864
+        },
+        "candidate": 4.784
+      },
+      "endScan": {
+        "time": 30.62,
+        "inSpeech": true,
+        "rms": 0.05284,
+        "gap": {
+          "from": 30.02,
+          "to": 30.56
+        },
+        "candidate": 30.48
+      }
+    },
+    {
+      "scene": "wilderness",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 4,
+      "from": 1,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/4/audio/souer.mp3",
+      "providerStart": 4.924,
+      "providerEnd": 82.073,
+      "duration": 196.54575,
+      "startScan": {
+        "time": 4.924,
+        "inSpeech": true,
+        "rms": 0.03591,
+        "gap": {
+          "from": 4.324,
+          "to": 4.864
+        },
+        "candidate": 4.784
+      },
+      "endScan": {
+        "time": 82.073,
+        "inSpeech": true,
+        "rms": 0.04609,
+        "gap": {
+          "from": 81.473,
+          "to": 82.063
+        },
+        "candidate": 81.973
+      }
+    },
+    {
+      "scene": "cana",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 2,
+      "from": 6,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/2/audio/souer.mp3",
+      "providerStart": 31.482,
+      "providerEnd": 85.506,
+      "duration": 180.7419375,
+      "startScan": {
+        "time": 31.482,
+        "inSpeech": true,
+        "rms": 0.10217,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 85.506,
+        "inSpeech": true,
+        "rms": 0.15644,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "zeal",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 2,
+      "from": 13,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/2/audio/souer.mp3",
+      "providerStart": 93.031,
+      "providerEnd": 128.798,
+      "duration": 180.7419375,
+      "startScan": {
+        "time": 93.031,
+        "inSpeech": false,
+        "rms": 0.00467,
+        "gap": {
+          "from": 92.431,
+          "to": 92.751
+        },
+        "candidate": 92.671
+      },
+      "endScan": {
+        "time": 128.798,
+        "inSpeech": true,
+        "rms": 0.14843,
+        "gap": {
+          "from": 128.198,
+          "to": 128.738
+        },
+        "candidate": 128.658
+      }
+    },
+    {
+      "scene": "cana",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 2,
+      "from": 1,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/2/audio/souer.mp3",
+      "providerStart": 5.083,
+      "providerEnd": 85.506,
+      "duration": 180.7419375,
+      "startScan": {
+        "time": 5.083,
+        "inSpeech": true,
+        "rms": 0.14915,
+        "gap": {
+          "from": 4.483,
+          "to": 5.043
+        },
+        "candidate": 4.963
+      },
+      "endScan": {
+        "time": 85.506,
+        "inSpeech": true,
+        "rms": 0.15644,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "zeal",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 2,
+      "from": 13,
+      "to": 22,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/2/audio/souer.mp3",
+      "providerStart": 93.031,
+      "providerEnd": 162.439,
+      "duration": 180.7419375,
+      "startScan": {
+        "time": 93.031,
+        "inSpeech": false,
+        "rms": 0.00467,
+        "gap": {
+          "from": 92.431,
+          "to": 92.751
+        },
+        "candidate": 92.671
+      },
+      "endScan": {
+        "time": 162.439,
+        "inSpeech": false,
+        "rms": 0.00227,
+        "gap": {
+          "from": 161.839,
+          "to": 162.459
+        },
+        "candidate": 162.339
+      }
+    },
+    {
+      "scene": "nicodemus",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 3,
+      "from": 1,
+      "to": 5,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/3/audio/souer.mp3",
+      "providerStart": 5.146,
+      "providerEnd": 46.304,
+      "duration": 272.208625,
+      "startScan": {
+        "time": 5.146,
+        "inSpeech": true,
+        "rms": 0.06087,
+        "gap": {
+          "from": 4.546,
+          "to": 5.146
+        },
+        "candidate": 5.046
+      },
+      "endScan": {
+        "time": 46.304,
+        "inSpeech": false,
+        "rms": 0.00973,
+        "gap": {
+          "from": 45.704,
+          "to": 46.284
+        },
+        "candidate": 46.204
+      }
+    },
+    {
+      "scene": "so-loved",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 3,
+      "from": 16,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/3/audio/souer.mp3",
+      "providerStart": 106.784,
+      "providerEnd": 122.753,
+      "duration": 272.208625,
+      "startScan": {
+        "time": 106.784,
+        "inSpeech": false,
+        "rms": 0.00743,
+        "gap": {
+          "from": 106.184,
+          "to": 106.514
+        },
+        "candidate": 106.434
+      },
+      "endScan": {
+        "time": 122.753,
+        "inSpeech": true,
+        "rms": 0.02409,
+        "gap": {
+          "from": 122.153,
+          "to": 122.723
+        },
+        "candidate": 122.643
+      }
+    },
+    {
+      "scene": "nicodemus",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 3,
+      "from": 1,
+      "to": 21,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/3/audio/souer.mp3",
+      "providerStart": 5.146,
+      "providerEnd": 160.821,
+      "duration": 272.208625,
+      "startScan": {
+        "time": 5.146,
+        "inSpeech": true,
+        "rms": 0.06087,
+        "gap": {
+          "from": 4.546,
+          "to": 5.146
+        },
+        "candidate": 5.046
+      },
+      "endScan": {
+        "time": 160.821,
+        "inSpeech": true,
+        "rms": 0.13808,
+        "gap": {
+          "from": 160.221,
+          "to": 160.721
+        },
+        "candidate": 160.641
+      }
+    },
+    {
+      "scene": "so-loved",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 3,
+      "from": 16,
+      "to": 16,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/3/audio/souer.mp3",
+      "providerStart": 106.784,
+      "providerEnd": 116.289,
+      "duration": 272.208625,
+      "startScan": {
+        "time": 106.784,
+        "inSpeech": false,
+        "rms": 0.00743,
+        "gap": {
+          "from": 106.184,
+          "to": 106.514
+        },
+        "candidate": 106.434
+      },
+      "endScan": {
+        "time": 116.289,
+        "inSpeech": false,
+        "rms": 0.0062,
+        "gap": {
+          "from": 115.689,
+          "to": 116.289
+        },
+        "candidate": 116.189
+      }
+    },
+    {
+      "scene": "samaria",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 4,
+      "from": 7,
+      "to": 10,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/4/audio/souer.mp3",
+      "providerStart": 39.313,
+      "providerEnd": 68.905,
+      "duration": 386.750875,
+      "startScan": {
+        "time": 39.313,
+        "inSpeech": false,
+        "rms": 0.0057,
+        "gap": {
+          "from": 38.713,
+          "to": 39.123
+        },
+        "candidate": 39.043
+      },
+      "endScan": {
+        "time": 68.905,
+        "inSpeech": true,
+        "rms": 0.09744,
+        "gap": {
+          "from": 68.305,
+          "to": 68.645
+        },
+        "candidate": 68.565
+      }
+    },
+    {
+      "scene": "water",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 4,
+      "from": 13,
+      "to": 14,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/4/audio/souer.mp3",
+      "providerStart": 85.177,
+      "providerEnd": 101.183,
+      "duration": 386.750875,
+      "startScan": {
+        "time": 85.177,
+        "inSpeech": true,
+        "rms": 0.07606,
+        "gap": {
+          "from": 84.577,
+          "to": 85.097
+        },
+        "candidate": 85.017
+      },
+      "endScan": {
+        "time": 101.183,
+        "inSpeech": false,
+        "rms": 0.00798,
+        "gap": {
+          "from": 100.583,
+          "to": 101.193
+        },
+        "candidate": 101.083
+      }
+    },
+    {
+      "scene": "samaria",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 4,
+      "from": 1,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/4/audio/souer.mp3",
+      "providerStart": 5.211,
+      "providerEnd": 296.175,
+      "duration": 386.750875,
+      "startScan": {
+        "time": 5.211,
+        "inSpeech": false,
+        "rms": 0.00107,
+        "gap": {
+          "from": 4.611,
+          "to": 5.231
+        },
+        "candidate": 5.111
+      },
+      "endScan": {
+        "time": 296.175,
+        "inSpeech": true,
+        "rms": 0.1615,
+        "gap": {
+          "from": 295.575,
+          "to": 296.075
+        },
+        "candidate": 295.995
+      }
+    },
+    {
+      "scene": "water",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 4,
+      "from": 14,
+      "to": 14,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/4/audio/souer.mp3",
+      "providerStart": 90.439,
+      "providerEnd": 101.183,
+      "duration": 386.750875,
+      "startScan": {
+        "time": 90.439,
+        "inSpeech": false,
+        "rms": 0.00014,
+        "gap": {
+          "from": 89.889,
+          "to": 90.459
+        },
+        "candidate": 90.339
+      },
+      "endScan": {
+        "time": 101.183,
+        "inSpeech": false,
+        "rms": 0.00798,
+        "gap": {
+          "from": 100.583,
+          "to": 101.193
+        },
+        "candidate": 101.083
+      }
+    },
+    {
+      "scene": "synagogue",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 4,
+      "from": 16,
+      "to": 21,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/4/audio/souer.mp3",
+      "providerStart": 99.524,
+      "providerEnd": 145.385,
+      "duration": 321.6016666666667,
+      "startScan": {
+        "time": 99.524,
+        "inSpeech": true,
+        "rms": 0.12178,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 145.385,
+        "inSpeech": true,
+        "rms": 0.19839,
+        "gap": {
+          "from": 145.035,
+          "to": 145.195
+        },
+        "candidate": 145.115
+      }
+    },
+    {
+      "scene": "synagogue",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 4,
+      "from": 16,
+      "to": 30,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/4/audio/souer.mp3",
+      "providerStart": 99.524,
+      "providerEnd": 210.495,
+      "duration": 321.6016666666667,
+      "startScan": {
+        "time": 99.524,
+        "inSpeech": true,
+        "rms": 0.12178,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 210.495,
+        "inSpeech": true,
+        "rms": 0.08286,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "bethesda",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 5,
+      "from": 5,
+      "to": 10,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/5/audio/souer.mp3",
+      "providerStart": 28.009,
+      "providerEnd": 71.632,
+      "duration": 347.24752083333334,
+      "startScan": {
+        "time": 28.009,
+        "inSpeech": true,
+        "rms": 0.21181,
+        "gap": {
+          "from": 27.649,
+          "to": 27.899
+        },
+        "candidate": 27.819
+      },
+      "endScan": {
+        "time": 71.632,
+        "inSpeech": false,
+        "rms": 0.00109,
+        "gap": {
+          "from": 71.032,
+          "to": 71.582
+        },
+        "candidate": 71.502
+      }
+    },
+    {
+      "scene": "bethesda",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 5,
+      "from": 1,
+      "to": 15,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/5/audio/souer.mp3",
+      "providerStart": 5.408,
+      "providerEnd": 105.121,
+      "duration": 347.24752083333334,
+      "startScan": {
+        "time": 5.408,
+        "inSpeech": true,
+        "rms": 0.108,
+        "gap": {
+          "from": 4.808,
+          "to": 5.308
+        },
+        "candidate": 5.228
+      },
+      "endScan": {
+        "time": 105.121,
+        "inSpeech": true,
+        "rms": 0.08117,
+        "gap": {
+          "from": 104.861,
+          "to": 105.111
+        },
+        "candidate": 105.021
+      }
+    },
+    {
+      "scene": "roof",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 2,
+      "from": 9,
+      "to": 12,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/2/audio/souer.mp3",
+      "providerStart": 58.066,
+      "providerEnd": 90.397,
+      "duration": 227.01,
+      "startScan": {
+        "time": 58.066,
+        "inSpeech": false,
+        "rms": 0.00314,
+        "gap": {
+          "from": 57.596,
+          "to": 58.076
+        },
+        "candidate": 57.966
+      },
+      "endScan": {
+        "time": 90.397,
+        "inSpeech": true,
+        "rms": 0.19237,
+        "gap": {
+          "from": 89.797,
+          "to": 90.297
+        },
+        "candidate": 90.217
+      }
+    },
+    {
+      "scene": "levi",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 2,
+      "from": 14,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/2/audio/souer.mp3",
+      "providerStart": 96.759,
+      "providerEnd": 136.559,
+      "duration": 227.01,
+      "startScan": {
+        "time": 96.759,
+        "inSpeech": true,
+        "rms": 0.18773,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 136.559,
+        "inSpeech": true,
+        "rms": 0.06441,
+        "gap": {
+          "from": 135.959,
+          "to": 136.549
+        },
+        "candidate": 136.459
+      }
+    },
+    {
+      "scene": "roof",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 2,
+      "from": 1,
+      "to": 12,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/2/audio/souer.mp3",
+      "providerStart": 4.287,
+      "providerEnd": 90.397,
+      "duration": 227.01,
+      "startScan": {
+        "time": 4.287,
+        "inSpeech": true,
+        "rms": 0.06607,
+        "gap": {
+          "from": 3.687,
+          "to": 4.217
+        },
+        "candidate": 4.137
+      },
+      "endScan": {
+        "time": 90.397,
+        "inSpeech": true,
+        "rms": 0.19237,
+        "gap": {
+          "from": 89.797,
+          "to": 90.297
+        },
+        "candidate": 90.217
+      }
+    },
+    {
+      "scene": "levi",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 2,
+      "from": 13,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/2/audio/souer.mp3",
+      "providerStart": 90.397,
+      "providerEnd": 136.559,
+      "duration": 227.01,
+      "startScan": {
+        "time": 90.397,
+        "inSpeech": true,
+        "rms": 0.19237,
+        "gap": {
+          "from": 89.797,
+          "to": 90.297
+        },
+        "candidate": 90.217
+      },
+      "endScan": {
+        "time": 136.559,
+        "inSpeech": true,
+        "rms": 0.06441,
+        "gap": {
+          "from": 135.959,
+          "to": 136.549
+        },
+        "candidate": 136.459
+      }
+    },
+    {
+      "scene": "sermon",
+      "length": "key",
+      "book": "MAT",
+      "chapter": 5,
+      "from": 1,
+      "to": 10,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/5/audio/souer.mp3",
+      "providerStart": 5.109,
+      "providerEnd": 51.383,
+      "duration": 354.49685416666665,
+      "startScan": {
+        "time": 5.109,
+        "inSpeech": false,
+        "rms": 0.00667,
+        "gap": {
+          "from": 4.509,
+          "to": 5.109
+        },
+        "candidate": 5.009
+      },
+      "endScan": {
+        "time": 51.383,
+        "inSpeech": true,
+        "rms": 0.02354,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "sermon",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 5,
+      "from": 1,
+      "to": 48,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/5/audio/souer.mp3",
+      "providerStart": 5.109,
+      "providerEnd": null,
+      "duration": 354.49685416666665,
+      "startScan": {
+        "time": 5.109,
+        "inSpeech": false,
+        "rms": 0.00667,
+        "gap": {
+          "from": 4.509,
+          "to": 5.109
+        },
+        "candidate": 5.009
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "nain",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 7,
+      "from": 11,
+      "to": 15,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/7/audio/souer.mp3",
+      "providerStart": 79.275,
+      "providerEnd": 117.834,
+      "duration": 390.63652083333335,
+      "startScan": {
+        "time": 79.275,
+        "inSpeech": true,
+        "rms": 0.09454,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 117.834,
+        "inSpeech": true,
+        "rms": 0.11446,
+        "gap": {
+          "from": 117.234,
+          "to": 117.614
+        },
+        "candidate": 117.534
+      }
+    },
+    {
+      "scene": "nain",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 7,
+      "from": 1,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/7/audio/souer.mp3",
+      "providerStart": 4.829,
+      "providerEnd": 133.136,
+      "duration": 390.63652083333335,
+      "startScan": {
+        "time": 4.829,
+        "inSpeech": false,
+        "rms": 0.00847,
+        "gap": {
+          "from": 4.229,
+          "to": 4.809
+        },
+        "candidate": 4.729
+      },
+      "endScan": {
+        "time": 133.136,
+        "inSpeech": true,
+        "rms": 0.05305,
+        "gap": {
+          "from": 132.536,
+          "to": 133.076
+        },
+        "candidate": 132.996
+      }
+    },
+    {
+      "scene": "parables",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 4,
+      "from": 26,
+      "to": 32,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/4/audio/souer.mp3",
+      "providerStart": 176.772,
+      "providerEnd": 223.599,
+      "duration": 287.31095833333336,
+      "startScan": {
+        "time": 176.772,
+        "inSpeech": true,
+        "rms": 0.04624,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 223.599,
+        "inSpeech": true,
+        "rms": 0.16318,
+        "gap": {
+          "from": 222.999,
+          "to": 223.559
+        },
+        "candidate": 223.479
+      }
+    },
+    {
+      "scene": "gerasenes",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 4,
+      "from": 37,
+      "to": 41,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/4/audio/souer.mp3",
+      "providerStart": 249.859,
+      "providerEnd": null,
+      "duration": 287.31095833333336,
+      "startScan": {
+        "time": 249.859,
+        "inSpeech": true,
+        "rms": 0.09223,
+        "gap": {
+          "from": 249.259,
+          "to": 249.769
+        },
+        "candidate": 249.689
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "parables",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 4,
+      "from": 1,
+      "to": 34,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/4/audio/souer.mp3",
+      "providerStart": 4.223,
+      "providerEnd": 237.051,
+      "duration": 287.31095833333336,
+      "startScan": {
+        "time": 4.223,
+        "inSpeech": true,
+        "rms": 0.19963,
+        "gap": {
+          "from": 3.623,
+          "to": 4.153
+        },
+        "candidate": 4.073
+      },
+      "endScan": {
+        "time": 237.051,
+        "inSpeech": true,
+        "rms": 0.01053,
+        "gap": {
+          "from": 236.771,
+          "to": 237.051
+        },
+        "candidate": 236.951
+      }
+    },
+    {
+      "scene": "gerasenes",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 4,
+      "from": 35,
+      "to": 41,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/4/audio/souer.mp3",
+      "providerStart": 237.051,
+      "providerEnd": null,
+      "duration": 287.31095833333336,
+      "startScan": {
+        "time": 237.051,
+        "inSpeech": true,
+        "rms": 0.01053,
+        "gap": {
+          "from": 236.771,
+          "to": 237.051
+        },
+        "candidate": 236.951
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "jairus",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 5,
+      "from": 35,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/5/audio/souer.mp3",
+      "providerStart": 225.757,
+      "providerEnd": 286.873,
+      "duration": 294.28616666666665,
+      "startScan": {
+        "time": 225.757,
+        "inSpeech": false,
+        "rms": 0.00169,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 286.873,
+        "inSpeech": true,
+        "rms": 0.12912,
+        "gap": {
+          "from": 286.273,
+          "to": 286.783
+        },
+        "candidate": 286.703
+      }
+    },
+    {
+      "scene": "gerasenes",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 5,
+      "from": 1,
+      "to": 20,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/5/audio/souer.mp3",
+      "providerStart": 4.347,
+      "providerEnd": 137.855,
+      "duration": 294.28616666666665,
+      "startScan": {
+        "time": 4.347,
+        "inSpeech": true,
+        "rms": 0.14826,
+        "gap": {
+          "from": 3.747,
+          "to": 4.317
+        },
+        "candidate": 4.237
+      },
+      "endScan": {
+        "time": 137.855,
+        "inSpeech": false,
+        "rms": 0.00545,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "jairus",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 5,
+      "from": 21,
+      "to": 43,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/5/audio/souer.mp3",
+      "providerStart": 137.855,
+      "providerEnd": null,
+      "duration": 294.28616666666665,
+      "startScan": {
+        "time": 137.855,
+        "inSpeech": false,
+        "rms": 0.00545,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "twelve-sent",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 7,
+      "to": 13,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 55.458,
+      "providerEnd": 96.714,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 55.458,
+        "inSpeech": true,
+        "rms": 0.04321,
+        "gap": {
+          "from": 55.018,
+          "to": 55.398
+        },
+        "candidate": 55.318
+      },
+      "endScan": {
+        "time": 96.714,
+        "inSpeech": true,
+        "rms": 0.071,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "john",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 26,
+      "to": 29,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 192.41,
+      "providerEnd": 218.884,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 192.41,
+        "inSpeech": true,
+        "rms": 0.0387,
+        "gap": {
+          "from": 191.81,
+          "to": 192.4
+        },
+        "candidate": 192.31
+      },
+      "endScan": {
+        "time": 218.884,
+        "inSpeech": true,
+        "rms": 0.13389,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "loaves",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 41,
+      "to": 44,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 299.198,
+      "providerEnd": 322.731,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 299.198,
+        "inSpeech": true,
+        "rms": 0.02682,
+        "gap": {
+          "from": 298.598,
+          "to": 298.908
+        },
+        "candidate": 298.828
+      },
+      "endScan": {
+        "time": 322.731,
+        "inSpeech": true,
+        "rms": 0.17503,
+        "gap": {
+          "from": 322.131,
+          "to": 322.671
+        },
+        "candidate": 322.591
+      }
+    },
+    {
+      "scene": "walking",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 47,
+      "to": 52,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 334.454,
+      "providerEnd": 377.21,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 334.454,
+        "inSpeech": false,
+        "rms": 0.00401,
+        "gap": {
+          "from": 333.854,
+          "to": 334.274
+        },
+        "candidate": 334.194
+      },
+      "endScan": {
+        "time": 377.21,
+        "inSpeech": false,
+        "rms": 0.0028,
+        "gap": {
+          "from": 376.61,
+          "to": 377.22
+        },
+        "candidate": 377.11
+      }
+    },
+    {
+      "scene": "twelve-sent",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 7,
+      "to": 13,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 55.458,
+      "providerEnd": 96.714,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 55.458,
+        "inSpeech": true,
+        "rms": 0.04321,
+        "gap": {
+          "from": 55.018,
+          "to": 55.398
+        },
+        "candidate": 55.318
+      },
+      "endScan": {
+        "time": 96.714,
+        "inSpeech": true,
+        "rms": 0.071,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "john",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 14,
+      "to": 29,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 96.714,
+      "providerEnd": 218.884,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 96.714,
+        "inSpeech": true,
+        "rms": 0.071,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 218.884,
+        "inSpeech": true,
+        "rms": 0.13389,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "loaves",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 30,
+      "to": 44,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 218.884,
+      "providerEnd": 322.731,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 218.884,
+        "inSpeech": true,
+        "rms": 0.13389,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 322.731,
+        "inSpeech": true,
+        "rms": 0.17503,
+        "gap": {
+          "from": 322.131,
+          "to": 322.671
+        },
+        "candidate": 322.591
+      }
+    },
+    {
+      "scene": "walking",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 6,
+      "from": 45,
+      "to": 52,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/6/audio/souer.mp3",
+      "providerStart": 322.731,
+      "providerEnd": 377.21,
+      "duration": 403.29170833333336,
+      "startScan": {
+        "time": 322.731,
+        "inSpeech": true,
+        "rms": 0.17503,
+        "gap": {
+          "from": 322.131,
+          "to": 322.671
+        },
+        "candidate": 322.591
+      },
+      "endScan": {
+        "time": 377.21,
+        "inSpeech": false,
+        "rms": 0.0028,
+        "gap": {
+          "from": 376.61,
+          "to": 377.22
+        },
+        "candidate": 377.11
+      }
+    },
+    {
+      "scene": "bread",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 6,
+      "from": 32,
+      "to": 35,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/6/audio/souer.mp3",
+      "providerStart": 230.11,
+      "providerEnd": 259.05,
+      "duration": 502.83158333333336,
+      "startScan": {
+        "time": 230.11,
+        "inSpeech": true,
+        "rms": 0.04634,
+        "gap": {
+          "from": 229.51,
+          "to": 230
+        },
+        "candidate": 229.92
+      },
+      "endScan": {
+        "time": 259.05,
+        "inSpeech": true,
+        "rms": 0.0177,
+        "gap": {
+          "from": 258.45,
+          "to": 258.98
+        },
+        "candidate": 258.9
+      }
+    },
+    {
+      "scene": "bread",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 6,
+      "from": 35,
+      "to": 35,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/6/audio/souer.mp3",
+      "providerStart": 250.205,
+      "providerEnd": 259.05,
+      "duration": 502.83158333333336,
+      "startScan": {
+        "time": 250.205,
+        "inSpeech": true,
+        "rms": 0.06181,
+        "gap": {
+          "from": 249.605,
+          "to": 249.935
+        },
+        "candidate": 249.855
+      },
+      "endScan": {
+        "time": 259.05,
+        "inSpeech": true,
+        "rms": 0.0177,
+        "gap": {
+          "from": 258.45,
+          "to": 258.98
+        },
+        "candidate": 258.9
+      }
+    },
+    {
+      "scene": "tyre",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 7,
+      "from": 25,
+      "to": 30,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/7/audio/souer.mp3",
+      "providerStart": 175.475,
+      "providerEnd": 217.478,
+      "duration": 273.06325,
+      "startScan": {
+        "time": 175.475,
+        "inSpeech": true,
+        "rms": 0.26287,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 217.478,
+        "inSpeech": true,
+        "rms": 0.07004,
+        "gap": {
+          "from": 216.878,
+          "to": 217.428
+        },
+        "candidate": 217.348
+      }
+    },
+    {
+      "scene": "tyre",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 7,
+      "from": 24,
+      "to": 37,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/7/audio/souer.mp3",
+      "providerStart": 165.725,
+      "providerEnd": null,
+      "duration": 273.06325,
+      "startScan": {
+        "time": 165.725,
+        "inSpeech": true,
+        "rms": 0.10216,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "sight",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 8,
+      "from": 22,
+      "to": 25,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/8/audio/souer.mp3",
+      "providerStart": 153.917,
+      "providerEnd": 185.338,
+      "duration": 287.5450833333333,
+      "startScan": {
+        "time": 153.917,
+        "inSpeech": false,
+        "rms": 0.0042,
+        "gap": {
+          "from": 153.427,
+          "to": 153.917
+        },
+        "candidate": 153.817
+      },
+      "endScan": {
+        "time": 185.338,
+        "inSpeech": true,
+        "rms": 0.06977,
+        "gap": {
+          "from": 184.738,
+          "to": 185.208
+        },
+        "candidate": 185.128
+      }
+    },
+    {
+      "scene": "confession",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 8,
+      "from": 27,
+      "to": 31,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/8/audio/souer.mp3",
+      "providerStart": 190.41,
+      "providerEnd": 231.924,
+      "duration": 287.5450833333333,
+      "startScan": {
+        "time": 190.41,
+        "inSpeech": true,
+        "rms": 0.04012,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 231.924,
+        "inSpeech": true,
+        "rms": 0.06334,
+        "gap": {
+          "from": 231.324,
+          "to": 231.634
+        },
+        "candidate": 231.554
+      }
+    },
+    {
+      "scene": "cross",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 8,
+      "from": 34,
+      "to": 36,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/8/audio/souer.mp3",
+      "providerStart": 248.967,
+      "providerEnd": 272.087,
+      "duration": 287.5450833333333,
+      "startScan": {
+        "time": 248.967,
+        "inSpeech": true,
+        "rms": 0.04043,
+        "gap": {
+          "from": 248.367,
+          "to": 248.927
+        },
+        "candidate": 248.847
+      },
+      "endScan": {
+        "time": 272.087,
+        "inSpeech": true,
+        "rms": 0.14278,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "sight",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 8,
+      "from": 22,
+      "to": 26,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/8/audio/souer.mp3",
+      "providerStart": 153.917,
+      "providerEnd": 190.41,
+      "duration": 287.5450833333333,
+      "startScan": {
+        "time": 153.917,
+        "inSpeech": false,
+        "rms": 0.0042,
+        "gap": {
+          "from": 153.427,
+          "to": 153.917
+        },
+        "candidate": 153.817
+      },
+      "endScan": {
+        "time": 190.41,
+        "inSpeech": true,
+        "rms": 0.04012,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "confession",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 8,
+      "from": 27,
+      "to": 38,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/8/audio/souer.mp3",
+      "providerStart": 190.41,
+      "providerEnd": null,
+      "duration": 287.5450833333333,
+      "startScan": {
+        "time": 190.41,
+        "inSpeech": true,
+        "rms": 0.04012,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "cross",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 8,
+      "from": 34,
+      "to": 34,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/8/audio/souer.mp3",
+      "providerStart": 248.967,
+      "providerEnd": 259.937,
+      "duration": 287.5450833333333,
+      "startScan": {
+        "time": 248.967,
+        "inSpeech": true,
+        "rms": 0.04043,
+        "gap": {
+          "from": 248.367,
+          "to": 248.927
+        },
+        "candidate": 248.847
+      },
+      "endScan": {
+        "time": 259.937,
+        "inSpeech": false,
+        "rms": 0.00266,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "transfig",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 9,
+      "from": 2,
+      "to": 7,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/9/audio/souer.mp3",
+      "providerStart": 14.123,
+      "providerEnd": 57.279,
+      "duration": 356.592625,
+      "startScan": {
+        "time": 14.123,
+        "inSpeech": true,
+        "rms": 0.14531,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 57.279,
+        "inSpeech": true,
+        "rms": 0.07937,
+        "gap": {
+          "from": 56.679,
+          "to": 57.209
+        },
+        "candidate": 57.129
+      }
+    },
+    {
+      "scene": "confession",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 9,
+      "from": 1,
+      "to": 1,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/9/audio/souer.mp3",
+      "providerStart": 4.481,
+      "providerEnd": 14.123,
+      "duration": 356.592625,
+      "startScan": {
+        "time": 4.481,
+        "inSpeech": true,
+        "rms": 0.04415,
+        "gap": {
+          "from": 3.881,
+          "to": 4.431
+        },
+        "candidate": 4.351
+      },
+      "endScan": {
+        "time": 14.123,
+        "inSpeech": true,
+        "rms": 0.14531,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "transfig",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 9,
+      "from": 2,
+      "to": 8,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/9/audio/souer.mp3",
+      "providerStart": 14.123,
+      "providerEnd": 62.381,
+      "duration": 356.592625,
+      "startScan": {
+        "time": 14.123,
+        "inSpeech": true,
+        "rms": 0.14531,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 62.381,
+        "inSpeech": true,
+        "rms": 0.16279,
+        "gap": {
+          "from": 61.781,
+          "to": 62.121
+        },
+        "candidate": 62.041
+      }
+    },
+    {
+      "scene": "samaritan",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 10,
+      "from": 30,
+      "to": 37,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/10/audio/souer.mp3",
+      "providerStart": 231.376,
+      "providerEnd": 302.087,
+      "duration": 342.12472916666667,
+      "startScan": {
+        "time": 231.376,
+        "inSpeech": true,
+        "rms": 0.0631,
+        "gap": {
+          "from": 230.776,
+          "to": 231.326
+        },
+        "candidate": 231.246
+      },
+      "endScan": {
+        "time": 302.087,
+        "inSpeech": true,
+        "rms": 0.1626,
+        "gap": {
+          "from": 301.487,
+          "to": 301.947
+        },
+        "candidate": 301.867
+      }
+    },
+    {
+      "scene": "samaritan",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 10,
+      "from": 25,
+      "to": 37,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/10/audio/souer.mp3",
+      "providerStart": 198.945,
+      "providerEnd": 302.087,
+      "duration": 342.12472916666667,
+      "startScan": {
+        "time": 198.945,
+        "inSpeech": true,
+        "rms": 0.20619,
+        "gap": {
+          "from": 198.345,
+          "to": 198.825
+        },
+        "candidate": 198.745
+      },
+      "endScan": {
+        "time": 302.087,
+        "inSpeech": true,
+        "rms": 0.1626,
+        "gap": {
+          "from": 301.487,
+          "to": 301.947
+        },
+        "candidate": 301.867
+      }
+    },
+    {
+      "scene": "lost",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 15,
+      "from": 20,
+      "to": 24,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/15/audio/souer.mp3",
+      "providerStart": 145.834,
+      "providerEnd": 187.642,
+      "duration": 248.79470833333335,
+      "startScan": {
+        "time": 145.834,
+        "inSpeech": true,
+        "rms": 0.06123,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 187.642,
+        "inSpeech": true,
+        "rms": 0.14604,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "lost",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 15,
+      "from": 24,
+      "to": 24,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/15/audio/souer.mp3",
+      "providerStart": 178.8,
+      "providerEnd": 187.642,
+      "duration": 248.79470833333335,
+      "startScan": {
+        "time": 178.8,
+        "inSpeech": false,
+        "rms": 0.00303,
+        "gap": {
+          "from": 178.38,
+          "to": 178.81
+        },
+        "candidate": 178.7
+      },
+      "endScan": {
+        "time": 187.642,
+        "inSpeech": true,
+        "rms": 0.14604,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "ten",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 17,
+      "from": 12,
+      "to": 19,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/17/audio/souer.mp3",
+      "providerStart": 88.144,
+      "providerEnd": 136.083,
+      "duration": 259.278125,
+      "startScan": {
+        "time": 88.144,
+        "inSpeech": true,
+        "rms": 0.12521,
+        "gap": {
+          "from": 87.544,
+          "to": 87.914
+        },
+        "candidate": 87.834
+      },
+      "endScan": {
+        "time": 136.083,
+        "inSpeech": false,
+        "rms": 0.00615,
+        "gap": {
+          "from": 135.483,
+          "to": 136.073
+        },
+        "candidate": 135.983
+      }
+    },
+    {
+      "scene": "ten",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 17,
+      "from": 11,
+      "to": 19,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/17/audio/souer.mp3",
+      "providerStart": 82.162,
+      "providerEnd": 136.083,
+      "duration": 259.278125,
+      "startScan": {
+        "time": 82.162,
+        "inSpeech": false,
+        "rms": 0.00205,
+        "gap": {
+          "from": 81.562,
+          "to": 82.192
+        },
+        "candidate": 82.062
+      },
+      "endScan": {
+        "time": 136.083,
+        "inSpeech": false,
+        "rms": 0.00615,
+        "gap": {
+          "from": 135.483,
+          "to": 136.073
+        },
+        "candidate": 135.983
+      }
+    },
+    {
+      "scene": "booths",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 7,
+      "from": 37,
+      "to": 39,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/7/audio/souer.mp3",
+      "providerStart": 253.641,
+      "providerEnd": 280.506,
+      "duration": 352.83314583333333,
+      "startScan": {
+        "time": 253.641,
+        "inSpeech": true,
+        "rms": 0.1591,
+        "gap": {
+          "from": 253.041,
+          "to": 253.591
+        },
+        "candidate": 253.511
+      },
+      "endScan": {
+        "time": 280.506,
+        "inSpeech": true,
+        "rms": 0.1196,
+        "gap": {
+          "from": 279.906,
+          "to": 280.466
+        },
+        "candidate": 280.386
+      }
+    },
+    {
+      "scene": "booths",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 7,
+      "from": 1,
+      "to": 39,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/7/audio/souer.mp3",
+      "providerStart": 5.264,
+      "providerEnd": 280.506,
+      "duration": 352.83314583333333,
+      "startScan": {
+        "time": 5.264,
+        "inSpeech": true,
+        "rms": 0.14255,
+        "gap": {
+          "from": 4.664,
+          "to": 5.184
+        },
+        "candidate": 5.104
+      },
+      "endScan": {
+        "time": 280.506,
+        "inSpeech": true,
+        "rms": 0.1196,
+        "gap": {
+          "from": 279.906,
+          "to": 280.466
+        },
+        "candidate": 280.386
+      }
+    },
+    {
+      "scene": "siloam",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 9,
+      "from": 1,
+      "to": 7,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/9/audio/souer.mp3",
+      "providerStart": 5.002,
+      "providerEnd": 48.628,
+      "duration": 272.1251875,
+      "startScan": {
+        "time": 5.002,
+        "inSpeech": true,
+        "rms": 0.09577,
+        "gap": {
+          "from": 4.402,
+          "to": 4.972
+        },
+        "candidate": 4.892
+      },
+      "endScan": {
+        "time": 48.628,
+        "inSpeech": true,
+        "rms": 0.15798,
+        "gap": {
+          "from": 48.028,
+          "to": 48.538
+        },
+        "candidate": 48.458
+      }
+    },
+    {
+      "scene": "siloam",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 9,
+      "from": 1,
+      "to": 41,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/9/audio/souer.mp3",
+      "providerStart": 5.002,
+      "providerEnd": null,
+      "duration": 272.1251875,
+      "startScan": {
+        "time": 5.002,
+        "inSpeech": true,
+        "rms": 0.09577,
+        "gap": {
+          "from": 4.402,
+          "to": 4.972
+        },
+        "candidate": 4.892
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "shepherd",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 10,
+      "from": 11,
+      "to": 16,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/10/audio/souer.mp3",
+      "providerStart": 70.566,
+      "providerEnd": 112.405,
+      "duration": 271.6554791666667,
+      "startScan": {
+        "time": 70.566,
+        "inSpeech": true,
+        "rms": 0.13271,
+        "gap": {
+          "from": 69.966,
+          "to": 70.496
+        },
+        "candidate": 70.416
+      },
+      "endScan": {
+        "time": 112.405,
+        "inSpeech": false,
+        "rms": 0.00992,
+        "gap": {
+          "from": 112.175,
+          "to": 112.415
+        },
+        "candidate": 112.305
+      }
+    },
+    {
+      "scene": "dedication",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 10,
+      "from": 24,
+      "to": 30,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/10/audio/souer.mp3",
+      "providerStart": 155.9,
+      "providerEnd": 195.512,
+      "duration": 271.6554791666667,
+      "startScan": {
+        "time": 155.9,
+        "inSpeech": true,
+        "rms": 0.05157,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 195.512,
+        "inSpeech": true,
+        "rms": 0.17988,
+        "gap": {
+          "from": 194.912,
+          "to": 195.442
+        },
+        "candidate": 195.362
+      }
+    },
+    {
+      "scene": "beyond",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 10,
+      "from": 40,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/10/audio/souer.mp3",
+      "providerStart": 253.688,
+      "providerEnd": null,
+      "duration": 271.6554791666667,
+      "startScan": {
+        "time": 253.688,
+        "inSpeech": true,
+        "rms": 0.05716,
+        "gap": {
+          "from": 253.088,
+          "to": 253.658
+        },
+        "candidate": 253.578
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "shepherd",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 10,
+      "from": 1,
+      "to": 21,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/10/audio/souer.mp3",
+      "providerStart": 4.906,
+      "providerEnd": 146.556,
+      "duration": 271.6554791666667,
+      "startScan": {
+        "time": 4.906,
+        "inSpeech": true,
+        "rms": 0.04791,
+        "gap": {
+          "from": 4.306,
+          "to": 4.876
+        },
+        "candidate": 4.796
+      },
+      "endScan": {
+        "time": 146.556,
+        "inSpeech": true,
+        "rms": 0.08546,
+        "gap": {
+          "from": 145.956,
+          "to": 146.496
+        },
+        "candidate": 146.416
+      }
+    },
+    {
+      "scene": "dedication",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 10,
+      "from": 22,
+      "to": 39,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/10/audio/souer.mp3",
+      "providerStart": 146.556,
+      "providerEnd": 253.688,
+      "duration": 271.6554791666667,
+      "startScan": {
+        "time": 146.556,
+        "inSpeech": true,
+        "rms": 0.08546,
+        "gap": {
+          "from": 145.956,
+          "to": 146.496
+        },
+        "candidate": 146.416
+      },
+      "endScan": {
+        "time": 253.688,
+        "inSpeech": true,
+        "rms": 0.05716,
+        "gap": {
+          "from": 253.088,
+          "to": 253.658
+        },
+        "candidate": 253.578
+      }
+    },
+    {
+      "scene": "beyond",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 10,
+      "from": 40,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/10/audio/souer.mp3",
+      "providerStart": 253.688,
+      "providerEnd": null,
+      "duration": 271.6554791666667,
+      "startScan": {
+        "time": 253.688,
+        "inSpeech": true,
+        "rms": 0.05716,
+        "gap": {
+          "from": 253.088,
+          "to": 253.658
+        },
+        "candidate": 253.578
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "lazarus",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 11,
+      "from": 38,
+      "to": 44,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/11/audio/souer.mp3",
+      "providerStart": 229.143,
+      "providerEnd": 288.431,
+      "duration": 386.03897916666665,
+      "startScan": {
+        "time": 229.143,
+        "inSpeech": true,
+        "rms": 0.08867,
+        "gap": {
+          "from": 228.613,
+          "to": 229.063
+        },
+        "candidate": 228.983
+      },
+      "endScan": {
+        "time": 288.431,
+        "inSpeech": true,
+        "rms": 0.02476,
+        "gap": {
+          "from": 288.201,
+          "to": 288.421
+        },
+        "candidate": 288.331
+      }
+    },
+    {
+      "scene": "resurrection-life",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 11,
+      "from": 25,
+      "to": 27,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/11/audio/souer.mp3",
+      "providerStart": 145.859,
+      "providerEnd": 166.015,
+      "duration": 386.03897916666665,
+      "startScan": {
+        "time": 145.859,
+        "inSpeech": true,
+        "rms": 0.06012,
+        "gap": {
+          "from": 145.259,
+          "to": 145.759
+        },
+        "candidate": 145.679
+      },
+      "endScan": {
+        "time": 166.015,
+        "inSpeech": true,
+        "rms": 0.14554,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "ephraim",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 11,
+      "from": 53,
+      "to": 54,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/11/audio/souer.mp3",
+      "providerStart": 344.676,
+      "providerEnd": 359.953,
+      "duration": 386.03897916666665,
+      "startScan": {
+        "time": 344.676,
+        "inSpeech": true,
+        "rms": 0.09743,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 359.953,
+        "inSpeech": true,
+        "rms": 0.11948,
+        "gap": {
+          "from": 359.713,
+          "to": 359.913
+        },
+        "candidate": 359.833
+      }
+    },
+    {
+      "scene": "lazarus",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 11,
+      "from": 1,
+      "to": 44,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/11/audio/souer.mp3",
+      "providerStart": 5.16,
+      "providerEnd": 288.431,
+      "duration": 386.03897916666665,
+      "startScan": {
+        "time": 5.16,
+        "inSpeech": true,
+        "rms": 0.17348,
+        "gap": {
+          "from": 4.56,
+          "to": 5.09
+        },
+        "candidate": 5.01
+      },
+      "endScan": {
+        "time": 288.431,
+        "inSpeech": true,
+        "rms": 0.02476,
+        "gap": {
+          "from": 288.201,
+          "to": 288.421
+        },
+        "candidate": 288.331
+      }
+    },
+    {
+      "scene": "resurrection-life",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 11,
+      "from": 25,
+      "to": 25,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/11/audio/souer.mp3",
+      "providerStart": 145.859,
+      "providerEnd": 153.642,
+      "duration": 386.03897916666665,
+      "startScan": {
+        "time": 145.859,
+        "inSpeech": true,
+        "rms": 0.06012,
+        "gap": {
+          "from": 145.259,
+          "to": 145.759
+        },
+        "candidate": 145.679
+      },
+      "endScan": {
+        "time": 153.642,
+        "inSpeech": true,
+        "rms": 0.04353,
+        "gap": {
+          "from": 153.212,
+          "to": 153.602
+        },
+        "candidate": 153.522
+      }
+    },
+    {
+      "scene": "ephraim",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 11,
+      "from": 45,
+      "to": 57,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/11/audio/souer.mp3",
+      "providerStart": 288.431,
+      "providerEnd": null,
+      "duration": 386.03897916666665,
+      "startScan": {
+        "time": 288.431,
+        "inSpeech": true,
+        "rms": 0.02476,
+        "gap": {
+          "from": 288.201,
+          "to": 288.421
+        },
+        "candidate": 288.331
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "children",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 10,
+      "from": 13,
+      "to": 16,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/10/audio/souer.mp3",
+      "providerStart": 72.62,
+      "providerEnd": 103.147,
+      "duration": 380.74202083333336,
+      "startScan": {
+        "time": 72.62,
+        "inSpeech": true,
+        "rms": 0.18642,
+        "gap": {
+          "from": 72.02,
+          "to": 72.6
+        },
+        "candidate": 72.52
+      },
+      "endScan": {
+        "time": 103.147,
+        "inSpeech": true,
+        "rms": 0.19882,
+        "gap": {
+          "from": 102.547,
+          "to": 103.077
+        },
+        "candidate": 102.997
+      }
+    },
+    {
+      "scene": "bartimaeus",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 10,
+      "from": 46,
+      "to": 52,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/10/audio/souer.mp3",
+      "providerStart": 326.586,
+      "providerEnd": null,
+      "duration": 380.74202083333336,
+      "startScan": {
+        "time": 326.586,
+        "inSpeech": true,
+        "rms": 0.13605,
+        "gap": {
+          "from": 325.986,
+          "to": 326.496
+        },
+        "candidate": 326.416
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "children",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 10,
+      "from": 1,
+      "to": 31,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/10/audio/souer.mp3",
+      "providerStart": 4.223,
+      "providerEnd": 219.279,
+      "duration": 380.74202083333336,
+      "startScan": {
+        "time": 4.223,
+        "inSpeech": true,
+        "rms": 0.04358,
+        "gap": {
+          "from": 3.623,
+          "to": 4.183
+        },
+        "candidate": 4.103
+      },
+      "endScan": {
+        "time": 219.279,
+        "inSpeech": true,
+        "rms": 0.13856,
+        "gap": {
+          "from": 218.679,
+          "to": 219.159
+        },
+        "candidate": 219.079
+      }
+    },
+    {
+      "scene": "bartimaeus",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 10,
+      "from": 46,
+      "to": 52,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/10/audio/souer.mp3",
+      "providerStart": 326.586,
+      "providerEnd": null,
+      "duration": 380.74202083333336,
+      "startScan": {
+        "time": 326.586,
+        "inSpeech": true,
+        "rms": 0.13605,
+        "gap": {
+          "from": 325.986,
+          "to": 326.496
+        },
+        "candidate": 326.416
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "zacchaeus",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 19,
+      "from": 5,
+      "to": 10,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/19/audio/souer.mp3",
+      "providerStart": 27.76,
+      "providerEnd": 69.039,
+      "duration": 334.96483333333333,
+      "startScan": {
+        "time": 27.76,
+        "inSpeech": false,
+        "rms": 0.00184,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 69.039,
+        "inSpeech": false,
+        "rms": 0.00899,
+        "gap": {
+          "from": 68.439,
+          "to": 69.009
+        },
+        "candidate": 68.929
+      }
+    },
+    {
+      "scene": "entry",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 19,
+      "from": 37,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/19/audio/souer.mp3",
+      "providerStart": 245.203,
+      "providerEnd": 287.316,
+      "duration": 334.96483333333333,
+      "startScan": {
+        "time": 245.203,
+        "inSpeech": true,
+        "rms": 0.08361,
+        "gap": {
+          "from": 244.743,
+          "to": 245.193
+        },
+        "candidate": 245.103
+      },
+      "endScan": {
+        "time": 287.316,
+        "inSpeech": false,
+        "rms": 0.00374,
+        "gap": {
+          "from": 286.896,
+          "to": 287.286
+        },
+        "candidate": 287.206
+      }
+    },
+    {
+      "scene": "zacchaeus",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 19,
+      "from": 1,
+      "to": 10,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/19/audio/souer.mp3",
+      "providerStart": 5.109,
+      "providerEnd": 69.039,
+      "duration": 334.96483333333333,
+      "startScan": {
+        "time": 5.109,
+        "inSpeech": true,
+        "rms": 0.02126,
+        "gap": {
+          "from": 4.509,
+          "to": 5.109
+        },
+        "candidate": 5.009
+      },
+      "endScan": {
+        "time": 69.039,
+        "inSpeech": false,
+        "rms": 0.00899,
+        "gap": {
+          "from": 68.439,
+          "to": 69.009
+        },
+        "candidate": 68.929
+      }
+    },
+    {
+      "scene": "entry",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 19,
+      "from": 28,
+      "to": 44,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/19/audio/souer.mp3",
+      "providerStart": 197.048,
+      "providerEnd": 306.149,
+      "duration": 334.96483333333333,
+      "startScan": {
+        "time": 197.048,
+        "inSpeech": true,
+        "rms": 0.14724,
+        "gap": {
+          "from": 196.448,
+          "to": 196.948
+        },
+        "candidate": 196.868
+      },
+      "endScan": {
+        "time": 306.149,
+        "inSpeech": true,
+        "rms": 0.07951,
+        "gap": {
+          "from": 305.549,
+          "to": 306.089
+        },
+        "candidate": 306.009
+      }
+    },
+    {
+      "scene": "anoint",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 12,
+      "from": 3,
+      "to": 7,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/12/audio/souer.mp3",
+      "providerStart": 21.364,
+      "providerEnd": 61.733,
+      "duration": 380.5381458333333,
+      "startScan": {
+        "time": 21.364,
+        "inSpeech": false,
+        "rms": 0.00876,
+        "gap": {
+          "from": 20.764,
+          "to": 21.084
+        },
+        "candidate": 21.004
+      },
+      "endScan": {
+        "time": 61.733,
+        "inSpeech": true,
+        "rms": 0.04318,
+        "gap": {
+          "from": 61.573,
+          "to": 61.733
+        },
+        "candidate": 61.633
+      }
+    },
+    {
+      "scene": "anoint",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 12,
+      "from": 1,
+      "to": 8,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/12/audio/souer.mp3",
+      "providerStart": 6.04,
+      "providerEnd": 67.422,
+      "duration": 380.5381458333333,
+      "startScan": {
+        "time": 6.04,
+        "inSpeech": true,
+        "rms": 0.10275,
+        "gap": {
+          "from": 5.44,
+          "to": 5.94
+        },
+        "candidate": 5.86
+      },
+      "endScan": {
+        "time": 67.422,
+        "inSpeech": true,
+        "rms": 0.14517,
+        "gap": {
+          "from": 66.932,
+          "to": 67.402
+        },
+        "candidate": 67.322
+      }
+    },
+    {
+      "scene": "temple",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 11,
+      "from": 15,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/11/audio/souer.mp3",
+      "providerStart": 102.903,
+      "providerEnd": 130.563,
+      "duration": 233.554,
+      "startScan": {
+        "time": 102.903,
+        "inSpeech": false,
+        "rms": 0.00934,
+        "gap": {
+          "from": 102.303,
+          "to": 102.713
+        },
+        "candidate": 102.633
+      },
+      "endScan": {
+        "time": 130.563,
+        "inSpeech": false,
+        "rms": 0.00277,
+        "gap": {
+          "from": 129.963,
+          "to": 130.423
+        },
+        "candidate": 130.343
+      }
+    },
+    {
+      "scene": "temple",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 11,
+      "from": 15,
+      "to": 18,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/11/audio/souer.mp3",
+      "providerStart": 102.903,
+      "providerEnd": 139.49,
+      "duration": 233.554,
+      "startScan": {
+        "time": 102.903,
+        "inSpeech": false,
+        "rms": 0.00934,
+        "gap": {
+          "from": 102.303,
+          "to": 102.713
+        },
+        "candidate": 102.633
+      },
+      "endScan": {
+        "time": 139.49,
+        "inSpeech": true,
+        "rms": 0.15073,
+        "gap": {
+          "from": 138.89,
+          "to": 139.45
+        },
+        "candidate": 139.37
+      }
+    },
+    {
+      "scene": "greatest",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 12,
+      "from": 28,
+      "to": 31,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/12/audio/souer.mp3",
+      "providerStart": 193.917,
+      "providerEnd": 222.788,
+      "duration": 329.45595833333334,
+      "startScan": {
+        "time": 193.917,
+        "inSpeech": true,
+        "rms": 0.12123,
+        "gap": {
+          "from": 193.317,
+          "to": 193.897
+        },
+        "candidate": 193.817
+      },
+      "endScan": {
+        "time": 222.788,
+        "inSpeech": true,
+        "rms": 0.02253,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "greatest",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 12,
+      "from": 30,
+      "to": 30,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/12/audio/souer.mp3",
+      "providerStart": 210.602,
+      "providerEnd": 216.664,
+      "duration": 329.45595833333334,
+      "startScan": {
+        "time": 210.602,
+        "inSpeech": true,
+        "rms": 0.143,
+        "gap": {
+          "from": 210.052,
+          "to": 210.502
+        },
+        "candidate": 210.422
+      },
+      "endScan": {
+        "time": 216.664,
+        "inSpeech": true,
+        "rms": 0.06952,
+        "gap": {
+          "from": 216.064,
+          "to": 216.634
+        },
+        "candidate": 216.554
+      }
+    },
+    {
+      "scene": "watch",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 13,
+      "from": 32,
+      "to": 37,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/13/audio/souer.mp3",
+      "providerStart": 223.63,
+      "providerEnd": null,
+      "duration": 265.20452083333333,
+      "startScan": {
+        "time": 223.63,
+        "inSpeech": true,
+        "rms": 0.2267,
+        "gap": {
+          "from": 223.03,
+          "to": 223.51
+        },
+        "candidate": 223.43
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "watch",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 13,
+      "from": 1,
+      "to": 37,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/13/audio/souer.mp3",
+      "providerStart": 4.601,
+      "providerEnd": null,
+      "duration": 265.20452083333333,
+      "startScan": {
+        "time": 4.601,
+        "inSpeech": true,
+        "rms": 0.15575,
+        "gap": {
+          "from": 4.001,
+          "to": 4.531
+        },
+        "candidate": 4.451
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "upper",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 22,
+      "to": 25,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 162.182,
+      "providerEnd": 189.62,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 162.182,
+        "inSpeech": true,
+        "rms": 0.01204,
+        "gap": {
+          "from": 161.882,
+          "to": 162.132
+        },
+        "candidate": 162.052
+      },
+      "endScan": {
+        "time": 189.62,
+        "inSpeech": true,
+        "rms": 0.04621,
+        "gap": {
+          "from": 189.02,
+          "to": 189.59
+        },
+        "candidate": 189.51
+      }
+    },
+    {
+      "scene": "kidron",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 26,
+      "to": 26,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 189.62,
+      "providerEnd": 194.106,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 189.62,
+        "inSpeech": true,
+        "rms": 0.04621,
+        "gap": {
+          "from": 189.02,
+          "to": 189.59
+        },
+        "candidate": 189.51
+      },
+      "endScan": {
+        "time": 194.106,
+        "inSpeech": true,
+        "rms": 0.06686,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "pray",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 32,
+      "to": 36,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 226.935,
+      "providerEnd": 262.996,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 226.935,
+        "inSpeech": true,
+        "rms": 0.10641,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 262.996,
+        "inSpeech": true,
+        "rms": 0.0358,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "arrest",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 43,
+      "to": 46,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 306.15,
+      "providerEnd": 332.956,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 306.15,
+        "inSpeech": true,
+        "rms": 0.04677,
+        "gap": {
+          "from": 305.55,
+          "to": 305.88
+        },
+        "candidate": 305.8
+      },
+      "endScan": {
+        "time": 332.956,
+        "inSpeech": true,
+        "rms": 0.11946,
+        "gap": {
+          "from": 332.496,
+          "to": 332.816
+        },
+        "candidate": 332.736
+      }
+    },
+    {
+      "scene": "upper",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 12,
+      "to": 26,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 87.273,
+      "providerEnd": 194.106,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 87.273,
+        "inSpeech": true,
+        "rms": 0.15582,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 194.106,
+        "inSpeech": true,
+        "rms": 0.06686,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "kidron",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 26,
+      "to": 26,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 189.62,
+      "providerEnd": 194.106,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 189.62,
+        "inSpeech": true,
+        "rms": 0.04621,
+        "gap": {
+          "from": 189.02,
+          "to": 189.59
+        },
+        "candidate": 189.51
+      },
+      "endScan": {
+        "time": 194.106,
+        "inSpeech": true,
+        "rms": 0.06686,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "pray",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 36,
+      "to": 36,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 253.333,
+      "providerEnd": 262.996,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 253.333,
+        "inSpeech": true,
+        "rms": 0.14713,
+        "gap": {
+          "from": 252.733,
+          "to": 253.203
+        },
+        "candidate": 253.123
+      },
+      "endScan": {
+        "time": 262.996,
+        "inSpeech": true,
+        "rms": 0.0358,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "arrest",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 43,
+      "to": 50,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 306.15,
+      "providerEnd": 356.6,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 306.15,
+        "inSpeech": true,
+        "rms": 0.04677,
+        "gap": {
+          "from": 305.55,
+          "to": 305.88
+        },
+        "candidate": 305.8
+      },
+      "endScan": {
+        "time": 356.6,
+        "inSpeech": true,
+        "rms": 0.19837,
+        "gap": {
+          "from": 356,
+          "to": 356.45
+        },
+        "candidate": 356.37
+      }
+    },
+    {
+      "scene": "trials",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 14,
+      "from": 53,
+      "to": 72,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/14/audio/souer.mp3",
+      "providerStart": 367.878,
+      "providerEnd": null,
+      "duration": 517.5496875,
+      "startScan": {
+        "time": 367.878,
+        "inSpeech": false,
+        "rms": 0.00809,
+        "gap": {
+          "from": 367.568,
+          "to": 367.848
+        },
+        "candidate": 367.768
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "kidron",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 18,
+      "from": 1,
+      "to": 1,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/18/audio/souer.mp3",
+      "providerStart": 5.9,
+      "providerEnd": 13.265,
+      "duration": 315.0955416666667,
+      "startScan": {
+        "time": 5.9,
+        "inSpeech": true,
+        "rms": 0.15043,
+        "gap": {
+          "from": 5.3,
+          "to": 5.8
+        },
+        "candidate": 5.72
+      },
+      "endScan": {
+        "time": 13.265,
+        "inSpeech": true,
+        "rms": 0.08026,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "kidron",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 18,
+      "from": 1,
+      "to": 1,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/18/audio/souer.mp3",
+      "providerStart": 5.9,
+      "providerEnd": 13.265,
+      "duration": 315.0955416666667,
+      "startScan": {
+        "time": 5.9,
+        "inSpeech": true,
+        "rms": 0.15043,
+        "gap": {
+          "from": 5.3,
+          "to": 5.8
+        },
+        "candidate": 5.72
+      },
+      "endScan": {
+        "time": 13.265,
+        "inSpeech": true,
+        "rms": 0.08026,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "trials",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 15,
+      "from": 1,
+      "to": 5,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/15/audio/souer.mp3",
+      "providerStart": 4.904,
+      "providerEnd": 36.493,
+      "duration": 311.86745833333333,
+      "startScan": {
+        "time": 4.904,
+        "inSpeech": true,
+        "rms": 0.1475,
+        "gap": {
+          "from": 4.304,
+          "to": 4.864
+        },
+        "candidate": 4.784
+      },
+      "endScan": {
+        "time": 36.493,
+        "inSpeech": true,
+        "rms": 0.19006,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "golgotha",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 15,
+      "from": 22,
+      "to": 26,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/15/audio/souer.mp3",
+      "providerStart": 135.163,
+      "providerEnd": 160.055,
+      "duration": 311.86745833333333,
+      "startScan": {
+        "time": 135.163,
+        "inSpeech": true,
+        "rms": 0.01982,
+        "gap": {
+          "from": 134.563,
+          "to": 134.923
+        },
+        "candidate": 134.843
+      },
+      "endScan": {
+        "time": 160.055,
+        "inSpeech": true,
+        "rms": 0.1295,
+        "gap": {
+          "from": 159.455,
+          "to": 159.785
+        },
+        "candidate": 159.705
+      }
+    },
+    {
+      "scene": "torn",
+      "length": "key",
+      "book": "MRK",
+      "chapter": 15,
+      "from": 37,
+      "to": 39,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/15/audio/souer.mp3",
+      "providerStart": 228.953,
+      "providerEnd": 247.162,
+      "duration": 311.86745833333333,
+      "startScan": {
+        "time": 228.953,
+        "inSpeech": false,
+        "rms": 0.00705,
+        "gap": {
+          "from": 228.353,
+          "to": 228.893
+        },
+        "candidate": 228.813
+      },
+      "endScan": {
+        "time": 247.162,
+        "inSpeech": true,
+        "rms": 0.08059,
+        "gap": {
+          "from": 246.562,
+          "to": 247.152
+        },
+        "candidate": 247.062
+      }
+    },
+    {
+      "scene": "trials",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 15,
+      "from": 1,
+      "to": 15,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/15/audio/souer.mp3",
+      "providerStart": 4.904,
+      "providerEnd": 93.018,
+      "duration": 311.86745833333333,
+      "startScan": {
+        "time": 4.904,
+        "inSpeech": true,
+        "rms": 0.1475,
+        "gap": {
+          "from": 4.304,
+          "to": 4.864
+        },
+        "candidate": 4.784
+      },
+      "endScan": {
+        "time": 93.018,
+        "inSpeech": true,
+        "rms": 0.02047,
+        "gap": {
+          "from": 92.778,
+          "to": 92.998
+        },
+        "candidate": 92.918
+      }
+    },
+    {
+      "scene": "golgotha",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 15,
+      "from": 21,
+      "to": 32,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/15/audio/souer.mp3",
+      "providerStart": 124.618,
+      "providerEnd": 195.517,
+      "duration": 311.86745833333333,
+      "startScan": {
+        "time": 124.618,
+        "inSpeech": true,
+        "rms": 0.16489,
+        "gap": {
+          "from": 124.018,
+          "to": 124.578
+        },
+        "candidate": 124.498
+      },
+      "endScan": {
+        "time": 195.517,
+        "inSpeech": true,
+        "rms": 0.01384,
+        "gap": {
+          "from": 194.917,
+          "to": 195.467
+        },
+        "candidate": 195.387
+      }
+    },
+    {
+      "scene": "torn",
+      "length": "full",
+      "book": "MRK",
+      "chapter": 15,
+      "from": 37,
+      "to": 41,
+      "url": "https://audio.bible.helloao.org/api/BSB/MRK/15/audio/souer.mp3",
+      "providerStart": 228.953,
+      "providerEnd": 266.142,
+      "duration": 311.86745833333333,
+      "startScan": {
+        "time": 228.953,
+        "inSpeech": false,
+        "rms": 0.00705,
+        "gap": {
+          "from": 228.353,
+          "to": 228.893
+        },
+        "candidate": 228.813
+      },
+      "endScan": {
+        "time": 266.142,
+        "inSpeech": true,
+        "rms": 0.15393,
+        "gap": {
+          "from": 265.542,
+          "to": 265.862
+        },
+        "candidate": 265.782
+      }
+    },
+    {
+      "scene": "sayings",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 23,
+      "from": 39,
+      "to": 43,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/23/audio/souer.mp3",
+      "providerStart": 263.482,
+      "providerEnd": 297.754,
+      "duration": 388.5036666666667,
+      "startScan": {
+        "time": 263.482,
+        "inSpeech": true,
+        "rms": 0.1351,
+        "gap": {
+          "from": 263.262,
+          "to": 263.422
+        },
+        "candidate": 263.342
+      },
+      "endScan": {
+        "time": 297.754,
+        "inSpeech": true,
+        "rms": 0.05295,
+        "gap": {
+          "from": 297.154,
+          "to": 297.684
+        },
+        "candidate": 297.604
+      }
+    },
+    {
+      "scene": "finished",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 19,
+      "from": 28,
+      "to": 30,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/19/audio/souer.mp3",
+      "providerStart": 230.751,
+      "providerEnd": 255.841,
+      "duration": 351.6338125,
+      "startScan": {
+        "time": 230.751,
+        "inSpeech": true,
+        "rms": 0.15882,
+        "gap": {
+          "from": 230.151,
+          "to": 230.661
+        },
+        "candidate": 230.581
+      },
+      "endScan": {
+        "time": 255.841,
+        "inSpeech": true,
+        "rms": 0.16445,
+        "gap": {
+          "from": 255.241,
+          "to": 255.791
+        },
+        "candidate": 255.711
+      }
+    },
+    {
+      "scene": "burial",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 19,
+      "from": 38,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/19/audio/souer.mp3",
+      "providerStart": 308.173,
+      "providerEnd": null,
+      "duration": 351.6338125,
+      "startScan": {
+        "time": 308.173,
+        "inSpeech": true,
+        "rms": 0.10463,
+        "gap": {
+          "from": 307.573,
+          "to": 308.093
+        },
+        "candidate": 308.013
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "finished",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 19,
+      "from": 30,
+      "to": 30,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/19/audio/souer.mp3",
+      "providerStart": 246.82,
+      "providerEnd": 255.841,
+      "duration": 351.6338125,
+      "startScan": {
+        "time": 246.82,
+        "inSpeech": true,
+        "rms": 0.06705,
+        "gap": {
+          "from": 246.22,
+          "to": 246.67
+        },
+        "candidate": 246.59
+      },
+      "endScan": {
+        "time": 255.841,
+        "inSpeech": true,
+        "rms": 0.16445,
+        "gap": {
+          "from": 255.241,
+          "to": 255.791
+        },
+        "candidate": 255.711
+      }
+    },
+    {
+      "scene": "burial",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 19,
+      "from": 38,
+      "to": 42,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/19/audio/souer.mp3",
+      "providerStart": 308.173,
+      "providerEnd": null,
+      "duration": 351.6338125,
+      "startScan": {
+        "time": 308.173,
+        "inSpeech": true,
+        "rms": 0.10463,
+        "gap": {
+          "from": 307.573,
+          "to": 308.093
+        },
+        "candidate": 308.013
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "guard",
+      "length": "key",
+      "book": "MAT",
+      "chapter": 27,
+      "from": 62,
+      "to": 66,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/27/audio/souer.mp3",
+      "providerStart": 411.101,
+      "providerEnd": null,
+      "duration": 449.6343125,
+      "startScan": {
+        "time": 411.101,
+        "inSpeech": true,
+        "rms": 0.07918,
+        "gap": {
+          "from": 410.501,
+          "to": 410.931
+        },
+        "candidate": 410.851
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "guard",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 27,
+      "from": 62,
+      "to": 66,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/27/audio/souer.mp3",
+      "providerStart": 411.101,
+      "providerEnd": null,
+      "duration": 449.6343125,
+      "startScan": {
+        "time": 411.101,
+        "inSpeech": true,
+        "rms": 0.07918,
+        "gap": {
+          "from": 410.501,
+          "to": 410.931
+        },
+        "candidate": 410.851
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "risen",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 24,
+      "from": 1,
+      "to": 7,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/24/audio/souer.mp3",
+      "providerStart": 5.449,
+      "providerEnd": 47.252,
+      "duration": 346.0836458333333,
+      "startScan": {
+        "time": 5.449,
+        "inSpeech": true,
+        "rms": 0.16267,
+        "gap": {
+          "from": 4.849,
+          "to": 5.409
+        },
+        "candidate": 5.329
+      },
+      "endScan": {
+        "time": 47.252,
+        "inSpeech": true,
+        "rms": 0.04336,
+        "gap": {
+          "from": 46.652,
+          "to": 47.192
+        },
+        "candidate": 47.112
+      }
+    },
+    {
+      "scene": "emmaus",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 24,
+      "from": 28,
+      "to": 32,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/24/audio/souer.mp3",
+      "providerStart": 184.227,
+      "providerEnd": 220.268,
+      "duration": 346.0836458333333,
+      "startScan": {
+        "time": 184.227,
+        "inSpeech": true,
+        "rms": 0.10018,
+        "gap": {
+          "from": 183.627,
+          "to": 184.107
+        },
+        "candidate": 184.027
+      },
+      "endScan": {
+        "time": 220.268,
+        "inSpeech": true,
+        "rms": 0.11603,
+        "gap": {
+          "from": 220.068,
+          "to": 220.258
+        },
+        "candidate": 220.168
+      }
+    },
+    {
+      "scene": "ascension",
+      "length": "key",
+      "book": "LUK",
+      "chapter": 24,
+      "from": 50,
+      "to": 53,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/24/audio/souer.mp3",
+      "providerStart": 326.98,
+      "providerEnd": null,
+      "duration": 346.0836458333333,
+      "startScan": {
+        "time": 326.98,
+        "inSpeech": true,
+        "rms": 0.08191,
+        "gap": {
+          "from": 326.79,
+          "to": 326.95
+        },
+        "candidate": 326.87
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "risen",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 24,
+      "from": 1,
+      "to": 8,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/24/audio/souer.mp3",
+      "providerStart": 5.449,
+      "providerEnd": 49.333,
+      "duration": 346.0836458333333,
+      "startScan": {
+        "time": 5.449,
+        "inSpeech": true,
+        "rms": 0.16267,
+        "gap": {
+          "from": 4.849,
+          "to": 5.409
+        },
+        "candidate": 5.329
+      },
+      "endScan": {
+        "time": 49.333,
+        "inSpeech": true,
+        "rms": 0.08171,
+        "gap": {
+          "from": 48.793,
+          "to": 49.313
+        },
+        "candidate": 49.233
+      }
+    },
+    {
+      "scene": "emmaus",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 24,
+      "from": 13,
+      "to": 35,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/24/audio/souer.mp3",
+      "providerStart": 79.195,
+      "providerEnd": 239.578,
+      "duration": 346.0836458333333,
+      "startScan": {
+        "time": 79.195,
+        "inSpeech": true,
+        "rms": 0.03027,
+        "gap": {
+          "from": 78.595,
+          "to": 79.195
+        },
+        "candidate": 79.095
+      },
+      "endScan": {
+        "time": 239.578,
+        "inSpeech": false,
+        "rms": 0.00704,
+        "gap": {
+          "from": 238.978,
+          "to": 239.588
+        },
+        "candidate": 239.478
+      }
+    },
+    {
+      "scene": "ascension",
+      "length": "full",
+      "book": "LUK",
+      "chapter": 24,
+      "from": 50,
+      "to": 53,
+      "url": "https://audio.bible.helloao.org/api/BSB/LUK/24/audio/souer.mp3",
+      "providerStart": 326.98,
+      "providerEnd": null,
+      "duration": 346.0836458333333,
+      "startScan": {
+        "time": 326.98,
+        "inSpeech": true,
+        "rms": 0.08191,
+        "gap": {
+          "from": 326.79,
+          "to": 326.95
+        },
+        "candidate": 326.87
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "mary",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 20,
+      "from": 15,
+      "to": 18,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/20/audio/souer.mp3",
+      "providerStart": 97.1,
+      "providerEnd": 139.606,
+      "duration": 251.9419375,
+      "startScan": {
+        "time": 97.1,
+        "inSpeech": true,
+        "rms": 0.04188,
+        "gap": {
+          "from": 96.55,
+          "to": 97.05
+        },
+        "candidate": 96.97
+      },
+      "endScan": {
+        "time": 139.606,
+        "inSpeech": true,
+        "rms": 0.08795,
+        "gap": {
+          "from": 139.006,
+          "to": 139.536
+        },
+        "candidate": 139.456
+      }
+    },
+    {
+      "scene": "peace",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 20,
+      "from": 19,
+      "to": 22,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/20/audio/souer.mp3",
+      "providerStart": 139.606,
+      "providerEnd": 172.604,
+      "duration": 251.9419375,
+      "startScan": {
+        "time": 139.606,
+        "inSpeech": true,
+        "rms": 0.08795,
+        "gap": {
+          "from": 139.006,
+          "to": 139.536
+        },
+        "candidate": 139.456
+      },
+      "endScan": {
+        "time": 172.604,
+        "inSpeech": true,
+        "rms": 0.09676,
+        "gap": {
+          "from": 172.004,
+          "to": 172.514
+        },
+        "candidate": 172.434
+      }
+    },
+    {
+      "scene": "thomas",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 20,
+      "from": 26,
+      "to": 29,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/20/audio/souer.mp3",
+      "providerStart": 200.02,
+      "providerEnd": 235.504,
+      "duration": 251.9419375,
+      "startScan": {
+        "time": 200.02,
+        "inSpeech": true,
+        "rms": 0.11724,
+        "gap": {
+          "from": 199.42,
+          "to": 199.99
+        },
+        "candidate": 199.91
+      },
+      "endScan": {
+        "time": 235.504,
+        "inSpeech": true,
+        "rms": 0.0803,
+        "gap": {
+          "from": 234.904,
+          "to": 235.404
+        },
+        "candidate": 235.324
+      }
+    },
+    {
+      "scene": "mary",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 20,
+      "from": 16,
+      "to": 16,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/20/audio/souer.mp3",
+      "providerStart": 110.133,
+      "providerEnd": 119.082,
+      "duration": 251.9419375,
+      "startScan": {
+        "time": 110.133,
+        "inSpeech": true,
+        "rms": 0.02589,
+        "gap": {
+          "from": 109.533,
+          "to": 110.083
+        },
+        "candidate": 110.003
+      },
+      "endScan": {
+        "time": 119.082,
+        "inSpeech": true,
+        "rms": 0.14264,
+        "gap": {
+          "from": 118.482,
+          "to": 118.992
+        },
+        "candidate": 118.912
+      }
+    },
+    {
+      "scene": "peace",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 20,
+      "from": 19,
+      "to": 23,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/20/audio/souer.mp3",
+      "providerStart": 139.606,
+      "providerEnd": 180.248,
+      "duration": 251.9419375,
+      "startScan": {
+        "time": 139.606,
+        "inSpeech": true,
+        "rms": 0.08795,
+        "gap": {
+          "from": 139.006,
+          "to": 139.536
+        },
+        "candidate": 139.456
+      },
+      "endScan": {
+        "time": 180.248,
+        "inSpeech": true,
+        "rms": 0.15082,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "thomas",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 20,
+      "from": 24,
+      "to": 29,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/20/audio/souer.mp3",
+      "providerStart": 180.248,
+      "providerEnd": 235.504,
+      "duration": 251.9419375,
+      "startScan": {
+        "time": 180.248,
+        "inSpeech": true,
+        "rms": 0.15082,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 235.504,
+        "inSpeech": true,
+        "rms": 0.0803,
+        "gap": {
+          "from": 234.904,
+          "to": 235.404
+        },
+        "candidate": 235.324
+      }
+    },
+    {
+      "scene": "breakfast",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 21,
+      "from": 9,
+      "to": 13,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/21/audio/souer.mp3",
+      "providerStart": 75.907,
+      "providerEnd": 110.694,
+      "duration": 238.93677083333333,
+      "startScan": {
+        "time": 75.907,
+        "inSpeech": true,
+        "rms": 0.01892,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": 110.694,
+        "inSpeech": true,
+        "rms": 0.06405,
+        "gap": {
+          "from": 110.094,
+          "to": 110.654
+        },
+        "candidate": 110.574
+      }
+    },
+    {
+      "scene": "sheep",
+      "length": "key",
+      "book": "JHN",
+      "chapter": 21,
+      "from": 15,
+      "to": 17,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/21/audio/souer.mp3",
+      "providerStart": 116.998,
+      "providerEnd": 162.083,
+      "duration": 238.93677083333333,
+      "startScan": {
+        "time": 116.998,
+        "inSpeech": false,
+        "rms": 0.00212,
+        "gap": {
+          "from": 116.398,
+          "to": 117.018
+        },
+        "candidate": 116.898
+      },
+      "endScan": {
+        "time": 162.083,
+        "inSpeech": true,
+        "rms": 0.03941,
+        "gap": {
+          "from": 161.483,
+          "to": 161.863
+        },
+        "candidate": 161.783
+      }
+    },
+    {
+      "scene": "breakfast",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 21,
+      "from": 1,
+      "to": 14,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/21/audio/souer.mp3",
+      "providerStart": 5.246,
+      "providerEnd": 116.998,
+      "duration": 238.93677083333333,
+      "startScan": {
+        "time": 5.246,
+        "inSpeech": true,
+        "rms": 0.12443,
+        "gap": {
+          "from": 4.646,
+          "to": 5.196
+        },
+        "candidate": 5.116
+      },
+      "endScan": {
+        "time": 116.998,
+        "inSpeech": false,
+        "rms": 0.00212,
+        "gap": {
+          "from": 116.398,
+          "to": 117.018
+        },
+        "candidate": 116.898
+      }
+    },
+    {
+      "scene": "sheep",
+      "length": "full",
+      "book": "JHN",
+      "chapter": 21,
+      "from": 15,
+      "to": 19,
+      "url": "https://audio.bible.helloao.org/api/BSB/JHN/21/audio/souer.mp3",
+      "providerStart": 116.998,
+      "providerEnd": 184.24,
+      "duration": 238.93677083333333,
+      "startScan": {
+        "time": 116.998,
+        "inSpeech": false,
+        "rms": 0.00212,
+        "gap": {
+          "from": 116.398,
+          "to": 117.018
+        },
+        "candidate": 116.898
+      },
+      "endScan": {
+        "time": 184.24,
+        "inSpeech": true,
+        "rms": 0.01888,
+        "gap": null,
+        "candidate": null
+      }
+    },
+    {
+      "scene": "commission",
+      "length": "key",
+      "book": "MAT",
+      "chapter": 28,
+      "from": 18,
+      "to": 20,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/28/audio/souer.mp3",
+      "providerStart": 116.038,
+      "providerEnd": null,
+      "duration": 140.4184375,
+      "startScan": {
+        "time": 116.038,
+        "inSpeech": true,
+        "rms": 0.08728,
+        "gap": null,
+        "candidate": null
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "commission",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 28,
+      "from": 20,
+      "to": 20,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/28/audio/souer.mp3",
+      "providerStart": 130.831,
+      "providerEnd": null,
+      "duration": 140.4184375,
+      "startScan": {
+        "time": 130.831,
+        "inSpeech": true,
+        "rms": 0.05432,
+        "gap": {
+          "from": 130.271,
+          "to": 130.801
+        },
+        "candidate": 130.721
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "pentecost",
+      "length": "key",
+      "book": "ACT",
+      "chapter": 2,
+      "from": 1,
+      "to": 4,
+      "url": "https://audio.bible.helloao.org/api/BSB/ACT/2/audio/souer.mp3",
+      "providerStart": 4.066,
+      "providerEnd": 27.904,
+      "duration": 342.5167083333333,
+      "startScan": {
+        "time": 4.066,
+        "inSpeech": true,
+        "rms": 0.01023,
+        "gap": {
+          "from": 3.466,
+          "to": 4.056
+        },
+        "candidate": 3.966
+      },
+      "endScan": {
+        "time": 27.904,
+        "inSpeech": true,
+        "rms": 0.15708,
+        "gap": {
+          "from": 27.304,
+          "to": 27.854
+        },
+        "candidate": 27.774
+      }
+    },
+    {
+      "scene": "pentecost",
+      "length": "full",
+      "book": "ACT",
+      "chapter": 2,
+      "from": 1,
+      "to": 41,
+      "url": "https://audio.bible.helloao.org/api/BSB/ACT/2/audio/souer.mp3",
+      "providerStart": 4.066,
+      "providerEnd": 302.238,
+      "duration": 342.5167083333333,
+      "startScan": {
+        "time": 4.066,
+        "inSpeech": true,
+        "rms": 0.01023,
+        "gap": {
+          "from": 3.466,
+          "to": 4.056
+        },
+        "candidate": 3.966
+      },
+      "endScan": {
+        "time": 302.238,
+        "inSpeech": true,
+        "rms": 0.08399,
+        "gap": {
+          "from": 301.968,
+          "to": 302.238
+        },
+        "candidate": 302.138
+      }
+    },
+    {
+      "scene": "close",
+      "length": "key",
+      "book": "ACT",
+      "chapter": 1,
+      "from": 8,
+      "to": 11,
+      "url": "https://audio.bible.helloao.org/api/BSB/ACT/1/audio/souer.mp3",
+      "providerStart": 56.831,
+      "providerEnd": 91.695,
+      "duration": 212.187375,
+      "startScan": {
+        "time": 56.831,
+        "inSpeech": false,
+        "rms": 0.00028,
+        "gap": {
+          "from": 56.231,
+          "to": 56.581
+        },
+        "candidate": 56.501
+      },
+      "endScan": {
+        "time": 91.695,
+        "inSpeech": true,
+        "rms": 0.05691,
+        "gap": {
+          "from": 91.095,
+          "to": 91.615
+        },
+        "candidate": 91.535
+      }
+    },
+    {
+      "scene": "close",
+      "length": "full",
+      "book": "ACT",
+      "chapter": 1,
+      "from": 1,
+      "to": 14,
+      "url": "https://audio.bible.helloao.org/api/BSB/ACT/1/audio/souer.mp3",
+      "providerStart": 4.324,
+      "providerEnd": 121.272,
+      "duration": 212.187375,
+      "startScan": {
+        "time": 4.324,
+        "inSpeech": true,
+        "rms": 0.20896,
+        "gap": {
+          "from": 3.724,
+          "to": 4.284
+        },
+        "candidate": 4.204
+      },
+      "endScan": {
+        "time": 121.272,
+        "inSpeech": true,
+        "rms": 0.1527,
+        "gap": {
+          "from": 120.982,
+          "to": 121.232
+        },
+        "candidate": 121.152
+      }
+    },
+    {
+      "scene": "sermon",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 6,
+      "from": 1,
+      "to": 34,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/6/audio/souer.mp3",
+      "providerStart": 4.969,
+      "providerEnd": null,
+      "duration": 263.7167708333333,
+      "startScan": {
+        "time": 4.969,
+        "inSpeech": true,
+        "rms": 0.06109,
+        "gap": {
+          "from": 4.369,
+          "to": 4.969
+        },
+        "candidate": 4.869
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    },
+    {
+      "scene": "sermon",
+      "length": "full",
+      "book": "MAT",
+      "chapter": 7,
+      "from": 1,
+      "to": 29,
+      "url": "https://audio.bible.helloao.org/api/BSB/MAT/7/audio/souer.mp3",
+      "providerStart": 5.069,
+      "providerEnd": null,
+      "duration": 204.87522916666666,
+      "startScan": {
+        "time": 5.069,
+        "inSpeech": true,
+        "rms": 0.03338,
+        "gap": {
+          "from": 4.469,
+          "to": 5.019
+        },
+        "candidate": 4.939
+      },
+      "endScan": {
+        "time": null,
+        "chapterEnd": true
+      }
+    }
+  ]
+}

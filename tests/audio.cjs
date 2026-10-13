@@ -2,7 +2,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const source = fs.readFileSync('js/app.js', 'utf8');
-const ctx = {}; vm.createContext(ctx);
+const ctx = { window: {} }; vm.createContext(ctx);
+vm.runInContext(fs.readFileSync('js/audio-boundaries.js', 'utf8'), ctx);
 vm.runInContext(source.slice(source.indexOf('function audioBounds('), source.indexOf('async function prepareAudio(')), ctx);
 const chapter = numbers => ({ chapter: { content: numbers.map(number => ({ type: 'verse', number })) } });
 const bounds = (numbers, times, from, to) => JSON.parse(JSON.stringify(ctx.audioBounds(chapter(numbers), { verses: times }, from, to)));
@@ -67,5 +68,25 @@ checkStop('tour'); checkStop('passage');
   vm.runInContext(source.slice(source.indexOf('async function buildAudio('), source.indexOf('// iPhone only lets audio start')), ctx);
   const result = await ctx.buildAudio('Mark 14:3–15:2');
   assert.deepEqual(JSON.parse(JSON.stringify(result.segs)), [{ url: 'https://example.org/14.mp3', start: 3, end: null }, { url: 'https://example.org/15.mp3', start: 10, end: 30 }]);
+  ctx.TS.reader = 'gilbert';
+  ctx.loadChapter = async (book, n) => ({ ...chapter([1, 2, 3]), thisChapterAudioLinks: n === 14 ? { gilbert: 'https://example.org/gilbert.mp3' } : {} });
+  const missing = await ctx.buildAudio('Mark 14:3–15:2');
+  assert.equal(missing.wholeChapter, true, 'missing verse timings expose the whole-chapter fallback');
+  assert.equal(missing.partial, true, 'missing later recording exposes partial passage audio');
+  assert.equal(missing.segs.length, 1);
+  // Key readings must not leave a hanging comma/colon at a verse boundary.
+  ctx.norm = s => String(s).toLowerCase();
+  vm.runInContext(fs.readFileSync('js/tour.js', 'utf8'), ctx);
+  vm.runInContext(source.slice(source.indexOf('const BOOKS ='), source.indexOf('const stepSpans =')), ctx);
+  vm.runInContext(source.slice(source.indexOf('const API_BOOK ='), source.indexOf('const HUB_BOOK')), ctx);
+  for (const [scene, label] of Object.entries(ctx.window.WAY_KEY)) {
+    const sp = ctx.refSpans(label).at(-1);
+    const code = vm.runInContext('API_BOOK', ctx)[sp.book];
+    const content = JSON.parse(fs.readFileSync('data/bsb/' + code + '.json', 'utf8')).chapters[sp.c2];
+    const verse = content.filter(v => v.type === 'verse' && v.number <= sp.v2).at(-1);
+    const text = verse.content.map(v => typeof v === 'string' ? v : v.text || '').join('');
+    assert(!/[,:;]\s*["\u201d\u2019]*$/.test(text), scene + ' ends in the middle of a sentence: ' + label);
+  }
+  assert.equal(ctx.window.WAY_KEY.visitation, 'Luke 1:41–55', 'Mary\'s song finishes before the next card');
   console.log('PASS: verse gaps, first/last verses, chapter transitions, invalid timings, and both players stopping at the actual boundary.');
 })().catch(err => { console.error(err); process.exitCode = 1; });
