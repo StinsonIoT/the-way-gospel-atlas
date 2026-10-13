@@ -27,6 +27,8 @@ const ctx = {
   buildAudio: async label => ({ reader: 'souer', segs: label ? [{ url: 'first.mp3', start: 1, end: 3 }, { url: 'second.mp3', start: 2, end: 4 }] : [] }),
   refSpans: () => [], API_BOOK: {}, loadChapter: async () => ({})
 };
+let playClick;
+ctx.tPlay = { addEventListener: (name, fn) => { playClick = fn; } };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync('js/scenes.js', 'utf8'), ctx);
 ctx.STEPS = ctx.window.WAY.STEPS;
@@ -34,7 +36,35 @@ vm.runInContext(source.slice(source.indexOf('function watchAudioEnd('), source.i
 vm.runInContext(source.slice(source.indexOf('async function tourPlay('), source.indexOf('function dwell(')), ctx);
 vm.runInContext(source.slice(source.indexOf('function sceneDone('), source.indexOf('function endTour(')), ctx);
 vm.runInContext(source.slice(source.indexOf("tourEl.addEventListener('timeupdate'"), source.indexOf('const groupEnd =')), ctx);
+vm.runInContext(source.slice(source.indexOf('function tourPause('), source.indexOf("tourEl.addEventListener('timeupdate'")), ctx);
+vm.runInContext(source.slice(source.indexOf("tPlay.addEventListener('click'"), source.indexOf("document.getElementById('t-next').addEventListener")), ctx);
 (async () => {
+  const originalBuilder = ctx.buildAudio;
+  let resolveAudio;
+  ctx.buildAudio = () => new Promise(resolve => { resolveAudio = resolve; });
+  position = ctx.STEPS.findIndex(s => s.id === 'voice');
+  const pending = ctx.tourPlay(position);
+  ctx.tourPause();
+  resolveAudio({ segs: [{ url: 'paused-load.mp3', start: 1, end: 3 }] });
+  await pending;
+  assert(!ctx.tour.playing && media.paused, 'pausing while loading must remain paused when audio arrives');
+  assert.equal(media.src, 'paused-load.mp3', 'paused audio is prepared for later resume');
+  playClick();
+  assert(!media.paused, 'resuming after load starts the prepared recording');
+  const loadingAgain = ctx.tourPlay(position);
+  ctx.tourPause();
+  timers.clear();
+  playClick();
+  assert.equal(timers.size, 0, 'resume while loading must not begin a reading timer');
+  resolveAudio({ segs: [{ url: 'resumed-load.mp3', start: 2, end: 4 }] });
+  await loadingAgain;
+  assert(ctx.tour.playing && !media.paused, 'resume while loading plays when the recording arrives');
+  const pausedFallback = ctx.tourPlay(position);
+  ctx.tourPause(); timers.clear();
+  resolveAudio({ segs: [] }); await pausedFallback;
+  assert.equal(timers.size, 0, 'paused audio-unavailable fallback must not advance the story');
+  ctx.buildAudio = originalBuilder;
+  timers.clear(); position = 0;
   await ctx.tourPlay(1);
   for (let i = 1; i < ctx.STEPS.length; i++) {
     assert.equal(ctx.tour.i, i, 'tour reaches ' + ctx.STEPS[i].id);
@@ -57,5 +87,5 @@ vm.runInContext(source.slice(source.indexOf("tourEl.addEventListener('timeupdate
     }
   }
   assert(finished, 'tour reaches the closing state');
-  console.log('PASS: all 89 playable cards advance automatically, chapter transitions retain playback, and duplicate end events do not double-advance.');
+  console.log('PASS: pause/resume during loading preserves intent; paused fallbacks do not advance; all 89 playable cards advance automatically; chapter transitions retain playback; duplicate end events do not double-advance.');
 })().catch(err => { console.error(err); process.exitCode = 1; });

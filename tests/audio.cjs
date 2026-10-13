@@ -60,11 +60,12 @@ checkStop('tour'); checkStop('passage');
 // Exercise the real tour builder across a chapter break, including a gap.
 (async () => {
   Object.assign(ctx, {
-    TS: { reader: 'souer' }, READERS: ['souer'], API_BOOK: { mark: 'MRK' }, URL,
+    TS: { reader: 'souer' }, READERS: ['souer'], API_BOOK: { mark: 'MRK' }, URL, AbortController, setTimeout, clearTimeout,
     refSpans: () => [{ book: 'mark', c1: 14, v1: 3, c2: 15, v2: 2 }],
     loadChapter: async (book, n) => ({ ...chapter(n === 14 ? [1, 2, 3, 5] : [1, 2, 3]), thisChapterAudioLinks: { souer: `https://example.org/${n}.mp3` }, thisChapterAudioTimings: { souer: `/${n}.json` } }),
     fetch: async url => ({ ok: true, json: async () => ({ verses: url.endsWith('/14.json') ? [1, 2, 3, 5] : [10, 20, 30] }) })
   });
+  vm.runInContext(source.slice(source.indexOf('async function fetchJSON('), source.indexOf('const chapterCache')), ctx);
   vm.runInContext(source.slice(source.indexOf('async function buildAudio('), source.indexOf('// iPhone only lets audio start')), ctx);
   const result = await ctx.buildAudio('Mark 14:3–15:2');
   assert.deepEqual(JSON.parse(JSON.stringify(result.segs)), [{ url: 'https://example.org/14.mp3', start: 3, end: null }, { url: 'https://example.org/15.mp3', start: 10, end: 30 }]);

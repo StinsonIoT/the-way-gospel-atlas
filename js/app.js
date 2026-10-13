@@ -194,7 +194,7 @@
     const deeper = layers.length
       ? `<button type="button" class="deep-btn" data-deep="${s.id}" aria-haspopup="dialog">${dots}<span class="deep-say">Go deeper</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 L8 6 L4.5 9.5"/></svg><span class="vh">: ${esc(what)}${told.length ? '. Told in ' + esc(told.join(', ')) : ''}</span></button>`
       : '<span></span>';
-    return `<div class="study">${deeper}${experience.focused(s.id) ? `<details class="scene-tools"><summary>More options</summary>${acts}</details>` : acts}</div>`;
+    return `<div class="study">${deeper}<details class="scene-tools${experience.focused(s.id) ? '' : ' scene-tools-responsive'}"><summary>More options</summary>${acts}</details></div>`;
   }
 
   const LEGEND = [
@@ -305,6 +305,15 @@
     story.appendChild(sec);
   });
   const sections = Array.from(story.querySelectorAll('.step'));
+  // Use the native open state so desktop actions stay in the accessibility tree.
+  const desktopTools = window.matchMedia('(min-width: 900px)');
+  const syncTools = () => story.querySelectorAll('.scene-tools-responsive').forEach(el => {
+    if (el.open === desktopTools.matches) return;
+    el._layoutToggle = true;
+    el.open = desktopTools.matches;
+  });
+  syncTools();
+  desktopTools.addEventListener('change', syncTools);
 
   // ---------- Tap to explain: people and words in the card text ----------
   // The first mention of each person (in the scenes they belong to) and of a
@@ -475,7 +484,7 @@
     if (p.type === 'trad' || p.type === 'proposal') sym = '<i class="glow"></i><i class="dia"></i>';
     el.innerHTML = sym + `<span class="lbl"><span class="nm">${esc(p.label)}</span>${p.note ? `<span class="nt">${esc(p.note)}</span>` : ''}</span>`;
     el.style.opacity = 0;
-    new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([p.lng, p.lat]).addTo(map);
+    el._marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([p.lng, p.lat]).addTo(map);
     markerEls[id] = el;
   });
 
@@ -814,6 +823,9 @@
   // Opening or closing details changes a caption's height. Keep the reader's
   // place in that scene, so the caption stays settled and grows in place.
   story.addEventListener('toggle', (ev) => {
+    // Breakpoint changes update many disclosures together; resize/start already
+    // measures the resulting layout once, rather than once per scene.
+    if (ev.target._layoutToggle) { ev.target._layoutToggle = false; return; }
     if (!started) return;
     const r = Math.round(progress());
     const mine = sections[r] && sections[r].contains(ev.target);
@@ -1408,7 +1420,7 @@
       let when = null;
       try { when = localStorage.getItem('the-way:offline-text'); } catch (err) { /* ignore */ }
       html += `<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">Save the text of all four Gospels and their study notes to this phone, so every passage opens without a signal (a few megabytes). Map areas you have viewed are kept as well. Listening needs a connection.</p>
-        <button type="button" class="plan-offline"${when ? ' data-done="1"' : ''}>${when ? 'Saved for offline ✓ · Save again' : 'Save the Gospels for offline'}</button>`;
+        <button type="button" class="plan-offline"${when ? ' data-done="1"' : ''}${savingOffline ? ' disabled' : ''}>${offlineMessage || (when ? 'Saved for offline ✓ · Save again' : 'Save the Gospels for offline')}</button>${savingOffline ? '<button type="button" class="plan-cancel plan-reset">Cancel download</button>' : ''}`;
     }
     html += `<p class="plan-note">Your progress and saved scenes stay on this device.</p>${read || saved.size ? '<button type="button" class="plan-reset">Reset reading progress</button>' : ''}`;
     planBody.innerHTML = html;
@@ -1416,49 +1428,83 @@
   // Fetch every Gospel chapter and Acts 1–2 (ascension and Pentecost).
   const OFFLINE_BOOKS = [['matthew', 28], ['mark', 16], ['luke', 24], ['john', 21], ['acts', 2]];
   let savingOffline = false;
+  let offlineController = null, offlineCanceled = false, offlineMessage = '';
+  function updateOfflineButton(btn, text) {
+    if (text) offlineMessage = text;
+    const current = planBody.querySelector('.plan-offline');
+    [btn, current].filter(Boolean).forEach(button => { button.disabled = savingOffline; button.textContent = offlineMessage; });
+  }
+  function cancelOffline() {
+    if (!offlineController) return;
+    offlineCanceled = true;
+    updateOfflineButton(null, 'Canceling…');
+    offlineController.abort();
+  }
+  async function cacheOfflineResource(cache, url, signal, missingOK = false) {
+    if (await cache.match(url)) return;
+    if (signal.aborted) throw new DOMException('Canceled', 'AbortError');
+    const ctl = new AbortController(), abort = () => ctl.abort();
+    signal.addEventListener('abort', abort, { once: true });
+    const timer = setTimeout(abort, 9000);
+    try {
+      const res = await fetch(url, { signal: ctl.signal });
+      if (!res.ok && !(missingOK && res.status === 404)) throw new Error(res.status);
+      if (res.ok) await cache.put(url, res);
+    } finally {
+      clearTimeout(timer);
+      signal.removeEventListener('abort', abort);
+    }
+  }
   async function saveOffline(btn) {
     if (savingOffline) return;
     savingOffline = true;
-    btn.disabled = true;
+    offlineCanceled = false;
+    const ctl = new AbortController();
+    offlineController = ctl;
+    updateOfflineButton(btn, 'Saving…');
+    renderPlan();
     try {
       const cache = await caches.open('the-way-bible');
       const jobs = OFFLINE_BOOKS.flatMap(([b, n]) => Array.from({ length: n }, (x, k) => [b, k + 1]));
+      const total = jobs.length;
       let done = 0, failed = 0;
       const next = async () => {
-        while (jobs.length) {
+        while (jobs.length && !ctl.signal.aborted) {
           const [b, c] = jobs.shift();
           // The BSB text and the Tyndale study notes for the chapter.
           for (const url of [`https://bible.helloao.org/api/BSB/${API_BOOK[b]}/${c}.json`, `https://bible.helloao.org/api/c/tyndale/${API_BOOK[b]}/${c}.json`]) {
             try {
-              if (!(await cache.match(url))) {
-                const res = await fetch(url);
-                if (!res.ok && res.status !== 404) throw new Error(res.status);
-                if (res.ok) await cache.put(url, res);
-              }
-            } catch (err) { failed++; }
+              await cacheOfflineResource(cache, url, ctl.signal, true);
+            } catch (err) { failed++; ctl.abort(); }
+            if (ctl.signal.aborted) break;
           }
           done++;
-          if (btn.isConnected) btn.textContent = `Saving… ${done} of ${done + jobs.length}`;
+          if (!ctl.signal.aborted) updateOfflineButton(btn, `Saving… ${done} of ${total}`);
         }
       };
       // The saved copy of the Gospels and Acts, kept with the passages, so reading
       // still works offline if a chapter from the API is missing.
       for (const code of ['MAT', 'MRK', 'LUK', 'JHN', 'ACT']) {
         const url = new URL(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`, location.href).href;
-        try { if (!(await cache.match(url))) { const res = await fetch(url); if (res.ok) await cache.put(url, res); else failed++; } } catch (err) { failed++; }
+        try { await cacheOfflineResource(cache, url, ctl.signal); } catch (err) { failed++; ctl.abort(); }
+        if (ctl.signal.aborted) break;
       }
       await Promise.all([next(), next(), next(), next()]);
-      if (failed) { btn.textContent = `${failed} chapters didn’t save · Try again`; return; }
+      if (ctl.signal.aborted || failed) { updateOfflineButton(btn, offlineCanceled ? 'Canceled · Try again' : 'Saving stopped · Try again'); return; }
       try { localStorage.setItem('the-way:offline-text', new Date().toISOString()); } catch (err) { /* ignore */ }
-      btn.textContent = 'Saved for offline ✓ · Save again';
+      updateOfflineButton(btn, 'Saved for offline ✓ · Save again');
     } catch (err) {
-      btn.textContent = 'Offline storage is unavailable · Try again';
+      updateOfflineButton(btn, 'Offline storage is unavailable · Try again');
     } finally {
-      btn.disabled = false;
       savingOffline = false;
+      offlineController = null;
+      updateOfflineButton(btn);
+      const cancel = planBody.querySelector('.plan-cancel');
+      if (cancel) cancel.remove();
     }
   }
   planBody.addEventListener('click', (ev) => {
+    if (ev.target.closest('.plan-cancel')) { cancelOffline(); return; }
     const off = ev.target.closest('.plan-offline');
     if (off) { saveOffline(off); return; }
     const u = ev.target.closest('[data-unsave]');
@@ -1482,6 +1528,16 @@
     '1 chronicles': '1CH', '2 chronicles': '2CH', hosea: 'HOS', zechariah: 'ZEC',
     numbers: 'NUM', jeremiah: 'JER', daniel: 'DAN', joel: 'JOL', jonah: 'JON', malachi: 'MAL', romans: 'ROM', '1 corinthians': '1CO', galatians: 'GAL' };
   const HUB_BOOK = Object.fromEntries(Object.keys(API_BOOK).map((b) => [b, b.replace(' ', '_')]));
+  async function fetchJSON(url, missingOK = false) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 9000);
+    try {
+      const response = await fetch(url, { signal: ctl.signal });
+      if (missingOK && response.status === 404) return null;
+      if (!response.ok) throw new Error(response.status);
+      return await response.json();
+    } finally { clearTimeout(timer); }
+  }
   const chapterCache = new Map();
   // A chapter is used only if it really is the BSB and has verses in it.
   const isBSB = (j) => j && j.chapter && Array.isArray(j.chapter.content) && j.chapter.content.some((x) => x && x.type === 'verse')
@@ -1562,8 +1618,7 @@
   function loadNotes(book, c) {
     const key = book + c;
     if (!notesCache.has(key)) {
-      const pr = fetch(`https://bible.helloao.org/api/c/tyndale/${API_BOOK[book]}/${c}.json`)
-        .then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); });
+      const pr = fetchJSON(`https://bible.helloao.org/api/c/tyndale/${API_BOOK[book]}/${c}.json`, true);
       pr.catch(() => notesCache.delete(key));
       notesCache.set(key, pr);
     }
@@ -1600,7 +1655,7 @@
       pNotes.innerHTML = (out.length ? out.join('') : '<p class="p-status">No study notes for these verses.</p>')
         + '<p class="n-credit">From the <a href="https://tyndaleopenresources.com/" target="_blank" rel="noopener">Tyndale Open Study Notes</a> © 2022 Tyndale House Publishers, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. The notes are the editors’ own, shown unchanged.</p>';
     } catch (err) {
-      if (token === notesToken) pNotes.innerHTML = '<p class="p-status">The study notes couldn’t be loaded right now.</p>';
+      if (token === notesToken) pNotes.innerHTML = '<p class="p-status">The study notes couldn’t be loaded right now.</p><button type="button" class="notes-retry">Try again</button>';
     }
   }
   function showPassageTab(name) {
@@ -1612,6 +1667,7 @@
   }
   ptText.addEventListener('click', () => showPassageTab('text'));
   ptNotes.addEventListener('click', () => showPassageTab('notes'));
+  pNotes.addEventListener('click', ev => { if (ev.target.closest('.notes-retry')) showNotes(); });
   // opts.title replaces the heading; opts.focus marks the verses that matter
   // when a passage is shown with the verses around it.
   async function openPassage(label, opts) {
@@ -1722,7 +1778,7 @@
         const tl = (sg.json.thisChapterAudioTimings || {})[reader];
         if (tl) {
           try {
-            const t = await fetch(new URL(tl, 'https://bible.helloao.org/').href).then((r) => (r.ok ? r.json() : null));
+            const t = await fetchJSON(new URL(tl, 'https://bible.helloao.org/').href);
             const bounds = audioBounds(sg.json, t, sg.from, sg.to);
             if (!bounds) continue;
             ({ start, end } = bounds);
@@ -1732,7 +1788,8 @@
       }
       if (token !== passageToken || !out.length) return;
       aSegs = out; aIdx = 0; aTitle = label;
-      aReader.textContent = 'Read by ' + reader.charAt(0).toUpperCase() + reader.slice(1);
+      aReader.textContent = 'Read by ' + reader.charAt(0).toUpperCase() + reader.slice(1)
+        + (out.some(sg => sg.start === 0 && sg.end == null) ? ' · whole chapter audio (verse timing unavailable)' : '');
       aBar.hidden = false;
     } catch (err) { /* no audio: the button stays hidden */ }
   }
@@ -1830,7 +1887,7 @@
         const tl = (json.thisChapterAudioTimings || {})[reader];
         if (tl) {
           try {
-            const t = await fetch(new URL(tl, 'https://bible.helloao.org/').href).then((r) => (r.ok ? r.json() : null));
+            const t = await fetchJSON(new URL(tl, 'https://bible.helloao.org/').href);
             const bounds = audioBounds(json, t, from, to);
             if (!bounds) { partial = true; continue; }
             ({ start, end } = bounds);
@@ -1903,13 +1960,16 @@
   }
   async function tourPlay(i) {
     const token = ++tourToken;
+    // A tour takes over from menu jumps, including their delayed position fixes.
+    aim = -1;
+    touchedSinceJump = true;
     clearTimeout(tourDwell);
     if (tourEl.dataset.kind === 'tour') { tourEl.dataset.kind = 'idle'; tourEl.pause(); }
     resetAudio();
     const st = STEPS[i];
     const silent = TS.how === 'silent';
     const label = silent ? null : tourRef(st);
-    tour = { i, segs: [], k: 0, label, playing: true, ended: false, silent };
+    tour = { i, segs: [], k: 0, label, playing: true, ended: false, silent, loading: true };
     document.documentElement.classList.add('touring');
     tourBar.hidden = false;
     tTitle.textContent = stepLabel(st);
@@ -1925,15 +1985,16 @@
     if (token !== tourToken) return;
     const a = loading ? await loading : { segs: [] };
     if (token !== tourToken) return;
+    tour.loading = false;
     tour.segs = a.segs;
     if (tour.segs.length) {
       tSub.textContent = label + (a.reader ? ' · read by ' + a.reader.charAt(0).toUpperCase() + a.reader.slice(1) : '');
       if (a.wholeChapter) tSub.textContent += ' · whole chapter audio (verse timing unavailable)';
       if (a.partial) tSub.textContent += ' · some passage audio unavailable';
-      playTourSeg(0);
+      playTourSeg(0, tour.playing);
     } else {
       if (label) tSub.textContent = label + ' · audio unavailable';
-      dwell(token);
+      if (tour.playing) dwell(token);
     }
     if (silent) return;
     // Fetch the next passage while this one plays.
@@ -1941,7 +2002,7 @@
     const nl = n >= 0 ? tourRef(STEPS[n]) : null;
     if (nl) refSpans(nl).filter((sp) => API_BOOK[sp.book]).slice(0, 1).forEach((sp) => loadChapter(sp.book, sp.c1).catch(() => {}));
   }
-  function playTourSeg(k) {
+  function playTourSeg(k, autoplay = true) {
     const sg = tour.segs[k];
     tour.k = k;
     tourEl.dataset.kind = 'tour';
@@ -1949,6 +2010,7 @@
     tourEl.defaultPlaybackRate = +TS.rate || 1; tourEl.playbackRate = +TS.rate || 1;
     const seek = () => { try { tourEl.currentTime = sg.start; } catch (err) { /* ignore */ } };
     if (tourEl.readyState >= 1) seek(); else tourEl.addEventListener('loadedmetadata', seek, { once: true });
+    if (!autoplay) return;
     const pr = tourEl.play();
     if (pr && pr.catch) pr.catch(() => { setTourPlaying(false); tSub.textContent = 'Tap play to listen'; });
   }
@@ -2093,6 +2155,7 @@
     const r = Math.round(progress());
     if (tour.ended || r !== tour.i) { startTourAt(r); return; }
     setTourPlaying(true);
+    if (tour.loading) return;
     if (tourEl.dataset.kind === 'done') sceneDone();
     else if (tour.segs.length) { const pr = tourEl.play(); if (pr && pr.catch) pr.catch(() => setTourPlaying(false)); }
     else dwell(tourToken);
@@ -2299,7 +2362,13 @@
       const el = markerEls[id];
       el.classList.toggle('is-focus', primary.has(id));
       const s = v.toFixed(3);
-      if (el._op !== s) { el.style.opacity = s; el._op = s; el.style.visibility = v < 0.01 ? 'hidden' : 'visible'; }
+      if (id === 'nazareth') {
+        // Terrain coverage must not dim the town this caption is about. Set
+        // MapLibre's own opacity values so its move callbacks cannot undo this.
+        const covered = (a.id === 'annunciation' || b.id === 'annunciation' ? v : v * .2).toFixed(3);
+        if (el._op !== s || el._coveredOp !== covered) { el._marker.setOpacity(s, covered); el._coveredOp = covered; }
+      } else if (el._op !== s) el.style.opacity = s;
+      if (el._op !== s) { el._op = s; el.style.visibility = v < 0.01 ? 'hidden' : 'visible'; }
     });
     const feats = [];
     Object.keys(AREAS).forEach((id) => {
@@ -2383,6 +2452,7 @@
   if (map.isStyleLoaded()) start();
   window.addEventListener('scroll', queue, { passive: true });
   window.addEventListener('resize', () => {
+    syncTools();
     measure();
     if (started) { computeCams(); queue(); }
   });
@@ -2463,7 +2533,9 @@
       const rel = map.queryTerrainElevation(map.getCenter()); // relative to the current camera ground height
       if (rel == null || !isFinite(rel) || Math.abs(rel) < 1) return;
       map.transform.elevation = map.transform.elevation + rel;
-      map.triggerRepaint();
+      // Refresh the camera and DOM markers together after changing ground height.
+      // A repaint alone leaves markers projected against the previous elevation.
+      map.jumpTo({});
     } catch (err) { /* terrain not ready */ }
   }
   let flyToken = 0, userMoved = false;

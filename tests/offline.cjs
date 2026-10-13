@@ -38,8 +38,10 @@ async function checkWorker() {
   assets.push(...[...fs.readFileSync('css/fonts.css', 'utf8').matchAll(/url\(['"]?\.\.\/([^)'" ]+)/g)].map(m => m[1]));
   for (const asset of new Set(assets)) {
     let response;
-    hooks.fetch({ request: { url: key(asset), method: 'GET', mode: 'cors', headers: { has: () => false } }, respondWith: p => { response = p; } });
+    const lifetime = [];
+    hooks.fetch({ request: { url: key(asset), method: 'GET', mode: 'cors', headers: { has: () => false } }, respondWith: p => { response = p; }, waitUntil: p => lifetime.push(p) });
     assert(await response, 'available offline after update: ' + asset);
+    await Promise.all(lifetime);
   }
   skipped = false;
   ctx.caches.open = async () => ({ addAll: async () => { throw Error('incomplete download'); } });
@@ -74,7 +76,8 @@ async function checkReaderTimeout() {
 async function checkOfflineSave() {
   const requested = [], saved = new Map();
   const ctx = {
-    URL, location: { href: origin }, BSB_LOCAL_V: 1,
+    URL, AbortController, DOMException, setTimeout, clearTimeout, location: { href: origin }, BSB_LOCAL_V: 1,
+    planBody: { querySelector: () => null }, renderPlan: () => {},
     API_BOOK: { matthew: 'MAT', mark: 'MRK', luke: 'LUK', john: 'JHN', acts: 'ACT' },
     caches: { open: async () => { throw Error('storage denied'); } },
     fetch: async url => { requested.push(url); return { ok: true, status: 200 }; },

@@ -69,6 +69,68 @@ async function navigate(url) {
   });
   handlers.set('Runtime.exceptionThrown', p => errors.push(p.exceptionDetails));
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
+  if (process.argv.includes('--inspect-nazareth')) {
+    serveOldWorker = false;
+    for (const [name, width, height] of [['mobile', 390, 844], ['desktop', 1440, 900]]) {
+      await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: name === 'mobile' });
+      await navigate(base + '/#s-annunciation');
+      await waitFor(`document.body.classList.contains('ready')`);
+      await sleep(4000);
+      // A covered marker is normally faded by MapLibre. Exercise that path
+      // directly because terrain depth varies between desktop and iPhone GPUs.
+      await evaluate(`(() => { const map = window.__wayMap; window.auditDepthAtPoint = map.terrain.depthAtPoint; map.terrain.depthAtPoint = () => 0; map.fire('moveend'); })()`);
+      await sleep(300);
+      const label = await evaluate(`(() => { const el = [...document.querySelectorAll('.mk')].find(m => m.querySelector('.nm')?.textContent === 'Nazareth'); const s = getComputedStyle(el), l = getComputedStyle(el.querySelector('.lbl')); return { opacity: +s.opacity, labelOpacity: +l.opacity, color: l.color, shadow: l.textShadow, sceneOpacity: el._op, transform: el.style.transform }; })()`);
+      const shot = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync(path.join(os.tmpdir(), 'way-nazareth-' + name + '.png'), Buffer.from(shot.data, 'base64'));
+      console.log(name, JSON.stringify(label));
+      assert(label.opacity * label.labelOpacity >= .9, 'Nazareth remains readable while the annunciation caption is held');
+    }
+    return;
+  }
+  if (process.argv.includes('--journey-review')) {
+    serveOldWorker = false;
+    await require('./journeys.cjs')({ evaluate, send, navigate, waitFor, sleep, base, errors });
+    return;
+  }
+  if (process.argv.includes('--visual-review')) {
+    serveOldWorker = false;
+    const output = path.join(os.tmpdir(), 'way-visual-review');
+    fs.mkdirSync(output, { recursive: true });
+    for (const [label, width, height] of [['mobile', 390, 844], ['desktop', 1440, 900]]) {
+      await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: label === 'mobile' });
+      await navigate(base + '/');
+      await waitFor(`document.body.classList.contains('ready')`);
+      await evaluate('scrollTo(0, 0)');
+      for (const scene of ['title', 'voice', 'pray', 'risen']) {
+        if (scene !== 'title') await evaluate(`(() => { const i = [...document.querySelectorAll('.step')].findIndex(s => s.dataset.scene === '${scene}'); document.querySelector('#toc-body [data-i="'+i+'"]').click(); })()`);
+        await sleep(4000);
+        const diagnostic = await evaluate(`(() => { const m = window.__wayMap; const el = document.querySelector('.mk.is-focus'); return { center: m.getCenter(), elevation: m.transform.elevation, relative: m.queryTerrainElevation(m.getCenter()), marker: el && { transform: el.style.transform, opacity: getComputedStyle(el).opacity, text: el.innerText } }; })()`);
+        console.log(label, scene, JSON.stringify(diagnostic));
+        const shot = await send('Page.captureScreenshot', { format: 'png' });
+        fs.writeFileSync(path.join(output, label + '-' + scene + '.png'), Buffer.from(shot.data, 'base64'));
+        if (scene === 'voice') {
+          const actionsVisible = () => evaluate(`(() => { const r = document.querySelector('.step[data-scene="voice"] .listen-btn').getBoundingClientRect(); return r.width > 0 && r.height > 0; })()`);
+          assert.equal(await actionsVisible(), label === 'desktop', 'secondary actions collapse on phones and remain visible on desktop');
+          if (label === 'desktop') assert(await evaluate(`(() => { const button = document.querySelector('.step[data-scene="voice"] .listen-btn'); button.focus({ preventScroll: true }); return document.activeElement === button && button.closest('details').open; })()`), 'desktop secondary actions are open and keyboard accessible');
+          if (label === 'mobile') {
+            await evaluate(`document.querySelector('.step[data-scene="voice"] .scene-tools summary').click()`);
+            await sleep(200);
+            assert(await actionsVisible(), 'More options reveals the secondary actions');
+            await evaluate(`document.querySelector('.step[data-scene="voice"] .scene-tools summary').click()`);
+          }
+        }
+        if (scene === 'pray') {
+          const marker = await evaluate(`(() => { const el = document.querySelector('.mk.is-focus'); const r = el.querySelector('.dia').getBoundingClientRect(); const label = el.querySelector('.lbl'); const card = document.querySelector('.step[data-scene="pray"]').firstElementChild.getBoundingClientRect(); return { x: r.x, y: r.y, cardTop: card.top, labelOpacity: getComputedStyle(label).opacity }; })()`);
+          assert(marker.x >= 0 && marker.x < width && marker.y > 130 && marker.y < (label === 'mobile' ? marker.cardTop : height), 'Gethsemane marker stays in the open map: ' + JSON.stringify(marker));
+          assert.equal(marker.labelOpacity, '1', 'Gethsemane label is readable');
+        }
+      }
+    }
+    assert.equal(errors.length, 0, 'no uncaught browser errors during visual review');
+    console.log('PASS: visual review screenshots saved to ' + output);
+    return;
+  }
   if (process.argv.includes('--inspect-tour')) {
     await require('../tools/audio-waveform.cjs')(evaluate);
     return;
@@ -128,7 +190,7 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v46').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has('the-way-v51').then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });

@@ -43,7 +43,7 @@ The address follows the scene you're on, so links like `#s-arrest` open at that 
 
 ## The four Gospels
 
-Each scene shows which Gospels tell it (Mt · Mk · Lk · Jn) beside its Go deeper button; the Gospels tab lists the parallel passages, each readable in place, with a note where the accounts differ. **Follow** steps through the story one Gospel at a time, from a bar under the header. Parallels follow the standard Gospel synopses; the longer ending of Mark (16:9–20) is not used. Reading progress and saved scenes are kept on the device only.
+The **Gospels** tab under Go deeper lists the parallel passages, each readable in place, with a note where the accounts differ. On desktop, ordinary scene cards also show which Gospels tell them (Mt · Mk · Lk · Jn) beside Go deeper. **Follow** steps through the story one Gospel at a time, from a bar under the header. Parallels follow the standard Gospel synopses; the longer ending of Mark (16:9–20) is not used. Reading progress and saved scenes are kept on the device only.
 
 ## Study notes
 
@@ -75,13 +75,13 @@ Scenes grow to fit their cards, so nothing slides under the header with larger t
 
 ## Listening
 
-**Listen to the story** (on the title screen) or the headphones on any scene starts a listen-through: each scene's passage is read aloud from the BSB audio recordings, then the map glides on to the next scene, or to the next scene in the Gospel you are following. Scenes without a passage pause for a few seconds. A bar under the header pauses, skips or stops it, and the phone's lock-screen controls work too. Scrolling away pauses the tour at the end of the passage, so you can pick up from wherever you are.
+**Play the story** (on the title screen) or the headphones on any scene starts a listen-through: each scene's passage is read aloud from the BSB audio recordings, then the map glides on to the next scene, or to the next scene in the Gospel you are following. On phones, scene tools for listening, sharing and saving are under **More options**, inside **Read & study** on the special prayer and resurrection cards. Scenes without a passage pause for a few seconds. A bar under the header pauses, skips or stops it, and the phone's lock-screen controls work too. Scrolling away pauses the tour at the end of the passage, so you can pick up from wherever you are. If verse timings cannot be loaded, whole-chapter playback is clearly labelled; pausing while audio loads keeps it paused when the recording arrives.
 
 ## Sharing and installing
 
 - **About** (`about.html`) and **Sources** (`sources.html`) pages explain how the atlas was made and list every source the notes cite.
 - Shared links show a preview card (`og.png`). Each scene also has a share button: it sends a link to `s/<scene>.html`, a small page with that scene's own preview card (`s/<scene>.jpg`) that forwards to the scene. `tools/make-share.py` regenerates these pages and images after scene changes.
-- On iPhone, Share → Add to Home Screen installs it as an app (`manifest.webmanifest`, icons). The offline cache (`sw.js`) makes it reopen quickly and work without a signal: the atlas's own files, every Bible passage you have opened, and the most recent terrain tiles (up to 900) are kept. The Plan tab can also save the text of all four Gospels at once. Audio still needs a connection.
+- On iPhone, Share → Add to Home Screen installs it as an app (`manifest.webmanifest`, icons). The offline cache (`sw.js`) makes it reopen quickly and work without a signal: the atlas's own files, every Bible passage you have opened, and the most recent terrain tiles (up to 900) are kept. The Plan tab can also save the text of all four Gospels at once. Downloads can be canceled; a stopped download keeps completed resources for retry. Audio still needs a connection.
 - The atlas remembers the last scene you reached and offers to continue from there.
 
 ## Running it
