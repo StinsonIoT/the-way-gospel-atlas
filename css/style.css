@@ -322,6 +322,7 @@ dialog::backdrop { background: rgba(10, 14, 15, 0.5); }
   .hero .cue { align-items: flex-start; }
   .step-title { justify-content: center; }
   .verse { max-width: 600px; padding: 0; }
+  .verse-story { max-width: 440px; padding: 22px; }
   .top-row { padding: 0 28px 0 48px; }
 }
 
@@ -569,6 +570,7 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
   .card .note { font-size: 15.5px; }
   .kicker { font-size: 12px; }
   .verse { max-width: 680px; padding: 28px 30px 24px; }
+  .verse-story { max-width: 600px; padding: 28px 30px; gap: 14px; }
   .after { font-size: 19px; }
   .step { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
   dialog { width: min(520px, calc(100vw - 48px)); }
