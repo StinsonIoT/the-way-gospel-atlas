@@ -24,7 +24,7 @@ def fmt(text):
     """Escape, then link references and scenes; *x* becomes <em>."""
     t = html.escape(text, quote=False)
     t = REF.sub(lambda m: f'<a class="ref" data-ref="{m.group(0)}" href="https://biblehub.com/bsb/{BOOKS[m.group(1)]}/{m.group(2)}.htm" target="_blank" rel="noopener">{m.group(0)}</a>', t)
-    t = re.sub(r'\[\[([\w-]+)\|([^\]]+)\]\]', lambda m: f'<a class="scene" href="./#s-{m.group(1)}">{m.group(2)}</a>', t)
+    t = re.sub(r'\[\[([\w-]+)\|([^\]]+)\]\]', lambda m: f'<a class="scene" href="./?guide=holyweek#s-{m.group(1)}">{m.group(2)}</a>', t)
     t = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', t)
     return t
 
@@ -292,7 +292,7 @@ page = f'''<!doctype html>
 </head>
 <body class="guide">
 <header class="bar">
-  <a href="./#s-hw"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7,0 L8.6,5.4 L14,7 L8.6,8.6 L7,14 L5.4,8.6 L0,7 L5.4,5.4 Z"/></svg><span class="bk">Back to the atlas</span><span class="sh">Atlas</span></a>
+  <a href="./?guide=holyweek#s-hw"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7,0 L8.6,5.4 L14,7 L8.6,8.6 L7,14 L5.4,8.6 L0,7 L5.4,5.4 Z"/></svg><span class="bk">Back to the atlas</span><span class="sh">Atlas</span></a>
   <nav aria-label="Pages"><a href="holyweek.html" aria-current="page">Holy Week</a><a href="about.html">About</a><a href="sources.html">Sources</a></nav>
 </header>
 <nav class="toc" aria-label="On this page">{nav}</nav>
@@ -300,12 +300,12 @@ page = f'''<!doctype html>
 <p class="eyebrow">A guide</p>
 <h1>Holy <em>Week.</em></h1>
 <p class="lede">The last week of Jesus’ life fills a third of the Gospels. This guide gathers what the text says, what history and archaeology add, and what the New Testament found foretold in the Old, so the story can be read more deeply.</p>
-<p class="small">Quotations are from the Berean Standard Bible. Scripture links open the passage here, with study notes; <span class="scene-key">place links</span> open the scene on the map. Where the evidence is debated, the guide says so.</p>
+<p class="small">Quotations are from the Berean Standard Bible. Scripture links open the passage here, with study notes; <a class="scene" href="./?guide=holyweek#s-hw">place links</a> open the scene on the map. Use <b>Back to Holy Week guide</b> to return to your place here. Where the evidence is debated, the guide says so.</p>
 {body}
-<a class="btn" href="./#s-hw">Walk through Holy Week on the map</a>
+<a class="btn" href="./?guide=holyweek#s-hw">Walk through Holy Week on the map</a>
 <footer>Scripture quotations: Berean Standard Bible (public domain). Josephus is quoted from William Whiston’s translation; Tacitus from Church and Brodribb. Corrections are welcome on <a href="https://github.com/StinsonIoT/the-way-gospel-atlas/issues">GitHub</a>.</footer>
 </main>
-<script src="js/reader-lite.js?v=2"></script>
+<script src="js/reader-lite.js?v=4"></script>
 </body>
 </html>
 '''

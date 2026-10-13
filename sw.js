@@ -5,11 +5,18 @@
 //   URLs carry a version number, so a new version is a new file.
 // - Bible passages and terrain tiles: kept in their own caches, which survive
 //   app updates. Terrain keeps the most recent tiles only.
-const APP = 'the-way-v36';
+const APP = 'the-way-v43';
 const BIBLE = 'the-way-bible';
 const TILES = 'the-way-tiles';
 const TILE_LIMIT = 900;
-const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html', 'css/page.css?v=5', 'js/reader-lite.js?v=2', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
+const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html', 'css/page.css?v=5', 'js/reader-lite.js?v=4', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
+  'css/fonts.css?v=1', 'css/style.css?v=57',
+  'js/scenes.js?v=55', 'js/places.js?v=7', 'js/study.js?v=11', 'js/otrefs.js?v=1',
+  'js/guide.js?v=2', 'js/tour.js?v=1', 'js/experience.js?v=50', 'js/app.js?v=64',
+  'vendor/maplibre-contour.min.js?v=47',
+  'data/land-wide.json?v=1', 'data/rome.json?v=1', 'data/land.json?v=9',
+  'data/lakes.json?v=11', 'data/rivers.json?v=9', 'data/jerusalem.json?v=10',
+  'data/jerusalem3d.json?v=10', 'data/capernaum3d.json?v=12',
   'vendor/maplibre-gl.js', 'vendor/maplibre-gl.css',
   'fonts/newsreader.woff2', 'fonts/newsreader-italic.woff2', 'fonts/instrument-sans-400.woff2', 'fonts/instrument-sans-500.woff2', 'fonts/instrument-sans-600.woff2'];
 

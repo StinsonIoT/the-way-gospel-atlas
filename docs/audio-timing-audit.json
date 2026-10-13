@@ -1,0 +1,1623 @@
+{
+  "checkedAt": "2026-10-13T04:30:06.514Z",
+  "chapters": 91,
+  "timingFiles": 274,
+  "failures": [],
+  "results": [
+    {
+      "book": "ACT",
+      "chapter": 1,
+      "maxVerse": 26,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 26,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "ACT",
+      "chapter": 2,
+      "maxVerse": 47,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 47,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 1,
+      "maxVerse": 51,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 51,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 2,
+      "maxVerse": 25,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 25,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 3,
+      "maxVerse": 36,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 36,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 4,
+      "maxVerse": 54,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 54,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 5,
+      "maxVerse": 47,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 46 timestamps for max verse 47",
+        "hays: 46 timestamps for max verse 47",
+        "souer: 46 timestamps for max verse 47"
+      ],
+      "textVerseCount": 46,
+      "missingVerseNumbers": [
+        4
+      ]
+    },
+    {
+      "book": "JHN",
+      "chapter": 6,
+      "maxVerse": 71,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 71,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 7,
+      "maxVerse": 53,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 53,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 8,
+      "maxVerse": 59,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 59,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 9,
+      "maxVerse": 41,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 41,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 10,
+      "maxVerse": 42,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 42,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 11,
+      "maxVerse": 57,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 57,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 12,
+      "maxVerse": 50,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 50,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 13,
+      "maxVerse": 38,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 38,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 14,
+      "maxVerse": 31,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 31,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 15,
+      "maxVerse": 27,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 27,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 16,
+      "maxVerse": 33,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 33,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 17,
+      "maxVerse": 26,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 26,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 18,
+      "maxVerse": 40,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 40,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 19,
+      "maxVerse": 42,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 42,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 20,
+      "maxVerse": 31,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 31,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "JHN",
+      "chapter": 21,
+      "maxVerse": 25,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 25,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 1,
+      "maxVerse": 80,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 80,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 2,
+      "maxVerse": 52,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 52,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 3,
+      "maxVerse": 38,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 38,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 4,
+      "maxVerse": 44,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 44,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 5,
+      "maxVerse": 39,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 39,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 6,
+      "maxVerse": 49,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 49,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 7,
+      "maxVerse": 50,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 50,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 8,
+      "maxVerse": 56,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 56,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 9,
+      "maxVerse": 62,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 62,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 10,
+      "maxVerse": 42,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 42,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 11,
+      "maxVerse": 54,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 54,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 12,
+      "maxVerse": 59,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 59,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 13,
+      "maxVerse": 35,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 35,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 14,
+      "maxVerse": 35,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 35,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 15,
+      "maxVerse": 32,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 32,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 16,
+      "maxVerse": 31,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 31,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 17,
+      "maxVerse": 37,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 36 timestamps for max verse 37",
+        "hays: 36 timestamps for max verse 37",
+        "souer: 36 timestamps for max verse 37"
+      ],
+      "textVerseCount": 36,
+      "missingVerseNumbers": [
+        36
+      ]
+    },
+    {
+      "book": "LUK",
+      "chapter": 18,
+      "maxVerse": 43,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 43,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 19,
+      "maxVerse": 48,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 48,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 20,
+      "maxVerse": 47,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 47,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 21,
+      "maxVerse": 38,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 38,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 22,
+      "maxVerse": 71,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 71,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "LUK",
+      "chapter": 23,
+      "maxVerse": 56,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 55 timestamps for max verse 56",
+        "hays: 55 timestamps for max verse 56",
+        "souer: 55 timestamps for max verse 56"
+      ],
+      "textVerseCount": 55,
+      "missingVerseNumbers": [
+        17
+      ]
+    },
+    {
+      "book": "LUK",
+      "chapter": 24,
+      "maxVerse": 53,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 53,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 1,
+      "maxVerse": 25,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 25,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 2,
+      "maxVerse": 23,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 23,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 3,
+      "maxVerse": 17,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 17,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 4,
+      "maxVerse": 25,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 25,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 5,
+      "maxVerse": 48,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 48,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 6,
+      "maxVerse": 34,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 34,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 7,
+      "maxVerse": 29,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 29,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 8,
+      "maxVerse": 34,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 34,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 9,
+      "maxVerse": 38,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 38,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 10,
+      "maxVerse": 42,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 42,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 11,
+      "maxVerse": 30,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 30,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 12,
+      "maxVerse": 50,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 50,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 13,
+      "maxVerse": 58,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 58,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 14,
+      "maxVerse": 36,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 36,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 15,
+      "maxVerse": 39,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 39,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 16,
+      "maxVerse": 28,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 28,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 17,
+      "maxVerse": 27,
+      "readers": [
+        "david",
+        "gilbert",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [],
+      "problems": [
+        "david: 26 timestamps for max verse 27",
+        "gilbert: 26 timestamps for max verse 27",
+        "hays: 26 timestamps for max verse 27",
+        "souer: 26 timestamps for max verse 27"
+      ],
+      "textVerseCount": 26,
+      "missingVerseNumbers": [
+        21
+      ]
+    },
+    {
+      "book": "MAT",
+      "chapter": 18,
+      "maxVerse": 35,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 34 timestamps for max verse 35",
+        "hays: 34 timestamps for max verse 35",
+        "souer: 34 timestamps for max verse 35"
+      ],
+      "textVerseCount": 34,
+      "missingVerseNumbers": [
+        11
+      ]
+    },
+    {
+      "book": "MAT",
+      "chapter": 19,
+      "maxVerse": 30,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 30,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 20,
+      "maxVerse": 34,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 34,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 21,
+      "maxVerse": 46,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 46,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 22,
+      "maxVerse": 46,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 46,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 23,
+      "maxVerse": 39,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 38 timestamps for max verse 39",
+        "hays: 38 timestamps for max verse 39",
+        "souer: 38 timestamps for max verse 39"
+      ],
+      "textVerseCount": 38,
+      "missingVerseNumbers": [
+        14
+      ]
+    },
+    {
+      "book": "MAT",
+      "chapter": 24,
+      "maxVerse": 51,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 51,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 25,
+      "maxVerse": 46,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 46,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 26,
+      "maxVerse": 75,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 75,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 27,
+      "maxVerse": 66,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 66,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MAT",
+      "chapter": 28,
+      "maxVerse": 20,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 20,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 1,
+      "maxVerse": 45,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 45,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 2,
+      "maxVerse": 28,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 28,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 3,
+      "maxVerse": 35,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 35,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 4,
+      "maxVerse": 41,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 41,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 5,
+      "maxVerse": 43,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 43,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 6,
+      "maxVerse": 56,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 56,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 7,
+      "maxVerse": 37,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 36 timestamps for max verse 37",
+        "hays: 36 timestamps for max verse 37",
+        "souer: 36 timestamps for max verse 37"
+      ],
+      "textVerseCount": 36,
+      "missingVerseNumbers": [
+        16
+      ]
+    },
+    {
+      "book": "MRK",
+      "chapter": 8,
+      "maxVerse": 38,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 38,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 9,
+      "maxVerse": 50,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 48 timestamps for max verse 50",
+        "hays: 48 timestamps for max verse 50",
+        "souer: 48 timestamps for max verse 50"
+      ],
+      "textVerseCount": 48,
+      "missingVerseNumbers": [
+        44,
+        46
+      ]
+    },
+    {
+      "book": "MRK",
+      "chapter": 10,
+      "maxVerse": 52,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 52,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 11,
+      "maxVerse": 33,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 32 timestamps for max verse 33",
+        "hays: 32 timestamps for max verse 33",
+        "souer: 32 timestamps for max verse 33"
+      ],
+      "textVerseCount": 32,
+      "missingVerseNumbers": [
+        26
+      ]
+    },
+    {
+      "book": "MRK",
+      "chapter": 12,
+      "maxVerse": 44,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 44,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 13,
+      "maxVerse": 37,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 37,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 14,
+      "maxVerse": 72,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 72,
+      "missingVerseNumbers": []
+    },
+    {
+      "book": "MRK",
+      "chapter": 15,
+      "maxVerse": 47,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [
+        "david: 46 timestamps for max verse 47",
+        "hays: 46 timestamps for max verse 47",
+        "souer: 46 timestamps for max verse 47"
+      ],
+      "textVerseCount": 46,
+      "missingVerseNumbers": [
+        28
+      ]
+    },
+    {
+      "book": "MRK",
+      "chapter": 16,
+      "maxVerse": 20,
+      "readers": [
+        "david",
+        "hays",
+        "souer"
+      ],
+      "withoutTimings": [
+        "gilbert"
+      ],
+      "problems": [],
+      "textVerseCount": 20,
+      "missingVerseNumbers": []
+    }
+  ],
+  "affectedScenes": [
+    {
+      "scene": "bethesda",
+      "mode": "passage",
+      "label": "John 5:1–15",
+      "chapter": 5,
+      "missing": [
+        4
+      ],
+      "startVerseFromCurrentIndex": 1,
+      "endBoundaryVerseFromCurrentIndex": 17,
+      "expectedEndBoundary": 16
+    },
+    {
+      "scene": "bethesda",
+      "mode": "key verses",
+      "label": "John 5:5–9",
+      "chapter": 5,
+      "missing": [
+        4
+      ],
+      "startVerseFromCurrentIndex": 6,
+      "endBoundaryVerseFromCurrentIndex": 11,
+      "expectedEndBoundary": 10
+    },
+    {
+      "scene": "tyre",
+      "mode": "passage",
+      "label": "Mark 7:24–37",
+      "chapter": 7,
+      "missing": [
+        16
+      ],
+      "startVerseFromCurrentIndex": 25,
+      "endBoundaryVerseFromCurrentIndex": "chapter end",
+      "expectedEndBoundary": "chapter end"
+    },
+    {
+      "scene": "tyre",
+      "mode": "key verses",
+      "label": "Mark 7:25–30",
+      "chapter": 7,
+      "missing": [
+        16
+      ],
+      "startVerseFromCurrentIndex": 26,
+      "endBoundaryVerseFromCurrentIndex": 32,
+      "expectedEndBoundary": 31
+    },
+    {
+      "scene": "golgotha",
+      "mode": "passage",
+      "label": "Mark 15:21–32",
+      "chapter": 15,
+      "missing": [
+        28
+      ],
+      "startVerseFromCurrentIndex": 21,
+      "endBoundaryVerseFromCurrentIndex": 34,
+      "expectedEndBoundary": 33
+    },
+    {
+      "scene": "sayings",
+      "mode": "key verses",
+      "label": "Luke 23:39–43",
+      "chapter": 23,
+      "missing": [
+        17
+      ],
+      "startVerseFromCurrentIndex": 40,
+      "endBoundaryVerseFromCurrentIndex": 45,
+      "expectedEndBoundary": 44
+    },
+    {
+      "scene": "torn",
+      "mode": "passage",
+      "label": "Mark 15:37–41",
+      "chapter": 15,
+      "missing": [
+        28
+      ],
+      "startVerseFromCurrentIndex": 38,
+      "endBoundaryVerseFromCurrentIndex": 43,
+      "expectedEndBoundary": 42
+    },
+    {
+      "scene": "torn",
+      "mode": "key verses",
+      "label": "Mark 15:37–39",
+      "chapter": 15,
+      "missing": [
+        28
+      ],
+      "startVerseFromCurrentIndex": 38,
+      "endBoundaryVerseFromCurrentIndex": 41,
+      "expectedEndBoundary": 40
+    }
+  ]
+}

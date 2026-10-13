@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-10-13T12:20:18.352Z",
+  "cases": [
+    {
+      "scene": "word",
+      "label": "John 1:1–5",
+      "reader": "souer",
+      "actual": [
+        {
+          "start": 5.368,
+          "end": 28.575
+        }
+      ],
+      "expected": [
+        {
+          "start": 5.368,
+          "end": 28.575
+        }
+      ],
+      "matches": true
+    },
+    {
+      "scene": "bethesda",
+      "label": "John 5:5–9",
+      "reader": "souer",
+      "actual": [
+        {
+          "start": 28.009,
+          "end": 64.545
+        }
+      ],
+      "expected": [
+        {
+          "start": 28.009,
+          "end": 64.545
+        }
+      ],
+      "matches": true
+    },
+    {
+      "scene": "tyre",
+      "label": "Mark 7:25–30",
+      "reader": "souer",
+      "actual": [
+        {
+          "start": 175.475,
+          "end": 217.478
+        }
+      ],
+      "expected": [
+        {
+          "start": 175.475,
+          "end": 217.478
+        }
+      ],
+      "matches": true
+    },
+    {
+      "scene": "sayings",
+      "label": "Luke 23:39–43",
+      "reader": "souer",
+      "actual": [
+        {
+          "start": 263.482,
+          "end": 297.754
+        }
+      ],
+      "expected": [
+        {
+          "start": 263.482,
+          "end": 297.754
+        }
+      ],
+      "matches": true
+    },
+    {
+      "scene": "torn",
+      "label": "Mark 15:37–39",
+      "reader": "souer",
+      "actual": [
+        {
+          "start": 228.953,
+          "end": 247.162
+        }
+      ],
+      "expected": [
+        {
+          "start": 228.953,
+          "end": 247.162
+        }
+      ],
+      "matches": true
+    },
+    {
+      "scene": "trials",
+      "label": "Mark 15:1–5",
+      "reader": "souer",
+      "actual": [
+        {
+          "start": 4.904,
+          "end": 36.493
+        }
+      ],
+      "expected": [
+        {
+          "start": 4.904,
+          "end": 36.493
+        }
+      ],
+      "matches": true
+    }
+  ]
+}

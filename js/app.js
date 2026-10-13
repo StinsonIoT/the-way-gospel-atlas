@@ -387,6 +387,9 @@
     maxPitch: 70,
     attributionControl: false,
     fadeDuration: 0,
+    // Keep the terrain canvas at retina resolution without rendering nine
+    // pixels per CSS pixel on phones with a 3x display. DOM text stays native.
+    pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
     center: [35.3, 32.1],
     zoom: 7,
     style: {
@@ -477,14 +480,17 @@
   });
 
   // ---------- label collisions ----------
-  // After every frame, hide any label that overlaps a more important one.
+  // Check collisions periodically; layout measurements must not compete with
+  // every camera frame while the reader scrolls.
   // Named places and sites outrank area and water labels; the symbol stays.
   const RANK = { star: 0, named: 1, trad: 2, proposal: 2, hist: 2, rule: 3, area: 3, water: 4 };
   const markerOrder = Object.keys(PLACES).map((id, i) => ({ id, i, r: RANK[PLACES[id].type] ?? 3 }))
     .sort((x, y) => x.r - y.r || x.i - y.i).map((o) => o.id);
   let clashQueued = false;
+  let lastClashAt = -Infinity;
   function declutter() {
     clashQueued = false;
+    lastClashAt = performance.now();
     const top = document.querySelector('.top').getBoundingClientRect();
     const pad = 3;
     const live = [];
@@ -534,7 +540,13 @@
       if (!hit) placed.push(r);
     });
   }
-  function queueDeclutter() { if (!clashQueued) { clashQueued = true; requestAnimationFrame(declutter); } }
+  function queueDeclutter() {
+    if (clashQueued) return;
+    clashQueued = true;
+    const delay = Math.max(0, 120 - (performance.now() - lastClashAt));
+    if (delay) setTimeout(() => requestAnimationFrame(declutter), delay);
+    else requestAnimationFrame(declutter);
+  }
   map.on('render', queueDeclutter);
 
   // ---------- cameras ----------
@@ -716,12 +728,13 @@
   // the back swipe all return to the scene the reader left, one jump at a time.
   const backPill = document.getElementById('back-pill');
   const backName = document.getElementById('back-name');
+  const guideReturn = new URLSearchParams(location.search).get('guide') === 'holyweek';
   let backTrail = [];          // [{ i, off }] where each jump started
   let backLanded = -1;         // the scene the last jump landed on
   function showBack() {
     const b = backTrail[backTrail.length - 1];
-    if (!b || exploring) { backPill.hidden = true; return; }
-    backName.textContent = b.i === 0 ? 'the beginning' : stepLabel(STEPS[b.i]).replace(/[.!]$/, '');
+    if ((!b && !guideReturn) || exploring) { backPill.hidden = true; return; }
+    backName.textContent = b ? (b.i === 0 ? 'the beginning' : stepLabel(STEPS[b.i]).replace(/[.!]$/, '')) : 'Holy Week guide';
     const eb = exploreBtn.getBoundingClientRect(); // line up with Explore 3D when it shows
     backPill.style.top = Math.round(eb.height && eb.top > headBottom() ? eb.top : headBottom() + 10) + 'px';
     backPill.hidden = false;
@@ -754,10 +767,24 @@
     goTo(i, { quiet: true, off: st && st.off != null ? st.off : 0 });
     showBack();
   });
-  backPill.addEventListener('click', () => { if (backTrail.length) history.back(); else backPill.hidden = true; });
+  backPill.addEventListener('click', () => {
+    if (backTrail.length) { history.back(); return; }
+    if (guideReturn) {
+      let hash = '';
+      try {
+        const saved = JSON.parse(sessionStorage.getItem('the-way:guide-position') || 'null');
+        if (saved && typeof saved.hash === 'string' && saved.hash.startsWith('#')) hash = saved.hash;
+        sessionStorage.setItem('the-way:guide-restore', '1');
+      } catch (err) { /* the guide still opens if storage is unavailable */ }
+      location.assign('holyweek.html' + hash);
+      return;
+    }
+    backPill.hidden = true;
+  });
   // Reading on from where you landed: after two scenes the pill steps aside
   // (the phone's back button still returns).
   function checkBack(r) {
+    if (guideReturn) return;
     if (backPill.hidden || backLanded < 0) return;
     if (Math.abs(r - backLanded) >= 2) backPill.hidden = true;
   }
@@ -1386,45 +1413,50 @@
     html += `<p class="plan-note">Your progress and saved scenes stay on this device.</p>${read || saved.size ? '<button type="button" class="plan-reset">Reset reading progress</button>' : ''}`;
     planBody.innerHTML = html;
   }
-  // Fetch every Gospel chapter (and Acts 1) once; the service worker keeps them.
-  const OFFLINE_BOOKS = [['matthew', 28], ['mark', 16], ['luke', 24], ['john', 21], ['acts', 1]];
+  // Fetch every Gospel chapter and Acts 1–2 (ascension and Pentecost).
+  const OFFLINE_BOOKS = [['matthew', 28], ['mark', 16], ['luke', 24], ['john', 21], ['acts', 2]];
   let savingOffline = false;
   async function saveOffline(btn) {
     if (savingOffline) return;
     savingOffline = true;
-    const jobs = OFFLINE_BOOKS.flatMap(([b, n]) => Array.from({ length: n }, (x, k) => [b, k + 1]));
-    let done = 0, failed = 0;
-    const next = async () => {
-      while (jobs.length) {
-        const [b, c] = jobs.shift();
-        // The BSB text and the Tyndale study notes for the chapter.
-        for (const url of [`https://bible.helloao.org/api/BSB/${API_BOOK[b]}/${c}.json`, `https://bible.helloao.org/api/c/tyndale/${API_BOOK[b]}/${c}.json`]) {
-          try {
-            if (!(await cache.match(url))) {
-              const res = await fetch(url);
-              if (!res.ok && res.status !== 404) throw new Error(res.status);
-              if (res.ok) await cache.put(url, res);
-            }
-          } catch (err) { failed++; }
-        }
-        done++;
-        if (btn.isConnected) btn.textContent = `Saving… ${done} of ${done + jobs.length}`;
-      }
-    };
     btn.disabled = true;
-    const cache = await caches.open('the-way-bible');
-    // The saved copy of the Gospels and Acts, kept with the passages, so reading
-    // still works offline if a chapter from the API is missing.
-    for (const code of ['MAT', 'MRK', 'LUK', 'JHN', 'ACT']) {
-      const url = new URL(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`, location.href).href;
-      try { if (!(await cache.match(url))) { const res = await fetch(url); if (res.ok) await cache.put(url, res); else failed++; } } catch (err) { failed++; }
+    try {
+      const cache = await caches.open('the-way-bible');
+      const jobs = OFFLINE_BOOKS.flatMap(([b, n]) => Array.from({ length: n }, (x, k) => [b, k + 1]));
+      let done = 0, failed = 0;
+      const next = async () => {
+        while (jobs.length) {
+          const [b, c] = jobs.shift();
+          // The BSB text and the Tyndale study notes for the chapter.
+          for (const url of [`https://bible.helloao.org/api/BSB/${API_BOOK[b]}/${c}.json`, `https://bible.helloao.org/api/c/tyndale/${API_BOOK[b]}/${c}.json`]) {
+            try {
+              if (!(await cache.match(url))) {
+                const res = await fetch(url);
+                if (!res.ok && res.status !== 404) throw new Error(res.status);
+                if (res.ok) await cache.put(url, res);
+              }
+            } catch (err) { failed++; }
+          }
+          done++;
+          if (btn.isConnected) btn.textContent = `Saving… ${done} of ${done + jobs.length}`;
+        }
+      };
+      // The saved copy of the Gospels and Acts, kept with the passages, so reading
+      // still works offline if a chapter from the API is missing.
+      for (const code of ['MAT', 'MRK', 'LUK', 'JHN', 'ACT']) {
+        const url = new URL(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`, location.href).href;
+        try { if (!(await cache.match(url))) { const res = await fetch(url); if (res.ok) await cache.put(url, res); else failed++; } } catch (err) { failed++; }
+      }
+      await Promise.all([next(), next(), next(), next()]);
+      if (failed) { btn.textContent = `${failed} chapters didn’t save · Try again`; return; }
+      try { localStorage.setItem('the-way:offline-text', new Date().toISOString()); } catch (err) { /* ignore */ }
+      btn.textContent = 'Saved for offline ✓ · Save again';
+    } catch (err) {
+      btn.textContent = 'Offline storage is unavailable · Try again';
+    } finally {
+      btn.disabled = false;
+      savingOffline = false;
     }
-    await Promise.all([next(), next(), next(), next()]);
-    btn.disabled = false;
-    savingOffline = false;
-    if (failed) { btn.textContent = `${failed} chapters didn’t save · Try again`; return; }
-    try { localStorage.setItem('the-way:offline-text', new Date().toISOString()); } catch (err) { /* ignore */ }
-    btn.textContent = 'Saved for offline ✓ · Save again';
   }
   planBody.addEventListener('click', (ev) => {
     const off = ev.target.closest('.plan-offline');
@@ -1639,6 +1671,47 @@
     aSegs = []; aIdx = 0; aDone = false; aBar.hidden = true; aBar.classList.remove('playing'); aFill.style.width = '0%';
     aLabel.textContent = 'Listen';
   }
+  function audioBounds(json, timing, from, to) {
+    const verses = (json.chapter && json.chapter.content || []).filter(v => v.type === 'verse');
+    const selected = verses.filter(v => v.number >= from && v.number <= to);
+    if (!selected.length) return null;
+    const starts = timing && timing.verses;
+    if (!Array.isArray(starts) || !starts.length) throw new Error('Missing verse timings');
+    // The provider serializes the verses present in the text, without slots
+    // for omitted verse numbers. Also accept a fully numbered array.
+    const compact = starts.length === verses.length;
+    const maxVerse = Math.max(...verses.map(v => v.number));
+    if (!compact && starts.length !== maxVerse) throw new Error('Unexpected verse timings');
+    if (starts.some((t, i) => typeof t !== 'number' || !Number.isFinite(t) || t < 0 || (i > 0 && t <= starts[i - 1]))) throw new Error('Invalid verse timings');
+    const index = verse => compact ? verses.indexOf(verse) : verse.number - 1;
+    const first = selected[0], last = selected[selected.length - 1];
+    const next = verses.find(v => v.number > last.number);
+    let end = next ? starts[index(next)] : null;
+    // Souer's John 1 recording has a verified silent gap before verses 2 and
+    // 6. Stop there instead of including the next verse's first consonant.
+    // Apply only to the inspected recording/timestamps; updated timings win.
+    if (timing.translationId === 'BSB' && timing.bookId === 'JHN' && timing.chapterNumber === 1 && timing.reader === 'souer') {
+      const reviewed = { 1: [10.993, 10.85], 5: [28.725, 28.575] }[last.number];
+      if (reviewed && end != null && Math.abs(end - reviewed[0]) < 0.001) end = reviewed[1];
+    }
+    return { start: starts[index(first)], end };
+  }
+  function watchAudioEnd(media, segment, finish) {
+    let timer = 0;
+    const clear = () => { clearTimeout(timer); timer = 0; };
+    const schedule = () => {
+      clear();
+      const sg = segment();
+      if (!sg || sg.end == null || media.paused || media.seeking) return;
+      const remaining = sg.end - media.currentTime;
+      if (remaining <= 0) { finish(); return; }
+      // Recheck the media clock when the timer fires: buffering and background
+      // suspension must not consume the rest of a passage as wall-clock time.
+      timer = setTimeout(schedule, Math.max(5, remaining * 1000 / (media.playbackRate || 1)));
+    };
+    ['playing', 'timeupdate', 'seeked', 'ratechange'].forEach(event => media.addEventListener(event, schedule));
+    ['pause', 'waiting', 'seeking', 'emptied', 'ended'].forEach(event => media.addEventListener(event, clear));
+  }
   async function prepareAudio(segs, label, token) {
     try {
       const reader = (() => { const links = segs[0].json.thisChapterAudioLinks || {}; return READERS.find((r) => links[r]) || Object.keys(links)[0]; })();
@@ -1652,11 +1725,9 @@
         if (tl) {
           try {
             const t = await fetch(new URL(tl, 'https://bible.helloao.org/').href).then((r) => (r.ok ? r.json() : null));
-            const v = t && t.verses;
-            if (v && v.length) {
-              start = sg.from > 1 && v[sg.from - 1] != null ? v[sg.from - 1] : 0;
-              end = v[sg.to] != null ? v[sg.to] : null; // the next verse's start
-            }
+            const bounds = audioBounds(sg.json, t, sg.from, sg.to);
+            if (!bounds) continue;
+            ({ start, end } = bounds);
           } catch (err) { /* play the whole chapter instead */ }
         }
         out.push({ url, start, end });
@@ -1691,7 +1762,7 @@
   audioEl.addEventListener('timeupdate', () => {
     const sg = aSegs[aIdx]; if (!sg) return;
     const end = sg.end != null ? sg.end : audioEl.duration;
-    if (sg.end != null && audioEl.currentTime >= sg.end - 0.05) return nextSeg();
+    if (sg.end != null && audioEl.currentTime >= sg.end) return nextSeg();
     const span = Math.max(0.1, (end || sg.start + 1) - sg.start);
     const f = (aIdx + Math.min(1, Math.max(0, (audioEl.currentTime - sg.start) / span))) / aSegs.length;
     aFill.style.width = (100 * f).toFixed(1) + '%';
@@ -1701,6 +1772,7 @@
     if (aIdx < aSegs.length - 1) { aIdx++; loadSeg(aIdx); audioEl.play().catch(() => {}); }
     else { aDone = true; audioEl.pause(); aIdx = 0; aFill.style.width = '100%'; audioEl.removeAttribute('src'); aLabel.textContent = 'Listen again'; }
   }
+  watchAudioEnd(audioEl, () => !aDone ? aSegs[aIdx] : null, nextSeg);
 
   document.getElementById('passage-close').addEventListener('click', () => passage.close());
   passage.addEventListener('click', (ev) => { if (ev.target === passage) passage.close(); });
@@ -1760,8 +1832,9 @@
         if (tl) {
           try {
             const t = await fetch(new URL(tl, 'https://bible.helloao.org/').href).then((r) => (r.ok ? r.json() : null));
-            const v = t && t.verses;
-            if (v && v.length) { start = from > 1 && v[from - 1] != null ? v[from - 1] : 0; end = v[to] != null ? v[to] : null; }
+            const bounds = audioBounds(json, t, from, to);
+            if (!bounds) continue;
+            ({ start, end } = bounds);
           } catch (err) { /* whole chapter */ }
         }
         segs.push({ url, start, end });
@@ -1937,7 +2010,7 @@
   tourEl.addEventListener('timeupdate', () => {
     if (!tour || tourEl.dataset.kind !== 'tour') return;
     const sg = tour.segs[tour.k]; if (!sg) return;
-    if (sg.end != null && tourEl.currentTime >= sg.end - 0.05) { tourSegEnd(); return; }
+    if (sg.end != null && tourEl.currentTime >= sg.end) { tourSegEnd(); return; }
     if (sleepAt && Date.now() >= sleepAt + 60000) { sleepOver(); return; } // a long passage: stop within a minute
     const end = sg.end != null ? sg.end : tourEl.duration;
     const span = Math.max(0.1, (end || sg.start + 1) - sg.start);
@@ -1950,6 +2023,7 @@
     tourEl.dataset.kind = 'done';
     sceneDone();
   }
+  watchAudioEnd(tourEl, () => tour && tour.playing && tourEl.dataset.kind === 'tour' ? tour.segs[tour.k] : null, tourSegEnd);
   tourEl.addEventListener('pause', () => { if (tour && tour.playing && tourEl.dataset.kind === 'tour' && !tourEl.ended) setTourPlaying(false); });
   tourEl.addEventListener('play', () => { if (tour && tourEl.dataset.kind === 'tour') setTourPlaying(true); });
   const groupEnd = (i) => { const g = groups.find((gg) => gg.steps.includes(i)); return g ? g.steps[g.steps.length - 1] : N - 1; };
@@ -2054,8 +2128,9 @@
   toc.addEventListener('click', (ev) => { if (ev.target === toc) toc.close(); });
 
   let exploring = false;
+  let lastStoryCamera = '';
   function render() {
-    if (!cams.length || exploring) return;
+    if (!cams.length || exploring) { lastStoryCamera = ''; return; }
     const p = progress();
     const i = Math.min(N - 2, Math.floor(p));
     const f = p - i;
@@ -2066,7 +2141,12 @@
     if (reduceMotion) e = f < 0.5 ? 0 : 1;
     const ca = cams[i], cb = cams[i + 1];
     const merc = new maplibregl.MercatorCoordinate(lerp(ca.x, cb.x, e), lerp(ca.y, cb.y, e));
-    map.jumpTo({ center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: experience.mixPadding(ca.padding, cb.padding, e) });
+    const camera = { center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: experience.mixPadding(ca.padding, cb.padding, e) };
+    const cameraKey = JSON.stringify(camera);
+    if (cameraKey !== lastStoryCamera) {
+      lastStoryCamera = cameraKey;
+      map.jumpTo(camera);
+    }
     syncElevation();
     apply(STEPS[i], STEPS[i + 1], e, p);
     // header
@@ -2110,6 +2190,15 @@
   }
   const RULER = { antipas: '#B8863B', philip: '#4F8A5F', rome: '#9C3D52', archelaus: '#8A5A8E', deca: '#4E7C99' };
   let lastZoneKey = '';
+  const sceneProperties = new Map();
+  function sceneProperty(kind, layer, name, value) {
+    const key = kind + ':' + layer + ':' + name;
+    const signature = JSON.stringify(value);
+    if (sceneProperties.get(key) === signature) return;
+    sceneProperties.set(key, signature);
+    map[kind](layer, name, value);
+  }
+  let lastOverlayKey = '';
   function apply(a, b, e, p) {
     const A = PALETTES[a.pal], B = PALETTES[b.pal];
     const C = {};
@@ -2118,34 +2207,34 @@
     // light
     const plan = lerp(a.plan || 0, b.plan || 0, e);
     const temple = lerp(a.temple || 0, b.temple || 0, e);
-    map.setPaintProperty('sea', 'background-color', rgb(C.sea));
-    map.setPaintProperty('land', 'fill-color', rgb(C.land));
-    map.setPaintProperty('coast', 'line-color', rgb(C.coast));
-    map.setPaintProperty('land-wide', 'fill-color', rgb(C.land));
-    map.setPaintProperty('coast-wide', 'line-color', rgb(C.coast));
+    sceneProperty('setPaintProperty', 'sea', 'background-color', rgb(C.sea));
+    sceneProperty('setPaintProperty', 'land', 'fill-color', rgb(C.land));
+    sceneProperty('setPaintProperty', 'coast', 'line-color', rgb(C.coast));
+    sceneProperty('setPaintProperty', 'land-wide', 'fill-color', rgb(C.land));
+    sceneProperty('setPaintProperty', 'coast-wide', 'line-color', rgb(C.coast));
     // Rome's empire: fades with the scenes that show it.
     const ea = a.empire ? 1 : 0, eb = b.empire ? 1 : 0;
     const eOp = exploring ? (romeOn ? 1 : 0) : lerp(ea, eb, e);
     const era = exploring ? 'ministry' : (e < 0.5 ? a.empire || b.empire : b.empire || a.empire) || 'birth';
     setRome(era, eOp * (exploring ? 0.8 : (era === 'ministry' && !exploring ? 0.6 : 1)));
-    map.setPaintProperty('lakes', 'fill-color', rgb(C.lake));
-    map.setPaintProperty('lakes-line', 'line-color', rgb(C.coast));
-    map.setPaintProperty('rivers', 'line-color', rgb(C.river));
-    map.setPaintProperty('valley-band', 'line-color', rgb(mixA(C.land, BLACK, 0.12)));
-    map.setPaintProperty('valley-band', 'line-opacity', plan * 0.55);
-    map.setPaintProperty('valley-line', 'line-color', rgb(C.river));
-    map.setPaintProperty('valley-line', 'line-opacity', plan);
+    sceneProperty('setPaintProperty', 'lakes', 'fill-color', rgb(C.lake));
+    sceneProperty('setPaintProperty', 'lakes-line', 'line-color', rgb(C.coast));
+    sceneProperty('setPaintProperty', 'rivers', 'line-color', rgb(C.river));
+    sceneProperty('setPaintProperty', 'valley-band', 'line-color', rgb(mixA(C.land, BLACK, 0.12)));
+    sceneProperty('setPaintProperty', 'valley-band', 'line-opacity', plan * 0.55);
+    sceneProperty('setPaintProperty', 'valley-line', 'line-color', rgb(C.river));
+    sceneProperty('setPaintProperty', 'valley-line', 'line-opacity', plan);
     const WHITE3 = [255, 255, 255];
     const wallC = mixA(C.land, C.txt, 0.42);
-    map.setPaintProperty('wall', 'line-color', rgb(wallC));
-    map.setPaintProperty('wall', 'line-opacity', 0);
+    sceneProperty('setPaintProperty', 'wall', 'line-color', rgb(wallC));
+    sceneProperty('setPaintProperty', 'wall', 'line-opacity', 0);
     // 3D city: stone colours follow the light of each scene
     const stone = mixA(mixA(C.land, WHITE3, 0.35), C.txt, 0.05);
     const shadowStone = mixA(C.land, C.txt, 0.12);
     const gold = mixA(stone, hx('#C9A45C'), 0.35 + 0.35 * temple);
-    map.setLayoutProperty('city3d', 'visibility', plan > 0.01 ? 'visible' : 'none');
-    map.setPaintProperty('city3d', 'fill-extrusion-opacity', Math.min(1, plan) * 0.96);
-    map.setPaintProperty('city3d', 'fill-extrusion-color', ['match', ['get', 'kind'],
+    sceneProperty('setLayoutProperty', 'city3d', 'visibility', plan > 0.01 ? 'visible' : 'none');
+    sceneProperty('setPaintProperty', 'city3d', 'fill-extrusion-opacity', Math.min(1, plan) * 0.96);
+    sceneProperty('setPaintProperty', 'city3d', 'fill-extrusion-color', ['match', ['get', 'kind'],
       'sanctuary', rgb(gold),
       'altar', rgb(mixA(stone, BLACK, 0.12)),
       'house', rgb(mixA(stone, C.land, 0.35)),
@@ -2160,32 +2249,32 @@
     // 3D Capernaum: dark basalt houses, a paler synagogue
     const village = lerp(a.village || 0, b.village || 0, e);
     const basalt = mixA(mixA(C.land, BLACK, 0.28), C.txt, 0.06);
-    map.setLayoutProperty('village3d', 'visibility', village > 0.01 ? 'visible' : 'none');
-    map.setPaintProperty('village3d', 'fill-extrusion-opacity', Math.min(1, village) * 0.96);
-    map.setPaintProperty('village3d', 'fill-extrusion-color', ['match', ['get', 'kind'],
+    sceneProperty('setLayoutProperty', 'village3d', 'visibility', village > 0.01 ? 'visible' : 'none');
+    sceneProperty('setPaintProperty', 'village3d', 'fill-extrusion-opacity', Math.min(1, village) * 0.96);
+    sceneProperty('setPaintProperty', 'village3d', 'fill-extrusion-color', ['match', ['get', 'kind'],
       'synagogue', rgb(mixA(stone, hx('#C9A45C'), 0.25)),
       'podium', rgb(mixA(basalt, stone, 0.4)),
       rgb(basalt)]);
-    map.setPaintProperty('pools', 'fill-color', rgb(C.lake));
-    map.setPaintProperty('pools', 'fill-opacity', plan);
+    sceneProperty('setPaintProperty', 'pools', 'fill-color', rgb(C.lake));
+    sceneProperty('setPaintProperty', 'pools', 'fill-opacity', plan);
     const isTemple = ['==', ['get', 'kind'], 'temple'];
     const reconFill = mixA(C.land, C.txt, 0.08);
-    map.setPaintProperty('temple-fill', 'fill-color', ['case', isTemple, rgb(mixA(reconFill, C.accent, temple * 0.25)), rgb(reconFill)]);
-    map.setPaintProperty('temple-fill', 'fill-opacity', 0);
-    map.setPaintProperty('temple-line', 'line-color', ['case', isTemple, rgb(mixA(wallC, C.accent, temple)), rgb(wallC)]);
-    map.setPaintProperty('temple-line', 'line-width', ['case', isTemple, 1.2 + temple * 1.4, 1]);
+    sceneProperty('setPaintProperty', 'temple-fill', 'fill-color', ['case', isTemple, rgb(mixA(reconFill, C.accent, temple * 0.25)), rgb(reconFill)]);
+    sceneProperty('setPaintProperty', 'temple-fill', 'fill-opacity', 0);
+    sceneProperty('setPaintProperty', 'temple-line', 'line-color', ['case', isTemple, rgb(mixA(wallC, C.accent, temple)), rgb(wallC)]);
+    sceneProperty('setPaintProperty', 'temple-line', 'line-width', ['case', isTemple, 1.2 + temple * 1.4, 1]);
     const WHITE = [255, 255, 255];
-    map.setPaintProperty('hillshade', 'hillshade-shadow-color', rgb(mixA(C.land, BLACK, 0.45)));
-    map.setPaintProperty('hillshade', 'hillshade-highlight-color', rgb(mixA(C.land, WHITE, 0.3)));
-    map.setPaintProperty('hillshade', 'hillshade-accent-color', rgb(mixA(C.land, BLACK, 0.25)));
+    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-shadow-color', rgb(mixA(C.land, BLACK, 0.45)));
+    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-highlight-color', rgb(mixA(C.land, WHITE, 0.3)));
+    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-accent-color', rgb(mixA(C.land, BLACK, 0.25)));
     if (hasContours) {
-      map.setPaintProperty('contours', 'line-color', rgb(mixA(C.land, C.txt, 0.2)));
-      map.setPaintProperty('contours', 'line-opacity', 0.45 + 0.35 * plan);
+      sceneProperty('setPaintProperty', 'contours', 'line-color', rgb(mixA(C.land, C.txt, 0.2)));
+      sceneProperty('setPaintProperty', 'contours', 'line-opacity', 0.45 + 0.35 * plan);
     }
-    map.setPaintProperty('temple-line', 'line-opacity', 0);
-    ['area-fill', 'ring-line', 'route'].forEach((id) => map.setPaintProperty(id, id === 'area-fill' ? 'fill-color' : 'line-color', rgb(C.accent)));
-    map.setPaintProperty('area-line', 'line-color', rgb(C.accent));
-    map.setPaintProperty('link', 'line-color', rgb(mixA(C.land, C.txt, 0.5)));
+    sceneProperty('setPaintProperty', 'temple-line', 'line-opacity', 0);
+    ['area-fill', 'ring-line', 'route'].forEach((id) => sceneProperty('setPaintProperty', id, id === 'area-fill' ? 'fill-color' : 'line-color', rgb(C.accent)));
+    sceneProperty('setPaintProperty', 'area-line', 'line-color', rgb(C.accent));
+    sceneProperty('setPaintProperty', 'link', 'line-color', rgb(mixA(C.land, C.txt, 0.5)));
 
     root.setProperty('--m-txt', rgb(C.txt));
     root.setProperty('--m-muted', rgb(C.muted));
@@ -2237,7 +2326,11 @@
     const zkey = zf.map((f) => f.properties.op.toFixed(2) + f.properties.color).join('|');
     if (zkey !== lastZoneKey) { lastZoneKey = zkey; map.getSource('zones').setData({ type: 'FeatureCollection', features: zf }); }
     overlay.features = feats;
-    map.getSource('overlay').setData(overlay);
+    const overlayKey = JSON.stringify(feats);
+    if (overlayKey !== lastOverlayKey) {
+      lastOverlayKey = overlayKey;
+      map.getSource('overlay').setData(overlay);
+    }
 
     // Explore button appears over Jerusalem scenes
     exploreBtn.style.opacity = clamp((plan - 0.5) * 2, 0, 1).toFixed(2);
@@ -2269,6 +2362,7 @@
     else if (!OG) offerResume();
     render();
     document.body.classList.add('ready');
+    showBack();
     // The 3D models are the largest files; fetch them after the first draw so
     // the land, sea and names come first on a slow connection.
     let late = false;
@@ -2414,10 +2508,12 @@
     exploreClose.focus({ preventScroll: true });
   }
   function closeExplore() {
+    lastStoryCamera = '';
     setHandlers(false);
     romeOn = false; romeBtn.setAttribute('aria-pressed', 'false'); romeNote.hidden = true;
     exploring = false;
     document.documentElement.classList.remove('exploring');
+    showBack();
     queue();
   }
   jumps.addEventListener('click', (ev) => { const b = ev.target.closest('[data-view]'); if (b) openExplore(b.dataset.view); });

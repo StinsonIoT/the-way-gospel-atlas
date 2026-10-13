@@ -41,7 +41,11 @@
   const cache = new Map();
   const get = (url) => {
     if (!cache.has(url)) {
-      const p = fetch(url).then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); });
+      const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => ctl.abort(), 9000) : 0;
+      const p = fetch(url, ctl ? { signal: ctl.signal } : undefined)
+        .then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); })
+        .finally(() => clearTimeout(timer));
       p.catch(() => cache.delete(url));
       cache.set(url, p);
     }
@@ -151,6 +155,11 @@
   dlg.addEventListener('click', (ev) => { if (ev.target === dlg) dlg.close(); });
 
   document.addEventListener('click', (ev) => {
+    const link = ev.target.closest('a[href]');
+    const scene = link && new URL(link.href).origin === location.origin && new URL(link.href).searchParams.get('guide') === 'holyweek' ? link : null;
+    if (scene && !ev.defaultPrevented && !ev.ctrlKey && !ev.metaKey && !ev.shiftKey && !ev.altKey && ev.button === 0 && (!scene.target || scene.target === '_self')) {
+      try { sessionStorage.setItem('the-way:guide-position', JSON.stringify({ y: window.scrollY, hash: location.hash })); } catch (err) { /* optional */ }
+    }
     const a = ev.target.closest('a[data-ref]');
     if (!a || !dlg.showModal) return;
     const sp = spans(a.dataset.ref);
@@ -168,5 +177,15 @@
     loadText(t).catch(() => {
       if (t === token) textEl.innerHTML = `<p class="rd-status">The passage couldn’t be loaded right now. You can read it on <a href="${esc(a.href)}" target="_blank" rel="noopener">BibleHub</a> instead.</p>`;
     });
+  });
+  window.addEventListener('pageshow', () => {
+    try {
+      if (sessionStorage.getItem('the-way:guide-restore') !== '1') return;
+      sessionStorage.removeItem('the-way:guide-restore');
+      const saved = JSON.parse(sessionStorage.getItem('the-way:guide-position') || 'null');
+      if (!saved || !Number.isFinite(saved.y) || saved.y < 0) return;
+      const restore = () => requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved.y)));
+      if (document.fonts) document.fonts.ready.then(restore); else restore();
+    } catch (err) { /* native browser restoration remains available */ }
   });
 })();
