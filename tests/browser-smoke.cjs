@@ -69,6 +69,21 @@ async function navigate(url) {
   });
   handlers.set('Runtime.exceptionThrown', p => errors.push(p.exceptionDetails));
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
+  if (process.argv.includes('--performance')) {
+    serveOldWorker = false;
+    await require('./performance-browser.cjs')({ evaluate, send, navigate, waitFor, sleep, base, errors });
+    return;
+  }
+  if (process.argv.includes('--request-cancellation')) {
+    serveOldWorker = false;
+    await require('./request-cancellation-browser.cjs')({ evaluate, send, navigate, waitFor, base, errors });
+    return;
+  }
+  if (process.argv.includes('--resume-listening')) {
+    serveOldWorker = false;
+    await require('./listening-browser.cjs')({ evaluate, send, navigate, waitFor, sleep, base, errors });
+    return;
+  }
   if (process.argv.includes('--inspect-nazareth')) {
     serveOldWorker = false;
     for (const [name, width, height] of [['mobile', 390, 844], ['desktop', 1440, 900]]) {
@@ -190,7 +205,7 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v51').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has('the-way-v54').then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
@@ -305,6 +320,7 @@ async function navigate(url) {
     document.querySelector('[data-tour-from="bethesda"]').click();
   })()`);
   await waitFor(`document.querySelector('#t-audio').dataset.kind === 'tour' && document.querySelector('#t-audio').readyState >= 1 && document.querySelector('#t-audio').currentTime >= 4`);
+  await waitFor(`location.hash === '#s-bethesda'`);
   assert(await evaluate(`document.querySelector('#t-audio').currentTime < 5`), 'John 5:5 starts at its actual compact-array timestamp');
   await evaluate(`(() => { document.querySelector('#t-play').click(); const a = document.querySelector('#t-audio'); a.currentTime = 9.96; a.dispatchEvent(new Event('timeupdate')); })()`);
   assert.equal(await evaluate(`document.querySelector('#t-audio').dataset.kind`), 'tour', 'last fraction of final verse remains in the segment');
@@ -378,6 +394,7 @@ async function navigate(url) {
   }
   if (ws) ws.close();
   if (browser) browser.kill();
+  server.closeAllConnections();
   server.close();
   // Keep the isolated browser profile in the OS temp directory for diagnosis.
 });

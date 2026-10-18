@@ -31,7 +31,7 @@ Tapping a Scripture reference (on a card, under a verse, or inside a note) opens
 
 ## Exploring the map
 
-"Or explore the map freely" (on the title screen and in the Places tab) opens a free map of the whole land: drag, pinch, tilt and turn over the real terrain, with both 3D models. Place names appear as you zoom in, and tapping one opens its profile. Quick jumps go to Galilee, Capernaum 3D, Nazareth, Jacob's well, the Jericho road, Jerusalem 3D and Bethlehem, and every place profile has a "Show on the map" button. "Explore Jerusalem in 3D" opens the same mode over the city.
+"Or explore the map freely" (on the title screen and in the Places tab) opens a free map of the whole land: drag, pinch, tilt and turn over the real terrain, with both 3D models. Place names appear as you zoom in, and tapping one opens its profile. The 3D building models load as you approach their scenes or explore nearby. Each is saved after visiting; an unvisited model needs a connection. Quick jumps go to Galilee, Capernaum 3D, Nazareth, Jacob's well, the Jericho road, Jerusalem 3D and Bethlehem, and every place profile has a "Show on the map" button. "Explore Jerusalem in 3D" opens the same mode over the city.
 
 ## Getting around
 
@@ -78,6 +78,8 @@ Scenes grow to fit their cards, so nothing slides under the header with larger t
 **Play the story** (on the title screen) or the headphones on any scene starts a listen-through: each scene's passage is read aloud from the BSB audio recordings, then the map glides on to the next scene, or to the next scene in the Gospel you are following. On phones, scene tools for listening, sharing and saving are under **More options**, inside **Read & study** on the special prayer and resurrection cards. Scenes without a passage pause for a few seconds. A bar under the header pauses, skips or stops it, and the phone's lock-screen controls work too. Scrolling away pauses the tour at the end of the passage, so you can pick up from wherever you are. If verse timings cannot be loaded, whole-chapter playback is clearly labelled; pausing while audio loads keeps it paused when the recording arrives.
 
 ## Sharing and installing
+
+Listening progress is saved on this device. **Resume listening** on the opening screen restores the scene, chapter position, narrator, speed and Gospel after a tap. Unavailable audio keeps the saved position for retry; finishing the tour clears it. The sleep timer starts fresh. Reading progress remains available separately.
 
 - **About** (`about.html`) and **Sources** (`sources.html`) pages explain how the atlas was made and list every source the notes cite.
 - Shared links show a preview card (`og.png`). Each scene also has a share button: it sends a link to `s/<scene>.html`, a small page with that scene's own preview card (`s/<scene>.jpg`) that forwards to the scene. `tools/make-share.py` regenerates these pages and images after scene changes.

@@ -282,6 +282,8 @@ dialog::backdrop { background: rgba(10, 14, 15, 0.5); }
 .resume-k { font: 600 11px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--m-accent); }
 .resume-t { font: 400 20px var(--serif); }
 .resume-go small { font: 12px var(--sans); color: var(--m-muted); }
+.resume-choices { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.resume-read { min-height: 44px; padding: 8px 12px; border: 0; background: transparent; color: var(--m-muted); font: 500 13px var(--sans); text-align: left; text-decoration: underline; cursor: pointer; }
 .resume-x { width: 44px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--m-txt) 25%, transparent); background: transparent; color: var(--m-muted); font-size: 22px; cursor: pointer; }
 .credit-links { font-weight: 600; }
 .credit-links a { color: #1C2A25; }

@@ -45,7 +45,7 @@ function checkStop(player) {
   const callbacks = {}; let stopped = 0;
   const media = { dataset: { kind: 'tour' }, currentTime: 9.96, duration: 20, addEventListener: (name, fn) => { callbacks[name] = fn; } };
   const sg = { start: 1, end: 10 };
-  const env = player === 'tour' ? { tourEl: media, tour: { segs: [sg], k: 0 }, tourSegEnd: () => stopped++, sleepAt: 0, tFill: { style: {} }, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) }
+  const env = player === 'tour' ? { tourEl: media, tour: { segs: [sg], k: 0 }, tourSegEnd: () => stopped++, saveListening() {}, sleepAt: 0, tFill: { style: {} }, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) }
     : { audioEl: media, aSegs: [sg], aIdx: 0, nextSeg: () => stopped++, aFill: { style: {} } };
   vm.createContext(env);
   const variable = player === 'tour' ? 'tourEl' : 'audioEl';
@@ -68,7 +68,7 @@ checkStop('tour'); checkStop('passage');
   vm.runInContext(source.slice(source.indexOf('async function fetchJSON('), source.indexOf('const chapterCache')), ctx);
   vm.runInContext(source.slice(source.indexOf('async function buildAudio('), source.indexOf('// iPhone only lets audio start')), ctx);
   const result = await ctx.buildAudio('Mark 14:3–15:2');
-  assert.deepEqual(JSON.parse(JSON.stringify(result.segs)), [{ url: 'https://example.org/14.mp3', start: 3, end: null }, { url: 'https://example.org/15.mp3', start: 10, end: 30 }]);
+  assert.deepEqual(JSON.parse(JSON.stringify(result.segs)), [{ id: 'mark:14:3:999', url: 'https://example.org/14.mp3', start: 3, end: null }, { id: 'mark:15:1:2', url: 'https://example.org/15.mp3', start: 10, end: 30 }]);
   ctx.TS.reader = 'gilbert';
   ctx.loadChapter = async (book, n) => ({ ...chapter([1, 2, 3]), thisChapterAudioLinks: n === 14 ? { gilbert: 'https://example.org/gilbert.mp3' } : {} });
   const missing = await ctx.buildAudio('Mark 14:3–15:2');

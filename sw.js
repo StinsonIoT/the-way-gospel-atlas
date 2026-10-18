@@ -5,18 +5,18 @@
 //   URLs carry a version number, so a new version is a new file.
 // - Bible passages and terrain tiles: kept in their own caches, which survive
 //   app updates. Terrain keeps the most recent tiles only.
-const APP = 'the-way-v51';
+const APP = 'the-way-v54';
 const BIBLE = 'the-way-bible';
 const TILES = 'the-way-tiles';
+const MODELS = 'the-way-models';
 const TILE_LIMIT = 900;
 const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html', 'css/page.css?v=5', 'js/reader-lite.js?v=4', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
-  'css/fonts.css?v=1', 'css/style.css?v=62',
+  'css/fonts.css?v=1', 'css/style.css?v=63',
   'js/scenes.js?v=55', 'js/places.js?v=7', 'js/study.js?v=11', 'js/otrefs.js?v=1',
-  'js/guide.js?v=2', 'js/tour.js?v=2', 'js/audio-boundaries.js?v=1', 'js/experience.js?v=50', 'js/app.js?v=70',
+  'js/guide.js?v=2', 'js/tour.js?v=2', 'js/audio-boundaries.js?v=1', 'js/experience.js?v=50', 'js/listening.js?v=1', 'js/app.js?v=73',
   'vendor/maplibre-contour.min.js?v=47',
   'data/land-wide.json?v=1', 'data/rome.json?v=1', 'data/land.json?v=9',
   'data/lakes.json?v=11', 'data/rivers.json?v=9', 'data/jerusalem.json?v=10',
-  'data/jerusalem3d.json?v=10', 'data/capernaum3d.json?v=12',
   'vendor/maplibre-gl.js', 'vendor/maplibre-gl.css',
   'fonts/newsreader.woff2', 'fonts/newsreader-italic.woff2', 'fonts/instrument-sans-400.woff2', 'fonts/instrument-sans-500.woff2', 'fonts/instrument-sans-600.woff2'];
 
@@ -70,7 +70,10 @@ self.addEventListener('fetch', (e) => {
       .then((r) => r || match('index.html')));
     return;
   }
-  if (url.origin === self.location.origin) { e.respondWith(cacheFirst(APP, req, e)); return; }
+  if (url.origin === self.location.origin) {
+    const model = /\/(?:jerusalem3d|capernaum3d)\.json$/.test(url.pathname);
+    e.respondWith(cacheFirst(model ? MODELS : APP, req, e)); return;
+  }
   if (url.hostname === 'bible.helloao.org') { e.respondWith(cacheFirst(BIBLE, req, e)); return; }
   if (url.hostname === 's3.amazonaws.com' && url.pathname.includes('/terrarium/')) { e.respondWith(cacheFirst(TILES, req, e)); return; }
   // Everything else (audio, other sites) goes straight to the network.

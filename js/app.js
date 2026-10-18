@@ -13,6 +13,7 @@
   const HOLD = 0.35;
   const TRAVEL_HOLD = 0.12;
   const experience = window.WAY_EXPERIENCE;
+  const LISTEN = window.WAY_LISTEN;
 
   // ---------- small helpers ----------
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -469,6 +470,44 @@
   map.getCanvas().setAttribute('tabindex', '-1');
 
   window.__wayMap = map; // for debugging in the browser console
+  // Fetch buildings only near a scene/view that needs them. Completed models
+  // stay in their sources; a failed download can be retried after a short wait.
+  const modelLoads = new Map(), modelRetryAt = new Map();
+  function ensureModel(id) {
+    if (modelLoads.has(id) || performance.now() < (modelRetryAt.get(id) || 0)) return;
+    const url = id === 'city3d' ? 'data/jerusalem3d.json?v=10' : 'data/capernaum3d.json?v=12';
+    const pending = fetchJSON(url, false, undefined, 30000).then(async json => {
+      map.getSource(id).setData(json);
+      // The first model can arrive before the service worker takes control.
+      // Save it directly too, so that first visit is available offline.
+      if (window.caches) try {
+        const cache = await caches.open('the-way-models');
+        await cache.put(new URL(url, location.href).href, new Response(JSON.stringify(json), { headers: { 'Content-Type': 'application/json' } }));
+      } catch (err) { /* storage failure must not hide an available model */ }
+    }).catch(() => {
+      modelLoads.delete(id); modelRetryAt.set(id, performance.now() + 9000);
+      setTimeout(() => { if (navigator.onLine !== false) refreshModels(); }, 9000);
+    });
+    modelLoads.set(id, pending);
+  }
+  function storyModels(i) {
+    // One scene ahead gives the model time to arrive before its close-up.
+    const near = STEPS.slice(Math.max(0, i), Math.min(N, i + 2));
+    if (near.some(s => s.plan > 0)) ensureModel('city3d');
+    if (near.some(s => s.village > 0)) ensureModel('village3d');
+  }
+  function viewModels(view) {
+    if (view.zoom < 11) return;
+    const lng = view.center.lng ?? view.center[0], lat = view.center.lat ?? view.center[1];
+    if (Math.abs(lng - 35.2322) < .1 && Math.abs(lat - 31.7757) < .1) ensureModel('city3d');
+    if (Math.abs(lng - 35.5752) < .1 && Math.abs(lat - 32.8812) < .1) ensureModel('village3d');
+  }
+  function refreshModels() {
+    if (exploring) viewModels({ center: map.getCenter(), zoom: map.getZoom() });
+    else storyModels(Math.floor(progress()));
+  }
+  window.addEventListener('online', () => { modelRetryAt.clear(); refreshModels(); });
+  map.on('moveend', () => { if (exploring) viewModels({ center: map.getCenter(), zoom: map.getZoom() }); });
 
   // ---------- markers (HTML, constant size on screen) ----------
   const markerEls = {};
@@ -507,7 +546,7 @@
       const el = markerEls[id];
       if (!el) return;
       const op = +el._op || 0;
-      if (el.style.visibility === 'hidden' || op < 0.02) { el.classList.remove('clash'); return; }
+      if (el.style.visibility === 'hidden' || op < 0.02) return;
       live.push({ id, el, op, i, r: RANK[PLACES[id].type] ?? 3 });
     });
     // The scene arriving (or on screen) wins over the one fading out; then rank.
@@ -531,20 +570,32 @@
     const hits = (r, q) => r.left < q.right + pad && r.right > q.left - pad && r.top < q.bottom + pad && r.bottom > q.top - pad;
     const vw = window.innerWidth;
     const blocked = (r, id) => r.left < 2 || r.right > vw - 2 || placed.some((q) => hits(r, q)) || marks.some((m) => m.id !== id && hits(r, m.r));
+    // Read all label geometry before changing any classes. Mirroring a label
+    // around its anchor gives its other-side rectangle without another layout.
+    live.forEach(v => {
+      const el = v.el;
+      v.home = el._home || (el._home = el.classList.contains('mk-left') ? 'mk-left' : el.classList.contains('mk-right') ? 'mk-right' : '');
+      const r = el.querySelector('.lbl').getBoundingClientRect();
+      if (v.home) {
+        const x = el.getBoundingClientRect().left;
+        const reflected = { left: 2 * x - r.right, right: 2 * x - r.left, top: r.top, bottom: r.bottom };
+        v.rect = el.classList.contains(v.home) ? r : reflected;
+        v.otherRect = el.classList.contains(v.home) ? reflected : r;
+      } else v.rect = r;
+    });
     live.forEach((v) => {
-      const el = v.el, lbl = el.querySelector('.lbl');
+      const el = v.el;
       // Labels beside a dot may flip to the other side to avoid a clash.
-      const home = el._home || (el._home = el.classList.contains('mk-left') ? 'mk-left' : el.classList.contains('mk-right') ? 'mk-right' : '');
-      if (home && !el.classList.contains(home)) { el.classList.remove('mk-left', 'mk-right'); el.classList.add(home); }
-      let r = lbl.getBoundingClientRect();
+      const home = v.home;
+      let side = home, r = v.rect;
       let hit = blocked(r, v.id);
       if (hit && home) {
         const other = home === 'mk-left' ? 'mk-right' : 'mk-left';
-        el.classList.replace(home, other);
-        r = lbl.getBoundingClientRect();
+        r = v.otherRect;
         hit = blocked(r, v.id);
-        if (hit) el.classList.replace(other, home);
+        if (!hit) side = other;
       }
+      if (side && !el.classList.contains(side)) { el.classList.remove('mk-left', 'mk-right'); el.classList.add(side); }
       el.classList.toggle('clash', hit);
       if (!hit) placed.push(r);
     });
@@ -552,11 +603,13 @@
   function queueDeclutter() {
     if (clashQueued) return;
     clashQueued = true;
-    const delay = Math.max(0, 120 - (performance.now() - lastClashAt));
+    const delay = Math.max(0, 250 - (performance.now() - lastClashAt));
     if (delay) setTimeout(() => requestAnimationFrame(declutter), delay);
     else requestAnimationFrame(declutter);
   }
-  map.on('render', queueDeclutter);
+  map.on('move', queueDeclutter);
+  map.on('moveend', queueDeclutter);
+  map.on('idle', queueDeclutter);
 
   // ---------- cameras ----------
   let cams = [];
@@ -706,8 +759,20 @@
     let last = null;
     try { last = localStorage.getItem('the-way:last'); } catch (err) { return; }
     const i = STEPS.findIndex((st) => st.id === last);
-    if (i < 3) return;
     const box = document.getElementById('resume');
+    const listening = LISTEN.read(STEPS);
+    if (i < 3 && !listening) { box.hidden = true; box.innerHTML = ''; return; }
+    if (listening) {
+      const scene = STEPS.find(st => st.id === listening.scene);
+      const reader = listening.settings.reader;
+      box.innerHTML = `<div class="resume-choices"><button type="button" class="resume-go resume-listen"><span class="resume-k">Resume listening</span><span class="resume-t">${esc(stepLabel(scene))}</span><small>${esc(reader ? reader.charAt(0).toUpperCase() + reader.slice(1) : 'Scripture audio')} · ${listening.settings.rate}×</small></button>${i >= 3 ? '<button type="button" class="resume-read">Or continue reading</button>' : ''}</div><button type="button" class="resume-x" aria-label="Forget saved listening position">×</button>`;
+      box.hidden = false;
+      box.querySelector('.resume-listen').addEventListener('click', () => { box.hidden = true; resumeListening(listening); });
+      const read = box.querySelector('.resume-read');
+      if (read) read.addEventListener('click', () => { box.hidden = true; goTo(i); });
+      box.querySelector('.resume-x').addEventListener('click', () => { LISTEN.clear(); offerResume(); });
+      return;
+    }
     const g = groups.find((gg) => gg.steps.includes(i));
     box.innerHTML = `<button type="button" class="resume-go"><span class="resume-k">Continue where you left off</span><span class="resume-t">${esc(stepLabel(STEPS[i]))}</span><small>${esc(g && g.num ? g.num + ' · ' + g.title : '')}</small></button><button type="button" class="resume-x" aria-label="Start from the beginning instead">×</button>`;
     box.hidden = false;
@@ -1528,15 +1593,18 @@
     '1 chronicles': '1CH', '2 chronicles': '2CH', hosea: 'HOS', zechariah: 'ZEC',
     numbers: 'NUM', jeremiah: 'JER', daniel: 'DAN', joel: 'JOL', jonah: 'JON', malachi: 'MAL', romans: 'ROM', '1 corinthians': '1CO', galatians: 'GAL' };
   const HUB_BOOK = Object.fromEntries(Object.keys(API_BOOK).map((b) => [b, b.replace(' ', '_')]));
-  async function fetchJSON(url, missingOK = false) {
+  async function fetchJSON(url, missingOK = false, signal, deadline = 9000) {
+    signal?.throwIfAborted();
     const ctl = new AbortController();
-    const timer = setTimeout(() => ctl.abort(), 9000);
+    const abort = () => ctl.abort(signal.reason);
+    signal?.addEventListener('abort', abort, { once: true });
+    const timer = setTimeout(() => ctl.abort(), deadline);
     try {
       const response = await fetch(url, { signal: ctl.signal });
       if (missingOK && response.status === 404) return null;
       if (!response.ok) throw new Error(response.status);
       return await response.json();
-    } finally { clearTimeout(timer); }
+    } finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); }
   }
   const chapterCache = new Map();
   // A chapter is used only if it really is the BSB and has verses in it.
@@ -1547,33 +1615,33 @@
   // the same translation; it has no audio and no footnotes.
   const BSB_LOCAL_V = 1;
   const localBooks = new Map();
-  function loadLocalChapter(book, c) {
+  async function loadLocalChapter(book, c, signal) {
+    signal?.throwIfAborted();
     const code = API_BOOK[book];
     if (!localBooks.has(code)) {
-      const pr = fetch(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
-      pr.catch(() => localBooks.delete(code));
-      localBooks.set(code, pr);
+      const json = await fetchJSON(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`, false, signal);
+      signal?.throwIfAborted();
+      localBooks.set(code, json);
     }
-    return localBooks.get(code).then((b) => {
-      const content = b.translation === 'BSB' && b.chapters && b.chapters[String(c)];
-      if (!content) throw new Error('not in the saved copy');
-      return { translation: { id: 'BSB' }, book: { commonName: b.commonName }, chapter: { number: c, content }, savedCopy: true };
-    });
+    const b = localBooks.get(code);
+    const content = b.translation === 'BSB' && b.chapters && b.chapters[String(c)];
+    if (!content) throw new Error('not in the saved copy');
+    return { translation: { id: 'BSB' }, book: { commonName: b.commonName }, chapter: { number: c, content }, savedCopy: true };
   }
-  function loadChapter(book, c) {
+  async function loadChapter(book, c, signal) {
+    signal?.throwIfAborted();
     const key = book + c;
     if (!chapterCache.has(key)) {
-      const ctl = typeof AbortController === 'function' ? new AbortController() : null;
-      const timer = ctl ? setTimeout(() => ctl.abort(), 9000) : 0;
-      const pr = fetch(`https://bible.helloao.org/api/BSB/${API_BOOK[book]}/${c}.json`, ctl ? { signal: ctl.signal } : undefined)
-        .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then((j) => { if (!isBSB(j)) throw new Error('unexpected reply'); return j; })
-        .finally(() => clearTimeout(timer))
-        .catch(() => loadLocalChapter(book, c));
-      pr.catch(() => chapterCache.delete(key));
-      // A saved-copy chapter is not kept, so the next opening tries the API again.
-      pr.then((j) => { if (j.savedCopy) chapterCache.delete(key); }, () => {});
-      chapterCache.set(key, pr);
+      try {
+        const json = await fetchJSON(`https://bible.helloao.org/api/BSB/${API_BOOK[book]}/${c}.json`, false, signal);
+        signal?.throwIfAborted();
+        if (!isBSB(json)) throw new Error('unexpected reply');
+        // Cache completed data only: each active reader owns its pending requests.
+        chapterCache.set(key, json);
+      } catch (err) {
+        signal?.throwIfAborted();
+        return loadLocalChapter(book, c, signal);
+      }
     }
     return chapterCache.get(key);
   }
@@ -1607,6 +1675,7 @@
   const pHub = document.getElementById('passage-hub');
   let passageOpener = null;
   let passageToken = 0;
+  let passageLoad = null, notesLoad = null;
   // ---------- Study notes: Tyndale Open Study Notes, for the verses shown ----------
   // Each note is anchored at the first verse it covers and begins with its
   // reference ("6:30-44 …"). Loaded only when the Study notes tab is opened.
@@ -1615,12 +1684,13 @@
   const ptNotes = document.getElementById('pt-notes');
   let notesFor = [], notesToken = 0, notesShown = -1;
   const notesCache = new Map();
-  function loadNotes(book, c) {
+  async function loadNotes(book, c, signal) {
+    signal?.throwIfAborted();
     const key = book + c;
     if (!notesCache.has(key)) {
-      const pr = fetchJSON(`https://bible.helloao.org/api/c/tyndale/${API_BOOK[book]}/${c}.json`, true);
-      pr.catch(() => notesCache.delete(key));
-      notesCache.set(key, pr);
+      const json = await fetchJSON(`https://bible.helloao.org/api/c/tyndale/${API_BOOK[book]}/${c}.json`, true, signal);
+      signal?.throwIfAborted();
+      notesCache.set(key, json);
     }
     return notesCache.get(key);
   }
@@ -1637,13 +1707,16 @@
   async function showNotes() {
     const token = notesToken;
     if (notesShown === token) return;
+    notesLoad?.abort();
+    const ctl = notesLoad = new AbortController();
     pNotes.innerHTML = '<p class="p-status">Loading study notes…</p>';
     try {
       const out = [];
       for (const sp of notesFor.slice(0, 3)) {
         const last = Math.min(sp.c2, sp.c1 + 2);
         for (let c = sp.c1; c <= last; c++) {
-          const json = await loadNotes(sp.book, c);
+          const json = await loadNotes(sp.book, c, ctl.signal);
+          ctl.signal.throwIfAborted();
           if (!json || !json.chapter) continue;
           const from = c === sp.c1 && sp.v1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
           (json.chapter.content || []).filter((v) => v.type === 'verse' && v.number >= from && v.number <= to)
@@ -1655,11 +1728,12 @@
       pNotes.innerHTML = (out.length ? out.join('') : '<p class="p-status">No study notes for these verses.</p>')
         + '<p class="n-credit">From the <a href="https://tyndaleopenresources.com/" target="_blank" rel="noopener">Tyndale Open Study Notes</a> © 2022 Tyndale House Publishers, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. The notes are the editors’ own, shown unchanged.</p>';
     } catch (err) {
-      if (token === notesToken) pNotes.innerHTML = '<p class="p-status">The study notes couldn’t be loaded right now.</p><button type="button" class="notes-retry">Try again</button>';
+      if (token === notesToken && !ctl.signal.aborted) pNotes.innerHTML = '<p class="p-status">The study notes couldn’t be loaded right now.</p><button type="button" class="notes-retry">Try again</button>';
     }
   }
   function showPassageTab(name) {
     const notes = name === 'notes';
+    if (!notes) notesLoad?.abort();
     ptText.setAttribute('aria-selected', notes ? 'false' : 'true');
     ptNotes.setAttribute('aria-selected', notes ? 'true' : 'false');
     pBody.hidden = notes; pNotes.hidden = !notes;
@@ -1677,6 +1751,8 @@
     if (!spans.length) return false;
     const focus = opts.focus ? refSpans(opts.focus) : [];
     const first = spans[0];
+    passageLoad?.abort(); notesLoad?.abort();
+    const ctl = passageLoad = new AbortController();
     pTitle.textContent = opts.title || label.replace(/\s*·\s*BSB$/, '');
     pHub.href = `https://biblehub.com/bsb/${HUB_BOOK[first.book]}/${first.c1}.htm`;
     pBody.innerHTML = '<p class="p-status">Loading…</p>';
@@ -1694,7 +1770,8 @@
       for (const sp of spans.slice(0, 4)) {
         const last = Math.min(sp.c2, sp.c1 + 2);
         for (let c = sp.c1; c <= last; c++) {
-          const json = await loadChapter(sp.book, c);
+          const json = await loadChapter(sp.book, c, ctl.signal);
+          ctl.signal.throwIfAborted();
           const from = c === sp.c1 && sp.v1 ? sp.v1 : 1;
           const to = c === sp.c2 ? sp.v2 : 999;
           const head = spans.length > 1 || sp.c1 !== sp.c2 ? `<h3 class="p-ch">${esc(json.book && json.book.commonName ? json.book.commonName : label.split(' ')[0])} ${c}</h3>` : '';
@@ -1705,7 +1782,7 @@
         if (sp.c2 > last) parts.push(`<p class="p-status">The passage continues to chapter ${sp.c2}. <a href="${pHub.href}" target="_blank" rel="noopener">Read on</a>.</p>`);
       }
       if (segs.some((sg) => sg.json.savedCopy)) parts.unshift('<p class="p-saved">The Bible service couldn’t supply this passage, so this is the atlas’s saved copy of the Berean Standard Bible (the same text, without footnotes or audio).</p>');
-      if (token === passageToken) { pBody.innerHTML = parts.join(''); prepareAudio(segs, label, token); }
+      if (token === passageToken) { pBody.innerHTML = parts.join(''); prepareAudio(segs, label, token, ctl.signal); }
     } catch (err) {
       if (token === passageToken) pBody.innerHTML = `<p class="p-status">The passage couldn’t be loaded right now (it isn’t in the atlas’s saved copy either). You can read it on <a href="${pHub.href}" target="_blank" rel="noopener">BibleHub</a> instead.</p>`;
     }
@@ -1766,23 +1843,24 @@
     ['playing', 'timeupdate', 'seeked', 'ratechange'].forEach(event => media.addEventListener(event, schedule));
     ['pause', 'waiting', 'seeking', 'emptied', 'ended'].forEach(event => media.addEventListener(event, clear));
   }
-  async function prepareAudio(segs, label, token) {
+  async function prepareAudio(segs, label, token, signal) {
     try {
       const reader = (() => { const links = segs[0].json.thisChapterAudioLinks || {}; return READERS.find((r) => links[r]) || Object.keys(links)[0]; })();
       if (!reader) return;
       const out = [];
       for (const sg of segs) {
+        signal?.throwIfAborted();
         const url = (sg.json.thisChapterAudioLinks || {})[reader];
         if (!url) break;
         let start = 0, end = null;
         const tl = (sg.json.thisChapterAudioTimings || {})[reader];
         if (tl) {
           try {
-            const t = await fetchJSON(new URL(tl, 'https://bible.helloao.org/').href);
+            const t = await fetchJSON(new URL(tl, 'https://bible.helloao.org/').href, false, signal);
             const bounds = audioBounds(sg.json, t, sg.from, sg.to);
             if (!bounds) continue;
             ({ start, end } = bounds);
-          } catch (err) { /* play the whole chapter instead */ }
+          } catch (err) { signal?.throwIfAborted(); /* play the whole chapter instead */ }
         }
         out.push({ url, start, end });
       }
@@ -1832,6 +1910,8 @@
   document.getElementById('passage-close').addEventListener('click', () => passage.close());
   passage.addEventListener('click', (ev) => { if (ev.target === passage) passage.close(); });
   passage.addEventListener('close', () => {
+    passageToken++; notesToken++;
+    passageLoad?.abort(); notesLoad?.abort();
     resetAudio();
     if (passageOpener && passageOpener.focus) { try { passageOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
     passageOpener = null;
@@ -1870,14 +1950,15 @@
   }
   // The verses of a passage as audio segments: the recording of each chapter,
   // from the first verse's start time to the start of the verse after the last.
-  async function buildAudio(label) {
+  async function buildAudio(label, signal) {
     const segs = [];
     let wholeChapter = false, partial = false;
     let reader = null;
     for (const sp of refSpans(label).filter((x) => API_BOOK[x.book]).slice(0, 3)) {
       const last = Math.min(sp.c2, sp.c1 + 2);
       for (let c = sp.c1; c <= last; c++) {
-        const json = await loadChapter(sp.book, c);
+        const json = await loadChapter(sp.book, c, signal);
+        signal?.throwIfAborted();
         const links = json.thisChapterAudioLinks || {};
         if (!reader) reader = (TS.reader && links[TS.reader] ? TS.reader : null) || READERS.find((r) => links[r]) || Object.keys(links)[0];
         const url = links[reader];
@@ -1887,13 +1968,13 @@
         const tl = (json.thisChapterAudioTimings || {})[reader];
         if (tl) {
           try {
-            const t = await fetchJSON(new URL(tl, 'https://bible.helloao.org/').href);
+            const t = await fetchJSON(new URL(tl, 'https://bible.helloao.org/').href, false, signal);
             const bounds = audioBounds(json, t, from, to);
             if (!bounds) { partial = true; continue; }
             ({ start, end } = bounds);
-          } catch (err) { wholeChapter = true; }
+          } catch (err) { signal?.throwIfAborted(); wholeChapter = true; }
         } else wholeChapter = true;
-        segs.push({ url, start, end });
+        segs.push({ id: `${sp.book}:${c}:${from}:${to}`, url, start, end });
       }
     }
     return { reader, segs, wholeChapter, partial };
@@ -1915,6 +1996,34 @@
     if (pr && pr.catch) pr.catch(() => {});
   }
   let tour = null, tourToken = 0, tourDwell = 0, glideTouch = false;
+  let tourLoad = null;
+  let listeningWriteAt = 0;
+  function saveListening(force = false) {
+    if (!tour || tour.silent || tour.loading || tour.pendingSeek || tour.resumeBookmark && !tour.segs.length) return;
+    const now = Date.now();
+    if (!force && now - listeningWriteAt < 2000) return;
+    let i = tour.i, segment = null;
+    if (tourEl.dataset.kind === 'done') {
+      i = tourNext(i);
+      if (i < 0) { LISTEN.clear(); return; }
+    } else {
+      const sg = tour.segs[tour.k];
+      if (sg?.id && tourEl.dataset.kind === 'tour') segment = { id: sg.id, start: sg.start, end: sg.end, offset: Math.max(0, tourEl.currentTime - sg.start) };
+    }
+    const bookmark = { v: 1, scene: STEPS[i].id, end: STEPS[tourEnd].id, follow: follow || null,
+      ref: i === tour.i ? tour.label || '' : tourRef(STEPS[i]) || '',
+      settings: { reader: tour.reader || TS.reader || '', rate: +TS.rate, len: TS.len === 'key' ? 'key' : 'full' }, segment };
+    LISTEN.write(bookmark, STEPS);
+    listeningWriteAt = now;
+  }
+  function resumeListening(bookmark) {
+    Object.assign(TS, { how: 'listen', len: bookmark.settings.len, reader: bookmark.settings.reader, rate: bookmark.settings.rate, where: 'here', sleep: '0' });
+    saveTS();
+    setFollow(bookmark.follow);
+    startTourAt(STEPS.findIndex(s => s.id === bookmark.scene), STEPS.findIndex(s => s.id === bookmark.end), bookmark);
+  }
+  window.addEventListener('pagehide', () => saveListening(true));
+  document.addEventListener('visibilitychange', () => { if (document.hidden) saveListening(true); });
   window.addEventListener('touchstart', () => { glideTouch = true; }, { passive: true });
   const tourNext = (i) => {
     const n = follow ? followList.find((x) => x > i) : (i + 1 < N ? i + 1 : null);
@@ -1929,6 +2038,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden && tour && tour.playing && tour.silent) holdAwake(true); });
   function setTourPlaying(on) {
     if (tour) tour.playing = on;
+    if (!on) saveListening(true);
     holdAwake(on && !!tour && tour.silent);
     tourBar.classList.toggle('playing', on);
     tPlay.setAttribute('aria-label', on ? 'Pause' : 'Play');
@@ -1958,8 +2068,10 @@
       setTimeout(() => finish(!glideTouch), dur + 600); // if frames stop (screen locked)
     });
   }
-  async function tourPlay(i) {
+  async function tourPlay(i, bookmark = null) {
     const token = ++tourToken;
+    tourLoad?.abort();
+    const ctl = tourLoad = new AbortController();
     // A tour takes over from menu jumps, including their delayed position fixes.
     aim = -1;
     touchedSinceJump = true;
@@ -1969,7 +2081,7 @@
     const st = STEPS[i];
     const silent = TS.how === 'silent';
     const label = silent ? null : tourRef(st);
-    tour = { i, segs: [], k: 0, label, playing: true, ended: false, silent, loading: true };
+    tour = { i, segs: [], k: 0, label, playing: true, ended: false, silent, loading: true, resumeBookmark: bookmark };
     document.documentElement.classList.add('touring');
     tourBar.hidden = false;
     tTitle.textContent = stepLabel(st);
@@ -1980,39 +2092,62 @@
     if ('mediaSession' in navigator && !silent) {
       try { navigator.mediaSession.metadata = new MediaMetadata({ title: stepLabel(st), artist: label ? label + ' · Berean Standard Bible' : 'The Way', album: 'The Way', artwork: [{ src: 'icon-512.png', sizes: '512x512', type: 'image/png' }] }); } catch (err) { /* optional */ }
     }
-    const loading = label ? buildAudio(label).catch(() => ({ segs: [] })) : null;
+    const loading = label ? buildAudio(label, ctl.signal).catch(() => ({ segs: [] })) : null;
     if (Math.round(progress()) !== i) await glideTo(i);
     if (token !== tourToken) return;
     const a = loading ? await loading : { segs: [] };
     if (token !== tourToken) return;
     tour.loading = false;
     tour.segs = a.segs;
+    tour.reader = a.reader || '';
     if (tour.segs.length) {
+      tour.resumeBookmark = null;
       tSub.textContent = label + (a.reader ? ' · read by ' + a.reader.charAt(0).toUpperCase() + a.reader.slice(1) : '');
       if (a.wholeChapter) tSub.textContent += ' · whole chapter audio (verse timing unavailable)';
       if (a.partial) tSub.textContent += ' · some passage audio unavailable';
-      playTourSeg(0, tour.playing);
+      const restored = bookmark ? LISTEN.position(bookmark, tour.segs, tour.reader, label) : { index: 0, time: tour.segs[0].start };
+      if (bookmark?.segment && !restored.restored) tSub.textContent += ' · saved position unavailable; starting this passage';
+      playTourSeg(restored.index, tour.playing, restored.time);
     } else {
       if (label) tSub.textContent = label + ' · audio unavailable';
+      if (bookmark) {
+        setTourPlaying(false);
+        tSub.textContent += ' · tap play to retry';
+        return;
+      }
       if (tour.playing) dwell(token);
+      saveListening(true);
     }
     if (silent) return;
     // Fetch the next passage while this one plays.
     const n = tourNext(i);
     const nl = n >= 0 ? tourRef(STEPS[n]) : null;
-    if (nl) refSpans(nl).filter((sp) => API_BOOK[sp.book]).slice(0, 1).forEach((sp) => loadChapter(sp.book, sp.c1).catch(() => {}));
+    if (nl) refSpans(nl).filter((sp) => API_BOOK[sp.book]).slice(0, 1).forEach((sp) => loadChapter(sp.book, sp.c1, ctl.signal).catch(() => {}));
   }
-  function playTourSeg(k, autoplay = true) {
+  function playTourSeg(k, autoplay = true, startAt) {
     const sg = tour.segs[k];
+    const token = tourToken;
     tour.k = k;
+    tour.pendingSeek = true;
     tourEl.dataset.kind = 'tour';
     if (tourEl.getAttribute('src') !== sg.url) tourEl.src = sg.url;
     tourEl.defaultPlaybackRate = +TS.rate || 1; tourEl.playbackRate = +TS.rate || 1;
-    const seek = () => { try { tourEl.currentTime = sg.start; } catch (err) { /* ignore */ } };
+    const seek = () => {
+      if (token !== tourToken || !tour || tour.k !== k || tourEl.getAttribute('src') !== sg.url) return;
+      try {
+        const limit = sg.end == null ? Infinity : Math.max(sg.start, sg.end - .05);
+        tourEl.currentTime = Math.max(sg.start, Math.min(limit, startAt == null ? sg.start : startAt));
+        tour.pendingSeek = false;
+        saveListening(true);
+      } catch (err) { /* preserve the previous bookmark until media can seek */ }
+    };
     if (tourEl.readyState >= 1) seek(); else tourEl.addEventListener('loadedmetadata', seek, { once: true });
     if (!autoplay) return;
     const pr = tourEl.play();
-    if (pr && pr.catch) pr.catch(() => { setTourPlaying(false); tSub.textContent = 'Tap play to listen'; });
+    if (pr && pr.catch) pr.catch(() => {
+      if (token !== tourToken || !tour || tour.k !== k || tourEl.getAttribute('src') !== sg.url) return;
+      setTourPlaying(false); tSub.textContent = 'Tap play to listen';
+    });
   }
   function dwell(token) {
     const st = STEPS[tour.i];
@@ -2040,6 +2175,7 @@
   }
   function sceneDone() {
     if (!tour) return;
+    saveListening(true);
     if (sleepOver()) return;
     // If the reader scrolled away, stop here and let them pick up from there.
     if (Math.round(progress()) !== tour.i) { tour.ended = true; setTourPlaying(false); tSub.textContent = 'Paused · tap play to listen from here'; return; }
@@ -2049,11 +2185,15 @@
     tourDwell = setTimeout(() => { if (token === tourToken && tour && tour.playing) tourPlay(n); }, 900);
   }
   function endTour(finished) {
+    saveListening(true);
     tourToken++;
+    tourLoad?.abort();
     clearTimeout(tourDwell);
     tourEl.pause();
     tour = null;
+    if (finished) LISTEN.clear();
     setTourPlaying(false);
+    if (!OG) offerResume();
     if (finished) {
       tTitle.textContent = 'The end of the story';
       tSub.textContent = 'Thank you for listening.';
@@ -2078,6 +2218,7 @@
     const end = sg.end != null ? sg.end : tourEl.duration;
     const span = Math.max(0.1, (end || sg.start + 1) - sg.start);
     tFill.style.width = (100 * (tour.k + clamp((tourEl.currentTime - sg.start) / span, 0, 1)) / tour.segs.length).toFixed(1) + '%';
+    saveListening();
   });
   tourEl.addEventListener('ended', () => { if (tour && tourEl.dataset.kind === 'tour') tourSegEnd(); });
   function tourSegEnd() {
@@ -2090,8 +2231,9 @@
   watchAudioEnd(tourEl, () => tour && tour.playing && tourEl.dataset.kind === 'tour' ? tour.segs[tour.k] : null, tourSegEnd);
   tourEl.addEventListener('pause', () => { if (tour && tour.playing && tourEl.dataset.kind === 'tour' && !tourEl.ended) setTourPlaying(false); });
   tourEl.addEventListener('play', () => { if (tour && tourEl.dataset.kind === 'tour') setTourPlaying(true); });
+  tourEl.addEventListener('seeked', () => saveListening(true));
   const groupEnd = (i) => { const g = groups.find((gg) => gg.steps.includes(i)); return g ? g.steps[g.steps.length - 1] : N - 1; };
-  function startTourAt(i, end) {
+  function startTourAt(i, end, bookmark) {
     const from = Math.max(1, i);
     tourEnd = end != null ? end : N - 1;
     if (TS.sleep === 'chapter') tourEnd = Math.min(tourEnd, groupEnd(from));
@@ -2099,7 +2241,7 @@
     if (TS.how !== 'silent') unlockTour();
     if (exploring) closeExplore();
     if (toc.open) toc.close();
-    tourPlay(from);
+    tourPlay(from, bookmark);
   }
 
   // ---------- Play the story: the settings sheet ----------
@@ -2154,10 +2296,15 @@
     if (tour.playing) { tourPause(); return; }
     const r = Math.round(progress());
     if (tour.ended || r !== tour.i) { startTourAt(r); return; }
+    if (tour.resumeBookmark && !tour.segs.length) { startTourAt(tour.i, tourEnd, tour.resumeBookmark); return; }
     setTourPlaying(true);
     if (tour.loading) return;
     if (tourEl.dataset.kind === 'done') sceneDone();
-    else if (tour.segs.length) { const pr = tourEl.play(); if (pr && pr.catch) pr.catch(() => setTourPlaying(false)); }
+    else if (tour.segs.length) {
+      const token = tourToken, k = tour.k, source = tour.segs[k].url;
+      const pr = tourEl.play();
+      if (pr && pr.catch) pr.catch(() => { if (token === tourToken && tour && tour.k === k && tourEl.getAttribute('src') === source) setTourPlaying(false); });
+    }
     else dwell(tourToken);
     if (sleepAt === 0 && TS.sleep !== '0' && TS.sleep !== 'chapter') sleepAt = Date.now() + (+TS.sleep) * 60000;
   });
@@ -2199,6 +2346,10 @@
     if (!cams.length || exploring) { lastStoryCamera = ''; return; }
     const p = progress();
     const i = Math.min(N - 2, Math.floor(p));
+    storyModels(i);
+    // Measure controls before camera/style writes in this frame.
+    const capEl = sections[Math.round(p)].firstElementChild;
+    const tuck = !!capEl && capEl.getBoundingClientRect().top < exploreBtn.offsetTop + exploreBtn.offsetHeight + 8;
     const f = p - i;
     // The caption hold does the pausing now; a short delay lets the leaving
     // caption fade before the map sets off.
@@ -2235,9 +2386,8 @@
     }
     // When a long caption scrolls up under the floating Explore button, step
     // the button aside so it never sits on top of the text.
-    const capEl = sections[Math.round(p)].firstElementChild;
-    const tuck = !!capEl && capEl.getBoundingClientRect().top < exploreBtn.offsetTop + exploreBtn.offsetHeight + 8;
     if (tuck !== exploreBtn._tuck) { exploreBtn.classList.toggle('tucked', tuck); exploreBtn._tuck = tuck; }
+    queueDeclutter();
     updateTimeline(p);
     noteStep(Math.round(p));
     const ch = p < .8 ? 'Chapters' : STEPS[Math.round(p)].ch;
@@ -2257,6 +2407,12 @@
   const RULER = { antipas: '#B8863B', philip: '#4F8A5F', rome: '#9C3D52', archelaus: '#8A5A8E', deca: '#4E7C99' };
   let lastZoneKey = '';
   const sceneProperties = new Map();
+  function sceneStyle(name, value) {
+    const key = 'css:' + name;
+    if (sceneProperties.get(key) === value) return;
+    sceneProperties.set(key, value);
+    root.setProperty(name, value);
+  }
   function sceneProperty(kind, layer, name, value) {
     const key = kind + ':' + layer + ':' + name;
     const signature = JSON.stringify(value);
@@ -2265,7 +2421,10 @@
     map[kind](layer, name, value);
   }
   let lastOverlayKey = '';
+  let lastApply = null;
   function apply(a, b, e, p) {
+    if (lastApply && lastApply.a === a && lastApply.b === b && lastApply.e === e && lastApply.p === p && lastApply.exploring === exploring && lastApply.romeOn === romeOn) return;
+    lastApply = { a, b, e, p, exploring, romeOn };
     const A = PALETTES[a.pal], B = PALETTES[b.pal];
     const C = {};
     ['sea', 'land', 'coast', 'lake', 'river', 'txt', 'muted', 'accent', 'trad'].forEach((k) => { C[k] = mixA(hx(A[k]), hx(B[k]), e); });
@@ -2342,16 +2501,17 @@
     sceneProperty('setPaintProperty', 'area-line', 'line-color', rgb(C.accent));
     sceneProperty('setPaintProperty', 'link', 'line-color', rgb(mixA(C.land, C.txt, 0.5)));
 
-    root.setProperty('--m-txt', rgb(C.txt));
-    root.setProperty('--m-muted', rgb(C.muted));
-    root.setProperty('--m-accent', rgb(C.accent));
-    root.setProperty('--m-trad', rgb(C.trad));
-    root.setProperty('--m-land', rgb(C.land));
-    root.setProperty('--m-label', rgb(mixA(C.land, C.txt, 0.45)));
-    root.setProperty('--m-water', rgb(mixA(C.river, C.txt, 0.2)));
-    root.setProperty('--m-track', rgb(mixA(C.land, C.txt, 0.18)));
-    root.setProperty('--torch', lerp(a.torch || 0, b.torch || 0, e).toFixed(3));
-    document.body.style.backgroundColor = rgb(C.land);
+    sceneStyle('--m-txt', rgb(C.txt));
+    sceneStyle('--m-muted', rgb(C.muted));
+    sceneStyle('--m-accent', rgb(C.accent));
+    sceneStyle('--m-trad', rgb(C.trad));
+    sceneStyle('--m-land', rgb(C.land));
+    sceneStyle('--m-label', rgb(mixA(C.land, C.txt, 0.45)));
+    sceneStyle('--m-water', rgb(mixA(C.river, C.txt, 0.2)));
+    sceneStyle('--m-track', rgb(mixA(C.land, C.txt, 0.18)));
+    sceneStyle('--torch', lerp(a.torch || 0, b.torch || 0, e).toFixed(3));
+    const background = rgb(C.land);
+    if (document.body.style.backgroundColor !== background) document.body.style.backgroundColor = background;
 
     // visibility of places, areas and routes
     const showA = experience.visible(a), showB = experience.visible(b);
@@ -2407,6 +2567,7 @@
     // Explore button appears over Jerusalem scenes
     exploreBtn.style.opacity = clamp((plan - 0.5) * 2, 0, 1).toFixed(2);
     exploreBtn.style.visibility = plan > 0.5 ? 'visible' : 'hidden';
+    queueDeclutter();
   }
 
   let queued = false;
@@ -2435,16 +2596,6 @@
     render();
     document.body.classList.add('ready');
     showBack();
-    // The 3D models are the largest files; fetch them after the first draw so
-    // the land, sea and names come first on a slow connection.
-    let late = false;
-    const loadLate = () => {
-      if (late) return; late = true;
-      map.getSource('city3d').setData('data/jerusalem3d.json?v=10');
-      map.getSource('village3d').setData('data/capernaum3d.json?v=12');
-    };
-    map.once('idle', loadLate);
-    setTimeout(loadLate, 2500);
   }
   // Start as soon as the style is ready; do not wait for terrain tiles.
   map.on('style.load', start);
@@ -2541,6 +2692,7 @@
   let flyToken = 0, userMoved = false;
   ['dragstart', 'zoomstart', 'rotatestart', 'pitchstart'].forEach((ev) => map.on(ev, (e) => { if (e.originalEvent) userMoved = true; }));
   function flyView(v) {
+    viewModels(v);
     const token = ++flyToken;
     userMoved = false;
     const pad = exPad();

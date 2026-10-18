@@ -1,6 +1,6 @@
 # The Way: guided journey upgrade
 
-Status: proposed design for user review. Product implementation has not started.
+Status: approved for implementation planning on 2026-10-17. Product implementation has not started.
 
 ## Purpose and scope
 

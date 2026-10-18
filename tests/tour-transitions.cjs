@@ -11,12 +11,13 @@ const media = {
   play: () => { media.paused = false; (events.play || []).forEach(fn => fn()); return Promise.resolve(); }
 };
 const ctx = {
-  window: {}, navigator: {}, document: { documentElement: { classList: { add() {} } } },
+  window: {}, navigator: {}, AbortController, tourLoad: null, document: { documentElement: { classList: { add() {} } } },
   tourEl: media, tourBar: {}, tTitle: {}, tSub: {}, tFill: { style: {} },
   tour: null, tourToken: 0, tourDwell: 0, sleepAt: 0,
   TS: { how: 'listen', rate: 1 },
   clearTimeout: id => timers.delete(id), setTimeout: (fn, delay) => { timers.set(++clockId, { fn, delay }); return clockId; },
   resetAudio() {}, queueDeclutter() {}, stepLabel: s => s.id,
+  saveListening() {},
   progress: () => position, glideTo: async i => { position = i; },
   setTourPlaying: on => { if (ctx.tour) ctx.tour.playing = on; },
   endTour: () => { finished = true; ctx.tour = null; },
@@ -64,6 +65,21 @@ vm.runInContext(source.slice(source.indexOf("tPlay.addEventListener('click'"), s
   resolveAudio({ segs: [] }); await pausedFallback;
   assert.equal(timers.size, 0, 'paused audio-unavailable fallback must not advance the story');
   ctx.buildAudio = originalBuilder;
+  async function checkStalePlay(fromButton) {
+    const voice = ctx.STEPS.findIndex(s => s.id === 'voice');
+    await ctx.tourPlay(voice);
+    if (fromButton) ctx.tourPause();
+    const originalPlay = media.play;
+    let rejectOld;
+    media.play = () => { media.paused = false; (events.play || []).forEach(fn => fn()); return new Promise((resolve, reject) => { rejectOld = reject; }); };
+    if (fromButton) playClick(); else await ctx.tourPlay(voice);
+    media.play = originalPlay;
+    await ctx.tourPlay(voice + 1);
+    rejectOld(Error('previous source aborted'));
+    await new Promise(resolve => setImmediate(resolve));
+    assert(ctx.tour.playing && !media.paused, 'an old play rejection must not pause the newer tour');
+  }
+  await checkStalePlay(false); await checkStalePlay(true);
   timers.clear(); position = 0;
   await ctx.tourPlay(1);
   for (let i = 1; i < ctx.STEPS.length; i++) {

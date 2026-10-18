@@ -1,0 +1,47 @@
+const assert = require('node:assert/strict');
+module.exports = async ({ evaluate, send, navigate, waitFor, sleep, base, errors }) => {
+  await send('Network.setBlockedURLs', { urls: ['*s3.amazonaws.com*'] });
+  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await navigate(base + '/');
+  await waitFor(`document.body.classList.contains('ready')`);
+  await sleep(3000);
+  const initial = await evaluate(`(() => { const m=window.__wayMap; return ['city3d','village3d'].map(id => { const d=m.getSource(id)._data; return typeof d === 'object' && d.features.length === 0; }); })()`);
+  assert.deepEqual(initial, [true, true], 'opening must leave both distant 3D models unloaded');
+  const click = selector => evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
+  await click('[data-explore="land"]');
+  await sleep(2000);
+  assert(await evaluate(`window.__wayMap.getSource('village3d')._data.features.length === 0`), 'whole-land exploration does not fetch distant buildings');
+  await click('[data-view="capernaum"]');
+  await waitFor(`window.__wayMap.getSource('village3d')._data.features?.length > 100`, 30000);
+  assert(await evaluate(`window.__wayMap.getSource('city3d')._data.features.length === 0`), 'Capernaum loads independently of Jerusalem');
+  await click('[data-view="jerusalem"]');
+  await waitFor(`window.__wayMap.getSource('city3d')._data.features?.length > 100`, 30000);
+  await waitFor(`caches.match(new URL('data/jerusalem3d.json?v=10', location.href).href).then(Boolean)`);
+  await waitFor(`caches.match(new URL('data/capernaum3d.json?v=12', location.href).href).then(Boolean)`);
+  await click('#explore-close');
+  await evaluate(`document.querySelector('#chapter-btn').click(); document.querySelector('#toc-body [data-i="0"]').click()`);
+  await sleep(1000);
+  const work = await evaluate(`(async () => {
+    const map = window.__wayMap, source=map.getSource('overlay');
+    const stats={ paintWrites:0, overlayUpdates:0, styleWrites:0 };
+    const paint=map.setPaintProperty, data=source.setData, css=CSSStyleDeclaration.prototype.setProperty;
+    map.setPaintProperty=function(...a){stats.paintWrites++;return paint.apply(this,a)};
+    source.setData=function(...a){stats.overlayUpdates++;return data.apply(this,a)};
+    CSSStyleDeclaration.prototype.setProperty=function(...a){stats.styleWrites++;return css.apply(this,a)};
+    for(let i=0;i<5;i++){ dispatchEvent(new Event('scroll')); await new Promise(r=>requestAnimationFrame(r)); }
+    map.setPaintProperty=paint;source.setData=data;CSSStyleDeclaration.prototype.setProperty=css;
+    return stats;
+  })()`);
+  assert.equal(work.paintWrites, 0, 'stationary scroll notifications do not update map paint');
+  assert.equal(work.overlayUpdates, 0, 'stationary scroll notifications do not rebuild map geometry');
+  assert.equal(work.styleWrites, 0, 'stationary scroll notifications do not rewrite global styles');
+  await waitFor(`navigator.serviceWorker.controller !== null`);
+  await send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 });
+  await navigate(base + '/#s-zechariah');
+  await waitFor(`document.body.classList.contains('ready') && window.__wayMap.getSource('city3d')._data.features?.length > 100`);
+  await navigate(base + '/#s-firstday');
+  await waitFor(`document.body.classList.contains('ready') && window.__wayMap.getSource('village3d')._data.features?.length > 100`);
+  await send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+  assert.equal(errors.length, 0, 'no uncaught errors during model loading or exploration');
+  console.log('PASS: opening avoids both models; free-map jumps load each independently; visited models reopen offline on direct scene links; stationary scrolling avoids repeated map/style updates.', JSON.stringify(work));
+};

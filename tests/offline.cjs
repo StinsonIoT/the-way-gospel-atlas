@@ -7,6 +7,8 @@ const origin = 'https://example.org/the-way-gospel-atlas/';
 async function checkWorker() {
   const hooks = {}, stores = new Map([['the-way-v36', new Map()], ['the-way-bible', new Map()], ['the-way-tiles', new Map()]]);
   const key = req => new URL(typeof req === 'string' ? req : req.url, origin).href;
+  const visitedModel = 'data/capernaum3d.json?v=12';
+  stores.set('the-way-models', new Map([[key(visitedModel), { url: key(visitedModel) }]]));
   let skipped = false;
   const caches = {
     open: async name => {
@@ -31,6 +33,7 @@ async function checkWorker() {
   assert(skipped);
   hooks.activate({ waitUntil: p => { task = p; } }); await task;
   assert(!stores.has('the-way-v36')); assert(stores.has('the-way-bible')); assert(stores.has('the-way-tiles'));
+  assert(stores.has('the-way-models'), 'visited models survive application updates');
   const index = fs.readFileSync('index.html', 'utf8');
   const assets = [...index.matchAll(/(?:src|href)="((?:js|css|vendor)\/[^\"]+)"/g)].map(m => m[1]);
   assets.push(...[...app.matchAll(/['"](data\/(?!bsb\/)[^'"`]+\.json\?v=\d+)['"]/g)].map(m => m[1]));
@@ -40,7 +43,9 @@ async function checkWorker() {
     let response;
     const lifetime = [];
     hooks.fetch({ request: { url: key(asset), method: 'GET', mode: 'cors', headers: { has: () => false } }, respondWith: p => { response = p; }, waitUntil: p => lifetime.push(p) });
-    assert(await response, 'available offline after update: ' + asset);
+    if (/data\/(?:jerusalem3d|capernaum3d)\.json/.test(asset) && asset !== visitedModel) {
+      await assert.rejects(response, /offline/, 'unvisited optional buildings are not part of the initial offline shell');
+    } else assert(await response, 'available offline after update: ' + asset);
     await Promise.all(lifetime);
   }
   skipped = false;
