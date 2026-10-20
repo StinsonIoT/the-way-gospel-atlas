@@ -302,10 +302,16 @@ async function navigate(url) {
       : String(url).endsWith('/BSB/MRK/2.json') ? original('data/bsb/MRK.json?v=1').then(r => r.json()).then(b => new Response(JSON.stringify({ ...chapter, chapter: { number: 2, content: b.chapters['2'] }, thisChapterAudioTimings: { souer: '/fixture.markTimings.json' } })))
       : String(url).endsWith('/fixture.markTimings.json') ? Promise.resolve(new Response(JSON.stringify({ verses: Array.from({ length: 28 }, (_, i) => i + 1) })))
       : original(url, options);
+    // The fixture keeps playing, so record the first position the app seeks to rather than reading the moving clock later.
+    window.firstTourSeek = null;
+    const audio = document.querySelector('#t-audio'), desc = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime');
+    Object.defineProperty(audio, 'currentTime', { configurable: true, get() { return desc.get.call(this); },
+      set(v) { if (window.firstTourSeek == null && this.dataset.kind === 'tour') window.firstTourSeek = v; desc.set.call(this, v); } });
     document.querySelector('[data-tour-from="bethesda"]').click();
   })()`);
   await waitFor(`document.querySelector('#t-audio').dataset.kind === 'tour' && document.querySelector('#t-audio').readyState >= 1 && document.querySelector('#t-audio').currentTime >= 4`);
-  assert(await evaluate(`document.querySelector('#t-audio').currentTime < 5`), 'John 5:5 starts at its actual compact-array timestamp');
+  const firstSeek = await evaluate(`window.firstTourSeek`);
+  assert(firstSeek >= 4 && firstSeek < 5, 'John 5:5 starts at its actual compact-array timestamp (first seek went to ' + firstSeek + ')');
   await evaluate(`(() => { document.querySelector('#t-play').click(); const a = document.querySelector('#t-audio'); a.currentTime = 9.96; a.dispatchEvent(new Event('timeupdate')); })()`);
   assert.equal(await evaluate(`document.querySelector('#t-audio').dataset.kind`), 'tour', 'last fraction of final verse remains in the segment');
   await evaluate(`(() => { const a = document.querySelector('#t-audio'); a.currentTime = 10; a.dispatchEvent(new Event('timeupdate')); })()`);
