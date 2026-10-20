@@ -588,6 +588,7 @@ html.following .step, html.touring .step { padding-top: calc(130px + env(safe-ar
 /* People and words in the card text: tap to explain. */
 .xp { display: inline; padding: 0; border: 0; background: none; color: inherit; font: inherit; line-height: inherit; cursor: pointer;
   text-decoration: underline dotted; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, var(--c-accent, var(--m-accent)) 75%, transparent); text-underline-offset: 3px; }
+.xp-unit { white-space: nowrap; }
 .xp:hover, .xp:focus-visible { text-decoration-style: solid; }
 /* When: a small line on each card. */
 .when { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin: 2px 0 -2px; padding: 4px 0; min-height: 30px; border: 0; background: none; color: var(--c-muted, var(--m-muted)); font: 500 12.5px var(--sans); letter-spacing: .01em; cursor: pointer; text-align: left; }

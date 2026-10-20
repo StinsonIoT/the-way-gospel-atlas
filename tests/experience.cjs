@@ -73,7 +73,7 @@ assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
   assert.equal(word.also[1], 'John 1:14'); assert.equal(word.ref[0], 'John 1:1–14 · BSB');
   assert(ctx.window.WAY.STEPS.indexOf(word) > 0 && fs.readFileSync('js/app.js', 'utf8').includes('verse-also'));
 }
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=64')&&index.includes('js/app.js?v=72'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v54'));
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=65')&&index.includes('js/app.js?v=73'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v55'));
 // Saved BSB copy: every book the reader links to is there, checksums match the manifest, and it is labelled BSB.
 {const crypto=require('crypto');const m=JSON.parse(fs.readFileSync('data/bsb/manifest.json','utf8'));assert.equal(m.translation,'BSB');
 const apiBlock=app.slice(app.indexOf('const API_BOOK ='),app.indexOf('const HUB_BOOK'));
