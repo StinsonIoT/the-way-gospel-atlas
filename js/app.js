@@ -269,6 +269,7 @@
         <div class="kicker"><span>${esc(s.kicker)}</span></div>
         <blockquote>${esc(s.verse)}</blockquote>
         <div class="verse-foot">${refLink(s.ref, 'ref')}</div>
+        ${s.also ? `<blockquote class="verse-also">${esc(s.also[0])}<cite>${esc(s.also[1])} · BSB</cite></blockquote>` : ''}
         ${s.after ? `<p class="after">${linkRefs(esc(s.after))}</p>` : ''}
         ${whenHTML(s)}${studyRow(s)}
       </article>`;

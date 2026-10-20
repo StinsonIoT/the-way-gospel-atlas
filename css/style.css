@@ -148,6 +148,8 @@ body[data-moment="annunciation"] .mk-named .nm { font-weight: 700; }
 .verse-story .ref { color: var(--c-muted); }
 .verse-story blockquote { min-width: 0; overflow-wrap: break-word; text-shadow: none; }
 .verse-story .after { color: var(--c-muted); }
+article.verse-story blockquote.verse-also { margin: 0; padding-left: 14px; border-left: 2px solid var(--c-accent); font-size: 19px; line-height: 1.45; letter-spacing: 0; }
+.verse-also cite { display: block; margin-top: 6px; font: 500 12px/1.3 var(--sans); letter-spacing: 0.03em; color: var(--c-muted); }
 .after { margin: 0; font-family: var(--serif); font-size: 17px; line-height: 1.5; color: color-mix(in srgb, var(--m-txt) 82%, var(--m-land)); }
 
 /* ---------- Explore Jerusalem ---------- */
@@ -461,7 +463,7 @@ html.touring .explore-open { top: calc(126px + env(safe-area-inset-top)); }
 /* preview-image mode (?og): just the map and the scene's title */
 html.og .top, html.og .explore-open, html.og .credits, html.og .toast, html.og .resume, html.og .hero-acts, html.og .cue { display: none !important; }
 html.og .card > :not(.kicker):not(h2) { display: none; }
-html.og .card .kicker a, html.og .verse .study, html.og .verse .after, html.og .verse .more, html.og .verse .extra { display: none; }
+html.og .card .kicker a, html.og .verse .study, html.og .verse .after, html.og .verse .verse-also, html.og .verse .more, html.og .verse .extra { display: none; }
 html.og .card { max-width: 500px; padding: 30px 32px; gap: 14px; }
 html.og .card h2 { font-size: 56px; }
 html.og .kicker { font-size: 15px; }
