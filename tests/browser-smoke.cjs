@@ -190,13 +190,22 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v54').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has('the-way-v55').then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
     await sleep(200);
     const size = await evaluate(`({ width: innerWidth, content: document.documentElement.scrollWidth })`);
     assert(size.content <= size.width + 1, `no sideways overflow at ${width}x${height}: ` + JSON.stringify(size));
+    // An opening quote or bracket must not be left at the end of a line (or closing punctuation at the start of one) away from its tap-to-explain word.
+    const stranded = await evaluate(`(() => [...document.querySelectorAll('button.xp')].filter(b => {
+      const r = b.getClientRects(); if (!r.length) return false;
+      const edge = (node, from, to, rect) => { const g = document.createRange(); g.setStart(node, from); g.setEnd(node, to); const a = g.getClientRects()[0]; return a && (a.bottom <= rect.top + 1 || a.top >= rect.bottom - 1); };
+      const p = b.previousSibling, n = b.nextSibling;
+      return (p && p.nodeType === 3 && /[“‘(\\[]$/.test(p.nodeValue) && edge(p, p.nodeValue.length - 1, p.nodeValue.length, r[0])) ||
+        (n && n.nodeType === 3 && /^[”’)\\],.;:!?]/.test(n.nodeValue) && edge(n, 0, 1, r[r.length - 1]));
+    }).map(b => b.textContent))()`);
+    assert.deepEqual(stranded, [], `no stranded quote or punctuation beside tap-to-explain words at ${width}x${height}`);
   }
   console.log('PASS: main page loads without horizontal overflow at three phone sizes.');
   await waitFor(`document.body.classList.contains('ready')`);

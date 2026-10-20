@@ -352,15 +352,29 @@
           if (p.kind === 'word') words++;
           frag = frag || document.createDocumentFragment();
           const at = m.index + m[1].length;
-          frag.appendChild(document.createTextNode(t.slice(last, at)));
+          let before = t.slice(last, at);
           const b = document.createElement('button');
           b.type = 'button';
           b.className = p.kind === 'person' ? 'xp xp-person' : 'xp';
           b.dataset.explain = key;
           b.setAttribute('aria-haspopup', 'dialog');
           b.textContent = m[2];
-          frag.appendChild(b);
-          last = at + m[2].length;
+          // An opening quote or bracket stays on the same line as the word, and closing punctuation
+          // stays with it, so neither is left alone at the end or start of a line.
+          const lead = /[“‘(\[]$/.test(before) ? before.slice(-1) : '';
+          const trail = (/^[”’)\],.;:!?]{1,2}(?=\s|$)/.exec(t.slice(at + m[2].length)) || [''])[0];
+          if (lead || trail) {
+            before = before.slice(0, before.length - lead.length);
+            const unit = document.createElement('span');
+            unit.className = 'xp-unit';
+            unit.append(lead, b, trail);
+            frag.appendChild(document.createTextNode(before));
+            frag.appendChild(unit);
+          } else {
+            frag.appendChild(document.createTextNode(before));
+            frag.appendChild(b);
+          }
+          last = at + m[2].length + trail.length;
         }
         if (frag) { frag.appendChild(document.createTextNode(t.slice(last))); node.parentNode.replaceChild(frag, node); }
       });
