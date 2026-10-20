@@ -156,7 +156,8 @@ window.WAY_WORDS = [
   { id: 'tax-collector', word: 'Tax collector', match: ['tax collectors', 'tax collector'], text: 'Local men who collected tolls and taxes for Herod’s family or for Rome, and often took more than was due (Luke 3:12–13). Many saw them as cheats and collaborators.' },
   { id: 'temple', word: 'The temple', match: [], text: 'The temple in Jerusalem, the center of Jewish worship, where sacrifices were offered. Herod the Great rebuilt it on a grand scale, beginning about 20 BC; the Romans destroyed it in AD 70.' },
   { id: 'tetrarch', word: 'Tetrarch', match: ['tetrarch'], text: 'A ruler of part of a kingdom. Herod Antipas and Philip were tetrarchs (Luke 3:1).' },
-  { id: 'unclean-spirit', word: 'Unclean spirit', match: ['unclean spirits', 'unclean spirit'], text: 'The Gospels’ name for an evil spirit, also called a demon (Mark 1:23).' }
+  { id: 'unclean-spirit', word: 'Unclean spirit', match: ['unclean spirits', 'unclean spirit'], text: 'The Gospels’ name for an evil spirit, also called a demon (Mark 1:23).' },
+  { id: 'the-word', word: 'The Word', match: ['the Word'], text: 'John’s name for Jesus (John 1:1; John 1:14). In Greek it is logos, “word”. In the Old Testament God makes the world by speaking (Genesis 1:3; Psalm 33:6), and His word comes to the prophets (Jeremiah 1:4). John says this Word was with God and was God, that all things were made through Him, and that He “became flesh” (John 1:1–3; John 1:14). Verse 17 gives His name: Jesus Christ.' },
 ];
 
 // ---------- When ----------
