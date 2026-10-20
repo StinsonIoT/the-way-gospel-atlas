@@ -56,12 +56,12 @@ module.exports = async ({ evaluate, send, navigate, waitFor, sleep, base, errors
   });
 
   await check('Begin, chapter jump, and return', async () => {
-    await click('[data-story-jump="word"]');
-    await waitFor(`location.hash === '#s-word'`);
+    await click('[data-story-jump="land"]');
+    await waitFor(`location.hash === '#s-land'`);
     await jump('pray');
     assert(await evaluate(`!document.querySelector('#back-pill').hidden`));
     await click('#back-pill');
-    await waitFor(`location.hash === '#s-word'`);
+    await waitFor(`location.hash === '#s-land'`);
   });
   await check('Deep link and resume after reopening', async () => {
     await navigate(base + '/#s-pray');
