@@ -13,7 +13,10 @@ assert.equal(steps.length, 90);
 {
   const base = { window: {} }; vm.createContext(base);
   vm.runInContext(cp.execFileSync('git', ['show', '4b074cce54e39b69467c76a90ca086824de3b7e3:js/scenes.js']).toString(), base);
-  assert.equal(JSON.stringify(steps.map(s => s.id)), JSON.stringify(base.window.WAY.STEPS.map(s => s.id)), 'all 90 scenes keep their ids and order');
+  // One intended move since the baseline: John 1 ("word") now opens chapter II, just before "rulers".
+  const expected = base.window.WAY.STEPS.map(s => s.id).filter(id => id !== 'word');
+  expected.splice(expected.indexOf('rulers'), 0, 'word');
+  assert.equal(JSON.stringify(steps.map(s => s.id)), JSON.stringify(expected), 'all 90 scenes keep their ids and order, except John 1 opens chapter II');
 }
 // Jerusalem may gain reviewed detail (tools/add-temple-detail.py): every original
 // structure must stay as it was, and only illustrative houses may be cleared.
@@ -48,7 +51,7 @@ vm.runInContext(app.slice(app.indexOf('const HARM ='),app.indexOf('const LEGEND 
 ctx.whenHTML=()=>'';ctx.legendHTML='legend';
 vm.runInContext(app.slice(app.indexOf('function cardHTML('),app.indexOf('STEPS.forEach((s, i) =>')),ctx);
 for(const s of steps){const html=ctx.cardHTML(s),plain=html.replace(/<[^>]*>/g,'').replaceAll('&amp;','&').replaceAll('&quot;','"').replaceAll('&lt;','<').replaceAll('&gt;','>');if(s.text)assert(plain.includes(s.text),s.id+' summary retained');if(s.note)assert(plain.includes(s.note),s.id+' note retained');if(s.verse)assert(plain.includes(s.verse),s.id+' quote retained');}
-const title=ctx.cardHTML(steps[0]);assert(title.includes('data-story-jump="word"')&&title.includes('data-tour-setup')&&title.includes('data-explore="land"')&&title.includes('id="resume"'));
+const title=ctx.cardHTML(steps[0]);assert(title.includes('data-story-jump="land"')&&title.includes('data-tour-setup')&&title.includes('data-explore="land"')&&title.includes('id="resume"'));
 const upper=ctx.cardHTML(steps.find(s=>s.id==='upper'));assert(upper.includes('<details class="scene-context">'));assert(upper.includes('data-save="upper"')&&upper.includes('data-share="upper"')&&upper.includes('data-tour-from="upper"'));
 const hw=ctx.cardHTML(steps.find(s=>s.id==='hw'));assert(hw.includes('holyweek.html')&&hw.includes('First day of the week'));
 const prayer = steps.find(s=>s.id==='pray');const prayerHtml=ctx.cardHTML(prayer);
@@ -62,7 +65,7 @@ assert.deepEqual(Array.from(ex.visible(steps[0])),['star','jerusalem']);
 for (const id of ex.visible(steps[0])) assert(steps[0].show.includes(id) || id==='jerusalem', id+' is an existing place');
 assert(ctx.window.WAY.PLACES.jerusalem, 'opening labels are existing places');
 assert.deepEqual(Array.from(ex.visible({show:['a','b']})),['a','b']);
-const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=62')&&index.includes('js/app.js?v=70'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v52'));
+const index=fs.readFileSync('index.html','utf8');assert(index.indexOf('js/experience.js')<index.indexOf('js/app.js'));assert(index.includes('css/style.css?v=62')&&index.includes('js/app.js?v=71'));assert(fs.readFileSync('sw.js','utf8').includes('the-way-v53'));
 // Saved BSB copy: every book the reader links to is there, checksums match the manifest, and it is labelled BSB.
 {const crypto=require('crypto');const m=JSON.parse(fs.readFileSync('data/bsb/manifest.json','utf8'));assert.equal(m.translation,'BSB');
 const apiBlock=app.slice(app.indexOf('const API_BOOK ='),app.indexOf('const HUB_BOOK'));

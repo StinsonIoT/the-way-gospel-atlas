@@ -232,7 +232,7 @@
         <h1>Follow<br>the <em>Way.</em></h1>
         <p class="lede">Walk through the life, ministry, death and resurrection of Jesus.</p>
         <div id="resume" class="resume" hidden></div>
-        <p class="hero-meta">The Gospel accounts · Berean Standard Bible</p><a class="hero-begin" href="#s-word" data-story-jump="word">Begin the journey <span aria-hidden="true">↓</span></a>
+        <p class="hero-meta">The Gospel accounts · Berean Standard Bible</p><a class="hero-begin" href="#s-land" data-story-jump="land">Begin the journey <span aria-hidden="true">↓</span></a>
         <div class="hero-second"><button type="button" class="hero-play" data-tour-setup aria-haspopup="dialog"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 L13 8 L4.5 13.2 Z"/></svg>Play the story</button><button type="button" class="hero-maplink" data-explore="land">or explore the map</button></div>
         <div class="cue" aria-hidden="true">Scroll to begin<svg viewBox="0 0 12 26"><line x1="6" y1="0" x2="6" y2="24"/><polyline points="1,19 6,25 11,19"/></svg></div>
       </div>`;

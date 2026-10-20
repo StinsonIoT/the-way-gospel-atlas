@@ -169,6 +169,7 @@ window.WAY_WHEN = {
     { from: 'decree', label: 'The birth', years: 'about 6–4 BC' },
     { from: 'nazareth', label: 'Childhood in Nazareth', years: 'from about 4 BC' },
     { from: 'twelve', label: 'Jesus at twelve', years: 'about AD 7–9' },
+    { from: 'word', label: '', years: '' },
     { from: 'rulers', label: 'The ministry begins', years: 'about AD 27–29' },
     { from: 'synagogue', label: 'The ministry', years: '' },
     { from: 'tyre', label: 'Beyond Galilee', years: '' },

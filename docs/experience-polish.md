@@ -61,3 +61,7 @@ Requested after the first iPhone review: as the reader scrolls, each caption now
 - Opening or closing details keeps the caption settled and the reader's place in the scene.
 - Jumps from the menu or a link stay on target while fonts and cards finish laying out, until the reader scrolls.
 - The camera fits each place into the map that stays visible above (or beside) its caption, measured for every scene.
+
+## Update — John 1 moved to the start of the ministry
+
+The John 1 scene (`word`, "In the beginning") used to be the first scene after the title. It now opens chapter II, just before "rulers", where Jesus' public ministry begins: a reader who starts at Bethlehem meets "the Word" only after the birth and childhood scenes, which is where its meaning is easiest to follow. Notes on the opening above that mention John 1 now apply to "The land", the first scene after the title (the map view is the same). "Begin the journey" jumps to `#s-land`; `#s-word` still works as a deep link, and saved progress is unaffected because it is stored by scene id. The 30-day plan's day 1 is now "Where the story begins", and John 1 starts the day "The Word, and the Jordan". The scene has no "when" line, because the Word is not dated. `tests/experience.cjs` still guards the scene order, with this one move as the only difference from the baseline.
