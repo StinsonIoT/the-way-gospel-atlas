@@ -210,7 +210,7 @@ window.WAY = (function () {
       kicker: 'In the beginning',
       verse: 'In the beginning was the Word, and the Word was with God, and the Word was God.',
       ref: ['John 1:1 · BSB', 'john', 1],
-      after: 'John begins before Bethlehem, before creation itself: “The Word became flesh and made His dwelling among us” (John 1:14). The story that follows happens on this map.' },
+      after: 'John begins before Bethlehem, before creation itself. He calls Jesus “the Word”, the one through whom all things were made (John 1:3). Verse 14 says the Word became flesh and made His dwelling among us, and verse 17 names Him: Jesus Christ. The story that follows happens on this map.' },
 
     { id: 'land', ch: 'The land', pal: 'day', view: V.region,
       show: ['nazareth', 'capernaum', 'jerusalem', 'bethlehem', 'galilee', 'samaria', 'judea', 'sog', 'deadsea'],
