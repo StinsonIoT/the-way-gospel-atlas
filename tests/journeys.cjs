@@ -74,8 +74,9 @@ module.exports = async ({ evaluate, send, navigate, waitFor, sleep, base, errors
   await check('Search words, references, abbreviations, and no matches', async () => {
     await click('#search-open');
     for (const [query, expected] of [['Peter', 'person:peter'], ['John 4', null], ['Mk 14:36', null], ['no_such_atlas_word_987', 'empty']]) {
-      await evaluate(`(() => { const q = document.querySelector('#q'); q.value = ${JSON.stringify(query)}; q.dispatchEvent(new Event('input', { bubbles: true })); })()`);
-      await sleep(350);
+      // Search runs after a short debounce, and a busy browser can delay it well past any fixed pause, so wait until the results list has actually been replaced.
+      await evaluate(`(() => { window.searchBefore = document.querySelector('#results').innerHTML; const q = document.querySelector('#q'); q.value = ${JSON.stringify(query)}; q.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+      await waitFor(`document.querySelector('#results').innerHTML !== window.searchBefore`);
       if (expected === 'empty') assert.equal(await evaluate(`document.querySelectorAll('#results [data-i]').length`), 0);
       else if (expected) assert(await evaluate(`!!document.querySelector('#results [data-explain="${expected}"]')`));
       else assert(await evaluate(`document.querySelectorAll('#results [data-i]').length > 0`), query + ' returns scenes');
