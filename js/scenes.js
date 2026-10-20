@@ -322,8 +322,9 @@ window.WAY = (function () {
       show: ['galilee', 'samaria', 'judea'], kind: 'verse',
       kicker: 'In the beginning',
       verse: 'In the beginning was the Word, and the Word was with God, and the Word was God.',
-      ref: ['John 1:1 · BSB', 'john', 1],
-      after: 'John’s Gospel begins before Bethlehem, before creation itself. He calls Jesus “the Word”, the one through whom all things were made (John 1:3). Verse 14 says the Word became flesh and made His dwelling among us, and verse 17 names Him: Jesus Christ. Next, “the word of God came to John” in the wilderness (Luke 3:2).' },
+      ref: ['John 1:1–14 · BSB', 'john', 1],
+      also: ['The Word became flesh and made His dwelling among us. We have seen His glory, the glory of the one and only Son from the Father, full of grace and truth.', 'John 1:14'],
+      after: 'John’s Gospel begins before Bethlehem, before creation itself. He calls Jesus “the Word”, the one through whom all things were made (John 1:3). In verse 14 the Word becomes a human being, and verse 17 names Him: Jesus Christ. Next, “the word of God came to John” in the wilderness (Luke 3:2).' },
 
     { id: 'rulers', ch: 'II · Beginnings', pal: 'day', view: [[34.55, 31.25], [36.55, 33.45]], kind: 'list', empire: 'ministry',
       show: ['z-galilee', 'z-perea', 'z-philip', 'z-judea', 'z-deca', 'r-antipas-g', 'r-antipas-p', 'r-philip', 'r-pilate', 'r-deca', 'jerusalem', 'sog', 'deadsea'],
