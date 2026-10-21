@@ -449,11 +449,13 @@
   // The terrain tiles are decoded once and shared by the tint and the water depth.
   const demCache = new Map();
   const demUrl = (z, x, y) => DEM_URL.replace('{z}', z).replace('{x}', x).replace('{y}', y);
-  function demTile(z, x, y) {
+  function demTile(z, x, y, signal) {
+    signal?.throwIfAborted();
     const key = z + '/' + x + '/' + y;
     if (!demCache.has(key)) {
+      const entry = { controller: new AbortController(), users: 0, settled: false };
       const load = (async () => {
-        const res = await fetch(demUrl(z, x, y));
+        const res = await fetch(demUrl(z, x, y), { signal: entry.controller.signal });
         if (!res.ok) throw new Error('Terrain tile ' + res.status);
         const blob = await res.blob();
         // Heights are stored in the colour channels, so ask the browser not to colour-manage or premultiply them.
@@ -464,11 +466,31 @@
         for (let i = 0, k = 0; i < d.length; i += 4, k++) h[k] = Math.round(d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768);
         return { w: bmp.width, h };
       })();
-      demCache.set(key, load);
-      load.catch(() => demCache.delete(key));
+      entry.promise = load;
+      demCache.set(key, entry);
+      load.then(() => { entry.settled = true; }, () => {
+        entry.settled = true;
+        if (demCache.get(key) === entry) demCache.delete(key);
+      });
       if (demCache.size > 90) demCache.delete(demCache.keys().next().value);
     }
-    return demCache.get(key);
+    const entry = demCache.get(key);
+    entry.users++;
+    return new Promise((resolve, reject) => {
+      let released = false;
+      const release = () => {
+        if (released) return;
+        released = true;
+        signal?.removeEventListener('abort', abort);
+        if (--entry.users === 0 && !entry.settled) {
+          if (demCache.get(key) === entry) demCache.delete(key);
+          entry.controller.abort();
+        }
+      };
+      const abort = () => { release(); reject(signal.reason); };
+      signal?.addEventListener('abort', abort, { once: true });
+      entry.promise.then((dem) => { release(); resolve(dem); }, (err) => { release(); reject(err); });
+    });
   }
   const lookCanvas = (w, h) => (typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h }));
   async function lookPng(w, h, fill) {
@@ -480,8 +502,10 @@
     return { data: await out.arrayBuffer() };
   }
   const tileOf = (params) => { const m = /(\d+)\/(\d+)\/(\d+)$/.exec(params.url); return [+m[1], +m[2], +m[3]]; };
-  async function reliefTile(params) {
-    const [z, x, y] = tileOf(params), dem = await demTile(z, x, y);
+  async function reliefTile(params, abortController) {
+    const signal = abortController?.signal;
+    const [z, x, y] = tileOf(params), dem = await demTile(z, x, y, signal);
+    signal?.throwIfAborted();
     return lookPng(dem.w, dem.w, (d) => {
       for (let i = 0, k = 0; i < d.length; i += 4, k++) {
         const c = clamp(Math.round((dem.h[k] - LOOK_LUT_MIN) / LOOK_LUT_STEP), 0, LOOK_LUT_N - 1) * 3;
@@ -516,10 +540,12 @@
       return { pts, box: [a, b, c, e] };
     }))));
   const lookRings = LOOK ? { fine: ringsOf(lookLand.fine), wide: ringsOf(lookLand.wide) } : null;
-  const DEPTH_FINE_FROM = 7; // from this tile zoom the detailed land outline is used, matching the water layers below
-  async function depthTile(params) {
+  const DEPTH_FINE_FROM = 7; // map zoom; each water layer keeps its own mask, including cached parent tiles
+  async function depthTile(params, abortController) {
+    const signal = abortController?.signal;
     const [z, x, y] = tileOf(params);
-    const [dem, rings] = await Promise.all([demTile(z, x, y), z >= DEPTH_FINE_FROM ? lookRings.fine : lookRings.wide]);
+    const [dem, rings] = await Promise.all([demTile(z, x, y, signal), params.url.startsWith('atlasdepth://fine/') ? lookRings.fine : lookRings.wide]);
+    signal?.throwIfAborted();
     if (!rings) throw new Error('Land outline unavailable');
     const size = dem.w, n = 2 ** z;
     const mercY = (lat) => { const sn = Math.sin(lat * Math.PI / 180); return 0.5 - Math.log((1 + sn) / (1 - sn)) / (4 * Math.PI); };
@@ -549,7 +575,8 @@
   if (LOOK) { maplibregl.addProtocol('atlasrelief', reliefTile); maplibregl.addProtocol('atlasdepth', depthTile); }
   const lookSources = LOOK ? {
     relief: { type: 'raster', tiles: ['atlasrelief://{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
-    depth: { type: 'raster', tiles: ['atlasdepth://{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
+    depth: { type: 'raster', tiles: ['atlasdepth://fine/{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
+    depthwide: { type: 'raster', tiles: ['atlasdepth://wide/{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
     seacover: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
     seacoverwide: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } }
   } : {};
@@ -560,7 +587,8 @@
   const lookWaterLayers = LOOK ? [
     { id: 'sea-cover-wide', type: 'fill', source: 'seacoverwide', maxzoom: DEPTH_FINE_FROM, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
     { id: 'sea-cover', type: 'fill', source: 'seacover', minzoom: DEPTH_FINE_FROM, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
-    { id: 'sea-depth', type: 'raster', source: 'depth', layout: { visibility: 'none' }, paint: { 'raster-opacity': 1, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
+    { id: 'sea-depth-wide', type: 'raster', source: 'depthwide', maxzoom: DEPTH_FINE_FROM, layout: { visibility: 'none' }, paint: { 'raster-opacity': 1, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
+    { id: 'sea-depth', type: 'raster', source: 'depth', minzoom: DEPTH_FINE_FROM, layout: { visibility: 'none' }, paint: { 'raster-opacity': 1, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
     { id: 'sea-shallows', type: 'line', source: 'seacover', minzoom: DEPTH_FINE_FROM, layout: { 'line-join': 'round' },
       paint: { 'line-color': '#FFFFFF', 'line-opacity': 0.2, 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 8, 9, 16, 12, 30], 'line-blur': ['interpolate', ['linear'], ['zoom'], 7, 6, 9, 12, 12, 24],
         'line-offset': ['interpolate', ['linear'], ['zoom'], 7, 4, 9, 8, 12, 15] } }] : [];
@@ -655,7 +683,7 @@
       const put = () => {
         map.getSource(id).setData(seaFromLand(fc));
         ready[id] = true;
-        if (ready.seacover && ready.seacoverwide) ['relief', 'sea-depth'].forEach((l) => map.setLayoutProperty(l, 'visibility', 'visible'));
+        if (ready.seacover && ready.seacoverwide) ['relief', 'sea-depth', 'sea-depth-wide'].forEach((l) => map.setLayoutProperty(l, 'visibility', 'visible'));
       };
       if (map.getSource(id)) put(); else map.once('load', put);
     });
@@ -2480,6 +2508,7 @@
       sceneProperty('setPaintProperty', 'sea-shallows', 'line-color', rgb(mixA(water, [255, 255, 255], 0.55)));
       sceneProperty('setPaintProperty', 'sea-shallows', 'line-opacity', 0.04 + 0.16 * dayness);
       sceneProperty('setPaintProperty', 'sea-depth', 'raster-opacity', lit(lum(C.sea), 0.08, 0.5));
+      sceneProperty('setPaintProperty', 'sea-depth-wide', 'raster-opacity', lit(lum(C.sea), 0.08, 0.5));
       sceneProperty('setPaintProperty', 'relief', 'raster-opacity', 0.78 * dayness);
       sceneProperty('setPaintProperty', 'hillshade', 'hillshade-exaggeration', 0.34);
     }
