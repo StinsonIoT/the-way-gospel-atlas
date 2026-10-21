@@ -9,6 +9,10 @@
   // ?og renders a clean scene for the share previews (tools/make-share.py).
   const OG = /[?&]og\b/.test(location.search);
   if (OG) document.documentElement.classList.add('og');
+  // ?look=atlas previews the richer map look (elevation tint, deeper water, softer relief).
+  // It is opt-in and changes only how the map is painted: no scene, place or text changes.
+  const LOOK = /[?&]look=atlas\b/.test(location.search);
+  if (LOOK) document.documentElement.dataset.look = 'atlas';
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HOLD = 0.35;
   const TRAVEL_HOLD = 0.12;
@@ -405,6 +409,79 @@
   } catch (err) { hasContours = false; }
   if (!terrainSources.dem) terrainSources.dem = { type: 'raster-dem', encoding: 'terrarium', tiles: [DEM_URL], tileSize: 256, maxzoom: 13 };
   terrainSources.terrain = { ...terrainSources.dem };
+
+  // ---------- atlas look (opt-in, ?look=atlas) ----------
+  // Elevation tint: the terrain tiles already fetched for the hillshade are recoloured by height
+  // (limestone ivory on the plains, sage on the hills). Nothing here is a historical claim; it is
+  // only a different way to paint the same real elevations.
+  // The tint follows height only. It says nothing about vegetation or rainfall, so the hills Jesus walked
+  // (Judea and Galilee, 400-900 m) stay a pale limestone and khaki; olive and sage appear only on the high ground.
+  const LOOK_RAMP = [[-500, '#EDE3CF'], [0, '#F1E8D4'], [200, '#ECE0C8'], [400, '#E3D8BC'], [600, '#D9D1B0'], [800, '#CDCBA5'],
+    [1000, '#BCC39A'], [1300, '#A3B189'], [1700, '#8A9A78'], [2300, '#738469'], [2900, '#5F7160']];
+  const LOOK_LUT_MIN = -500, LOOK_LUT_STEP = 5, LOOK_LUT_N = 681; // -500 m to 2900 m
+  const LOOK_LUT = (() => {
+    const lut = new Uint8Array(LOOK_LUT_N * 3), stops = LOOK_RAMP.map(([e, h]) => [e, hx(h)]);
+    for (let i = 0; i < LOOK_LUT_N; i++) {
+      const e = LOOK_LUT_MIN + i * LOOK_LUT_STEP;
+      let k = 0;
+      while (k < stops.length - 2 && e > stops[k + 1][0]) k++;
+      const [e0, c0] = stops[k], [e1, c1] = stops[k + 1], t = clamp((e - e0) / (e1 - e0), 0, 1);
+      mixA(c0, c1, t).forEach((v, j) => { lut[i * 3 + j] = Math.round(v); });
+    }
+    return lut;
+  })();
+  // The water is drawn from the land outline (the sea is "everywhere that is not land"), so the sea floor
+  // in the elevation data never shows through as smudges. Rings are wound so the sea is on the left.
+  const ringArea = (r) => r.reduce((s, p, i) => { const q = r[(i + 1) % r.length]; return s + (q[0] - p[0]) * (q[1] + p[1]); }, 0) / 2; // > 0: clockwise
+  const asCW = (r) => (ringArea(r) > 0 ? r : r.slice().reverse());
+  const asCCW = (r) => (ringArea(r) < 0 ? r : r.slice().reverse());
+  function seaFromLand(fc) {
+    const outers = [], holes = [];
+    fc.features.forEach((f) => {
+      const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+      polys.forEach((p) => { outers.push(asCW(p[0])); for (let i = 1; i < p.length; i++) holes.push(asCCW(p[i])); });
+    });
+    const world = [[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]];
+    return { type: 'FeatureCollection', features: [
+      { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [world, ...outers] } },
+      ...holes.map((h) => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [h] } }))] };
+  }
+  async function reliefTile(params, abortController) {
+    const m = /(\d+)\/(\d+)\/(\d+)$/.exec(params.url);
+    const res = await fetch(DEM_URL.replace('{z}', m[1]).replace('{x}', m[2]).replace('{y}', m[3]), { signal: abortController && abortController.signal });
+    if (!res.ok) throw new Error('Terrain tile ' + res.status);
+    const blob = await res.blob();
+    // Heights are stored in the colour channels, so ask the browser not to colour-manage or premultiply them.
+    const bmp = await createImageBitmap(blob, { colorSpaceConversion: 'none', premultiplyAlpha: 'none' }).catch(() => createImageBitmap(blob));
+    const canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(bmp.width, bmp.height) : Object.assign(document.createElement('canvas'), { width: bmp.width, height: bmp.height });
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(bmp, 0, 0);
+    const img = ctx.getImageData(0, 0, bmp.width, bmp.height), d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const e = d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768;
+      const k = clamp(Math.round((e - LOOK_LUT_MIN) / LOOK_LUT_STEP), 0, LOOK_LUT_N - 1) * 3;
+      d[i] = LOOK_LUT[k]; d[i + 1] = LOOK_LUT[k + 1]; d[i + 2] = LOOK_LUT[k + 2]; d[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    const out = canvas.convertToBlob ? await canvas.convertToBlob({ type: 'image/png' }) : await new Promise((r) => canvas.toBlob(r, 'image/png'));
+    return { data: await out.arrayBuffer() };
+  }
+  if (LOOK) maplibregl.addProtocol('atlasrelief', reliefTile);
+  const lookSources = LOOK ? {
+    relief: { type: 'raster', tiles: ['atlasrelief://{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
+    seacover: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
+    seacoverwide: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } }
+  } : {};
+  // Below the hillshade: the tint, hidden until the water outline is ready (so it never tints the sea).
+  const lookReliefLayers = LOOK ? [
+    { id: 'relief', type: 'raster', source: 'relief', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.7, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } }] : [];
+  // Above the hillshade and contours: opaque water over the sea, and a soft shallow edge along the coast.
+  const lookWaterLayers = LOOK ? [
+    { id: 'sea-cover-wide', type: 'fill', source: 'seacoverwide', maxzoom: 6.5, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
+    { id: 'sea-cover', type: 'fill', source: 'seacover', minzoom: 6.5, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
+    { id: 'sea-shallows', type: 'line', source: 'seacover', minzoom: 6.5, layout: { 'line-join': 'round' },
+      paint: { 'line-color': '#FFFFFF', 'line-opacity': 0.3, 'line-width': ['interpolate', ['linear'], ['zoom'], 6.5, 6, 9, 16, 12, 30], 'line-blur': ['interpolate', ['linear'], ['zoom'], 6.5, 5, 9, 12, 12, 24],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 6.5, 3, 9, 8, 12, 15] } }] : [];
   const map = new maplibregl.Map({
     container: 'map',
     interactive: true,
@@ -430,16 +507,19 @@
         village3d: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         overlay: { type: 'geojson', data: overlay },
         zones: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
-        ...terrainSources
+        ...terrainSources,
+        ...lookSources
       },
       layers: [
         { id: 'sea', type: 'background', paint: { 'background-color': '#0F1A1C' } },
         // Natural Earth outline for the views that show the whole Mediterranean.
         { id: 'land-wide', type: 'fill', source: 'landwide', maxzoom: 6.5, paint: { 'fill-color': '#1B2624' } },
         { id: 'land', type: 'fill', source: 'land', paint: { 'fill-color': '#1B2624' } },
+        ...lookReliefLayers,
         { id: 'hillshade', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.45, 'hillshade-illumination-direction': 315 } },
         ...(hasContours ? [{ id: 'contours', type: 'line', source: 'contours', 'source-layer': 'contours', minzoom: 10,
           paint: { 'line-color': '#000', 'line-opacity': 0.5, 'line-width': ['match', ['get', 'level'], 1, 1, 0.5] } }] : []),
+        ...lookWaterLayers,
         // Rome's empire (data/rome.json, tools/make-rome.py): shown on the census
         // and 'who ruled where' scenes, and as a layer in Explore.
         { id: 'rome-fill', type: 'fill', source: 'rome', filter: ['==', ['get', 'era'], 'birth'],
@@ -484,6 +564,21 @@
   map.getCanvas().setAttribute('tabindex', '-1');
 
   window.__wayMap = map; // for debugging in the browser console
+
+  if (LOOK) {
+    // Build the water from the land outlines, then reveal the tint (which must never show over the sea).
+    const ready = { seacover: false, seacoverwide: false };
+    const water = (url, id) => fetch(url).then((r) => r.json()).then((fc) => {
+      const put = () => {
+        map.getSource(id).setData(seaFromLand(fc));
+        ready[id] = true;
+        if (ready.seacover && ready.seacoverwide) map.setLayoutProperty('relief', 'visibility', 'visible');
+      };
+      if (map.getSource(id)) put(); else map.once('load', put);
+    }).catch(() => { /* without the outline the tint stays hidden and the map looks as it does without ?look=atlas */ });
+    water('data/land.json?v=9', 'seacover');
+    water('data/land-wide.json?v=1', 'seacoverwide');
+  }
 
   // ---------- markers (HTML, constant size on screen) ----------
   const markerEls = {};
@@ -2289,6 +2384,21 @@
     const plan = lerp(a.plan || 0, b.plan || 0, e);
     const temple = lerp(a.temple || 0, b.temple || 0, e);
     sceneProperty('setPaintProperty', 'sea', 'background-color', rgb(C.sea));
+    if (LOOK) {
+      // The look follows each scene's light: full strength by day, fading out as the scene goes dark.
+      const lum = (c) => (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+      const lit = (x, lo, hi) => { const t = clamp((x - lo) / (hi - lo), 0, 1); return t * t * (3 - 2 * t); };
+      const water = mixA(C.sea, hx('#719D9B'), 0.9 * lit(lum(C.sea), 0.08, 0.5));
+      const dayness = lit(lum(C.land), 0.06, 0.5);
+      C.lake = mixA(water, [255, 255, 255], 0.1); // the lakes share the sea's colour, a touch lighter
+      sceneProperty('setPaintProperty', 'sea', 'background-color', rgb(water));
+      sceneProperty('setPaintProperty', 'sea-cover', 'fill-color', rgb(water));
+      sceneProperty('setPaintProperty', 'sea-cover-wide', 'fill-color', rgb(water));
+      sceneProperty('setPaintProperty', 'sea-shallows', 'line-color', rgb(mixA(water, [255, 255, 255], 0.55)));
+      sceneProperty('setPaintProperty', 'sea-shallows', 'line-opacity', 0.1 + 0.4 * dayness);
+      sceneProperty('setPaintProperty', 'relief', 'raster-opacity', 0.78 * dayness);
+      sceneProperty('setPaintProperty', 'hillshade', 'hillshade-exaggeration', 0.34);
+    }
     sceneProperty('setPaintProperty', 'land', 'fill-color', rgb(C.land));
     sceneProperty('setPaintProperty', 'coast', 'line-color', rgb(C.coast));
     sceneProperty('setPaintProperty', 'land-wide', 'fill-color', rgb(C.land));
