@@ -1,6 +1,8 @@
 # Handoff to Codex — The Way: A Gospel Atlas
 
-Written 2026-10-21 by Claude Code, at the end of a long working session with the project owner (Mike).
+Written 2026-10-21 by Claude Code, at the end of a long working session with the project owner (Mike), and **refreshed the same
+evening after PRs #16 to #23** (see section 3). Codex's own handoff back to Claude Code is `docs/CLAUDE-HANDOFF.md`, on branch
+`docs/claude-handoff` (no PR yet); read both.
 It says where the project stands, what was done and why, how to work in this repo, and what to do next.
 **Everything here was true when it was written. Check `git log`, `git branch -r` and the GitHub PR list before relying on any status line.**
 
@@ -42,9 +44,10 @@ current `app.js`/`style.css` versions and the cache name, so update them too. Th
 
 ### Running the tests
 - Logic tests (no browser): `node tests/experience.cjs`, `audio.cjs`, `network-recovery.cjs`, `offline-download.cjs`,
-  `offline.cjs`, `tour-transitions.cjs`, `worker-writes.cjs`. All print `PASS: ...`.
+  `offline.cjs`, `tour-transitions.cjs`, `worker-writes.cjs`, `layout-batching.cjs`. All print `PASS: ...`. Plus
+  `node --test tests/atlas-tiles.cjs` (6 tests, node's own runner).
 - Browser tests: `CHROME_PATH=/path/to/chrome node tests/browser-smoke.cjs`. Extra modes: `--journey-review`,
-  `--inspect-cards`, `--visual-review`, `--profile-scroll`, `--inspect-nazareth`. The modes `--inspect-tour`,
+  `--inspect-cards`, `--visual-review`, `--profile-scroll`, `--inspect-nazareth`, and `--map-fallback` (forces WebGL to fail). The modes `--inspect-tour`,
   `--inspect-opening` and `--inspect-origins` call the live Bible service and need network.
 - As root on Linux, Chrome needs `--no-sandbox`. Point `CHROME_PATH` at a one-line wrapper script that adds it.
 - Screenshots: `node tools/capture-scenes.cjs --out DIR --look off|atlas|both [--sizes 390x844,1280x800] [--scenes id,id] [--settle 9000]`.
@@ -62,17 +65,24 @@ current `app.js`/`style.css` versions and the cache name, so update them too. Th
 | #13 | John 1:14 quoted on the card; the reading link now opens John 1:1-14 (it opened only verse 1 before). Test checks the quote against the saved BSB. | merged |
 | #14 | Opening quotes and closing punctuation no longer get stranded beside tap-to-explain words (a no-break unit). Test added. | merged |
 | #15 | The owner's planning docs (`CLAUDE.md`, `AGENTS.md`, `docs/*`). | merged |
-| #16 | Fixed the flaky "Search" check in `--journey-review` (it slept a fixed 350 ms; now waits for the results to change). Test only. | **open**, waiting for the owner |
+| #16 | Fixed the flaky "Search" check in `--journey-review` (it slept a fixed 350 ms; now waits for the results to change). Test only. Re-verified on current `main`: 4 of 4 runs pass. | merged |
 | #17 | M0 + M1: `tools/capture-scenes.cjs`, and an **opt-in** map look behind `?look=atlas`. | merged |
-| #19 (`feature/atlas-look-depth`) | Real water-depth gradient in the look, lakes match the sea. | **open**, waiting for the owner |
-| #18 (draft, from `codex/atlas-depth-fixes`) | Opened by Codex into the depth branch: aborts terrain downloads nobody needs any more, and gives each water layer its own coast mask. Claude ran its tests (see below) but has not reviewed it line by line. | **draft**, targets `feature/atlas-look-depth` |
-| #20 | This handoff. | open |
+| #18 | Opened by Codex into the depth branch: aborts terrain downloads nobody needs any more, and gives each water layer its own coast mask (fixes a tile-zoom vs map-zoom mismatch in Claude's first version). | merged (into the depth branch) |
+| #19 | Real water-depth gradient in the look, lakes match the sea (with #18's fixes). | merged |
+| #22 | Codex: the look's colour overlays use fewer, larger tiles (about 45% fewer overlay bytes in Codex's headless test), and scene measuring batches its reads before writes. Owner's feedback "looks ok, just loads slow" prompted it. | merged |
+| #21 -> #23 | Codex's WebGL-startup fallback (readers keep search, Scripture and audio when the map cannot start). #21 conflicted with `main`; Claude integrated Codex's commit onto `main` as #23 and resolved the conflicts. | #23 merged; **#21 is superseded and can be closed** |
+| #20 | This handoff. | being merged |
 
-**Merge order matters.** #18 targets the depth branch, not `main`. Merge #18 into `feature/atlas-look-depth` *first*; then #19
-carries its fixes to `main`. If #19 merges first, #18's fixes stay stranded on the old branch and need retargeting.
-Claude ran #18's branch: its 6 new unit tests pass (`node --test tests/atlas-tiles.cjs`), all existing logic tests pass, and
-`browser-smoke` passed 2 of 2 runs with 10 checks. One thing to watch: it calls `AbortSignal.throwIfAborted()`, which older iOS
-Safari (before 15.4) lacks, so on those phones the opt-in look could fail to draw the tint and depth. It only affects `?look=atlas`.
+Merged state at the time of writing: `main` was at or past `84e59cf` (the merge of #23), with `app.js?v=79`, `style.css?v=67` and
+cache name `the-way-v61`. Pages built each merge successfully. Nobody has tested on a real iPhone.
+
+**Branch-target lesson.** #18 targeted the depth branch, not `main`; it had to be merged into that branch *before* #19, or its fixes
+would have been stranded. Check a PR's base branch before merging.
+
+Tests Codex added (all run in the suite): `tests/atlas-tiles.cjs` (`node --test`, 6 tests), `tests/layout-batching.cjs`, and the
+browser mode `node tests/browser-smoke.cjs --map-fallback` (forces WebGL to fail). `atlas-tiles` and `layout-batching` cut code
+out of `app.js` by **text markers** (for example `let map = null;`), so changing that code can break them for reasons that have
+nothing to do with the behaviour; adjust the marker, not the assertion.
 
 The John 1 work came from the owner's point that a first-time reader meets "the Word" before any story context.
 The atlas look came from a design brief and an AI-generated concept image (see §5).
@@ -120,12 +130,15 @@ The owner's view, agreed in conversation: get the wow from colour, light, depth 
 
 ## 7. Known issues and open items
 
-- **PR #16** (flaky Search check) is open. Until it merges, `--journey-review` fails about half the time on that one check.
+- The flaky Search check in `--journey-review` is fixed (#16, merged).
 - **Play the story audio for John 1** reads only John 1:1-5 (`WAY_KEY` in `js/tour.js`). The card and reading panel now
   cover 1:1-14. Extending the audio needs new boundaries checked by listening on a device (`docs/audio-audit.md`,
   `docs/play-story-audit.md`). 32 audio endpoints still use provider timing, unlistened.
-- **No fallback when WebGL is unavailable** (verified: with WebGL off the text renders but the map is a blank dark void and
-  the search/Map key buttons never appear, because `body.ready` is never set). No tile-failure state either.
+- **WebGL startup failure is handled** (#23): the reader sees a notice and keeps reading, search, Scripture and audio. Still
+  open: *later* WebGL context loss and terrain-tile outages have no message.
+- **Older iPhones and the opt-in look.** Codex's tile code calls `AbortSignal.throwIfAborted()`, which Safari before 15.4 lacks, so
+  on such a phone `?look=atlas` could fail to draw its tint and depth. The default site is unaffected. The look also uses
+  OffscreenCanvas with a normal-canvas fallback; neither is tested on a real device.
 - **Egypt:** the flight-to-Egypt route (`to-egypt` in `js/scenes.js`) ends at a specific coordinate, and Egypt is a point
   label. The brief wants a broad region, not an endpoint. Emmaus is deliberately not drawn (good), but the brief wants its
   disputed candidates shown as a group. The Plain of Gennesaret is missing.
@@ -134,20 +147,26 @@ The owner's view, agreed in conversation: get the wow from colour, light, depth 
 - The README says Jerusalem scenes "circle the city"; the brief says avoid spinning. Not re-tested, worth a look.
 - A branch `wip/ios-app` (Capacitor app shell, "not finished", 1,216 files) exists from before this session. We did not
   touch or review it.
-- `share` pages in `s/` are generated by `tools/make-share.py`; regenerate if a scene's title or card text changes
-  (not run this session).
+- **Stale share page.** `s/word.html` still labels the John 1 scene "I · Origins · In the beginning · John 1:1", because the
+  scene moved to chapter II and `tools/make-share.py` was not rerun. Only the link-preview title is wrong. Regenerate with
+  `tools/make-share.py` (see the script's header for needs) and check the other pages.
+- **The owner's local, unpublished work.** On the owner's Windows machine, branch `codex/guided-journey` holds two commits that
+  are not on GitHub (a guided-journey design and a listening/performance checkpoint) plus uncommitted files such as
+  `js/journey.js`. Do not reset or clean that checkout. Codex's handoff has the details.
 
 ## 8. Suggested next steps (the roadmap in `docs/IMPLEMENTATION-ROADMAP.md`, adapted)
 
-Done: **M0** (screenshot tool, docs fix) and **M1** (regional look prototype), plus water depth on a branch.
+Done: **M0** (screenshot tool, docs fix), **M1** (regional look prototype), water depth, the loading-time reduction, and the
+WebGL-startup fallback.
 
-1. Get the owner's decision on #16 and on the depth branch (open a PR when they ask).
+1. Close the superseded draft #21 (with the owner's say-so). Regenerate the share pages. Ask the owner for a real-iPhone check of
+   the look, its load time and the fallback.
 2. **M2, evidence register and route classes (no visual change).** A data file keyed by the existing place, route and
    scene ids: passages, a confidence word (identified, approximate, region-only, traditional, disputed, unknown), basis
    (text / archaeology / tradition / proposal), sources, review date. Plus a test that every id has a valid entry and route
    classes (recorded-unknown-path, sourced-plausible, editorial, region). This is research work: every source must be real.
 3. **M3, accuracy fixes:** Egypt as a region, Emmaus candidates, Plain of Gennesaret.
-4. **M6 (part):** a no-WebGL message and tile-failure state.
+4. **M6 (rest):** tile-failure and later context-loss states (the startup fallback is done).
 5. **M4:** warm the Jerusalem model (limestone ramp, colour variation, light). Keep it a labelled reconstruction.
 6. Then Galilee detail, Holy Week and resurrection polish, and, only with approval, turning the look on by default.
 
