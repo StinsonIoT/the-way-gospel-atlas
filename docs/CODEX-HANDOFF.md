@@ -64,7 +64,15 @@ current `app.js`/`style.css` versions and the cache name, so update them too. Th
 | #15 | The owner's planning docs (`CLAUDE.md`, `AGENTS.md`, `docs/*`). | merged |
 | #16 | Fixed the flaky "Search" check in `--journey-review` (it slept a fixed 350 ms; now waits for the results to change). Test only. | **open**, waiting for the owner |
 | #17 | M0 + M1: `tools/capture-scenes.cjs`, and an **opt-in** map look behind `?look=atlas`. | merged |
-| `feature/atlas-look-depth` | Real water-depth gradient in the look, lakes match the sea. | **pushed, no PR yet**; owner asked for it |
+| #19 (`feature/atlas-look-depth`) | Real water-depth gradient in the look, lakes match the sea. | **open**, waiting for the owner |
+| #18 (draft, from `codex/atlas-depth-fixes`) | Opened by Codex into the depth branch: aborts terrain downloads nobody needs any more, and gives each water layer its own coast mask. Claude ran its tests (see below) but has not reviewed it line by line. | **draft**, targets `feature/atlas-look-depth` |
+| #20 | This handoff. | open |
+
+**Merge order matters.** #18 targets the depth branch, not `main`. Merge #18 into `feature/atlas-look-depth` *first*; then #19
+carries its fixes to `main`. If #19 merges first, #18's fixes stay stranded on the old branch and need retargeting.
+Claude ran #18's branch: its 6 new unit tests pass (`node --test tests/atlas-tiles.cjs`), all existing logic tests pass, and
+`browser-smoke` passed 2 of 2 runs with 10 checks. One thing to watch: it calls `AbortSignal.throwIfAborted()`, which older iOS
+Safari (before 15.4) lacks, so on those phones the opt-in look could fail to draw the tint and depth. It only affects `?look=atlas`.
 
 The John 1 work came from the owner's point that a first-time reader meets "the Word" before any story context.
 The atlas look came from a design brief and an AI-generated concept image (see §5).
@@ -84,9 +92,11 @@ capturing the same scenes from a clean copy of `main` and from the branch, same 
   level, so a simple "below 0 m" test is wrong). Depths are approximate, and say nothing about the ancient coastline.
 - **Per-scene light.** Colours fade with each scene's palette, so night and dusk scenes stay dark.
 - **Labels.** Hierarchy rules under `html[data-look="atlas"]` in `css/style.css`.
-- On the depth branch the coast dataset switches at tile zoom 7 (`DEPTH_FINE_FROM`): the wide Natural Earth outline below,
-  the detailed clipped one above, and the water layers use the same threshold so the mask and the flat water agree. (On
-  `main` the water layers still switch at map zoom 6.5.) Keep them in step if you change either.
+- Coast dataset: the wide Natural Earth outline below map zoom 7 (`DEPTH_FINE_FROM`), the detailed clipped one from 7 up.
+  As first written, the depth mask chose its outline by *tile* zoom while the flat-water layers switched by *map* zoom, which
+  can disagree at fractional zooms and with reused parent tiles. Draft #18 fixes this with two depth sources, one per outline,
+  each tied to its own water layer. (On `main`, from #17, the water layers still switch at map zoom 6.5.) Keep the layers
+  and the masks in step if you change either.
 
 ## 5. The design brief, and what to take from the concept image
 
