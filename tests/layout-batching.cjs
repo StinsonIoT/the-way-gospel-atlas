@@ -13,7 +13,8 @@ const section = (top, height, captionHeight) => ({
   }
 });
 const sections = [section(0, 1000, 400), section(1000, 900, 200), section(1900, 1000, 300), section(2900, 1200, 800)];
-const context = vm.createContext({ sections, window: { innerWidth: 390, innerHeight: 844 },
+// `map` exists on any browser that can start WebGL; the fallback with no map has its own browser test (`--map-fallback`).
+const context = vm.createContext({ map: {}, sections, window: { innerWidth: 390, innerHeight: 844 },
   headBottom: () => read(66), getComputedStyle: () => ({ get paddingTop() { return read('32px'); } }) });
 vm.runInContext('let tops = [], ends = [];\n' + source.slice(source.indexOf('function captionPin('), source.indexOf("if ('ResizeObserver' in window)")) + '\nmeasure(); this.targets = {tops, ends};', context);
 assert.equal(readsAfterWrite, 0, 'measure all scene geometry before changing any caption layout');

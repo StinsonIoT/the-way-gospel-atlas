@@ -595,7 +595,9 @@
     { id: 'sea-shallows', type: 'line', source: 'seacover', minzoom: DEPTH_FINE_FROM, layout: { 'line-join': 'round' },
       paint: { 'line-color': '#FFFFFF', 'line-opacity': 0.2, 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 8, 9, 16, 12, 30], 'line-blur': ['interpolate', ['linear'], ['zoom'], 7, 6, 9, 12, 12, 24],
         'line-offset': ['interpolate', ['linear'], ['zoom'], 7, 4, 9, 8, 12, 15] } }] : [];
-  const map = new maplibregl.Map({
+  let map = null;
+  try {
+    map = new maplibregl.Map({
     container: 'map',
     interactive: true,
     maxPitch: 70,
@@ -671,14 +673,22 @@
           paint: { 'line-color': '#000', 'line-opacity': ['get', 'op'], 'line-width': 2.6, 'line-dasharray': [2.6, 2] } }
       ]
     }
-  });
+    });
+  } catch (err) {
+    // WebGL can be disabled or unavailable. Reading and study do not need it.
+    document.body.classList.add('map-unavailable');
+    document.getElementById('map').replaceChildren();
+    const status = document.getElementById('map-status');
+    document.querySelector('.hero').prepend(status);
+    status.hidden = false;
+  }
   // The map is decoration for screen readers (the story carries the meaning), so
   // its canvas stays out of the tab order.
-  map.getCanvas().setAttribute('tabindex', '-1');
+  map?.getCanvas().setAttribute('tabindex', '-1');
 
   window.__wayMap = map; // for debugging in the browser console
 
-  if (LOOK) {
+  if (LOOK && map) {
     // Build the water from the land outlines, then reveal the tint (which must never show over the sea).
     const ready = { seacover: false, seacoverwide: false };
     const water = (landPromise, id) => landPromise.then((fc) => {
@@ -697,6 +707,7 @@
   // ---------- markers (HTML, constant size on screen) ----------
   const markerEls = {};
   Object.keys(PLACES).forEach((id) => {
+    if (!map) return;
     const p = PLACES[id];
     const el = document.createElement('div');
     el.className = `mk mk-${p.type} mk-${p.side || 'center'}`;
@@ -780,7 +791,7 @@
     if (delay) setTimeout(() => requestAnimationFrame(declutter), delay);
     else requestAnimationFrame(declutter);
   }
-  map.on('render', queueDeclutter);
+  map?.on('render', queueDeclutter);
 
   // ---------- cameras ----------
   let cams = [];
@@ -797,6 +808,7 @@
   const is3D = (s) => (s.plan || 0) >= 0.5;
   let camPad = null;
   function computeCams() {
+    if (!map) return;
     const pad = padding();
     camPad = pad;
     let k = 0;
@@ -832,6 +844,7 @@
   let tops = [], ends = [];
   const headBottom = () => document.querySelector('.top').getBoundingClientRect().bottom;
   function captionPin(h, head = headBottom()) {
+    if (!map) return head + 16;
     const vh = window.innerHeight, vw = window.innerWidth;
     const gap = vw >= 900 ? 28 : 14;
     if (vw >= 900 && h <= vh - head - 40) return Math.max(head + 16, Math.round((vh - h) / 2));
@@ -858,7 +871,7 @@
       // A caption taller than the screen counts as arrived when its top is
       // just below the header, so a jump to it starts at the beginning.
       const start = top + gap - Math.max(pin, head + 8);
-      tops.push(Math.max(top, start));
+      tops.push(Math.max(map ? top : 0, start));
       ends.push(Math.max(tops[tops.length - 1], top + height - pin - h));
     });
   }
@@ -2388,7 +2401,10 @@
     setTourPlaying(true);
     if (tour.loading) return;
     if (tourEl.dataset.kind === 'done') sceneDone();
-    else if (tour.segs.length) { const pr = tourEl.play(); if (pr && pr.catch) pr.catch(() => setTourPlaying(false)); }
+    else if (tour.segs.length) {
+      const token = tourToken, pr = tourEl.play();
+      if (pr && pr.catch) pr.catch(() => { if (token === tourToken) setTourPlaying(false); });
+    }
     else dwell(tourToken);
     if (sleepAt === 0 && TS.sleep !== '0' && TS.sleep !== 'chapter') sleepAt = Date.now() + (+TS.sleep) * 60000;
   });
@@ -2427,7 +2443,7 @@
   let exploring = false;
   let lastStoryCamera = '';
   function render() {
-    if (!cams.length || exploring) { lastStoryCamera = ''; return; }
+    if (!started || (map && !cams.length) || exploring) { lastStoryCamera = ''; return; }
     const p = progress();
     const i = Math.min(N - 2, Math.floor(p));
     const f = p - i;
@@ -2436,15 +2452,17 @@
     const hold = TRAVEL_HOLD;
     let e = smooth(clamp((f - hold) / (1 - hold), 0, 1));
     if (reduceMotion) e = f < 0.5 ? 0 : 1;
-    const ca = cams[i], cb = cams[i + 1];
-    const merc = new maplibregl.MercatorCoordinate(lerp(ca.x, cb.x, e), lerp(ca.y, cb.y, e));
-    const camera = { center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: experience.mixPadding(ca.padding, cb.padding, e) };
-    const cameraKey = JSON.stringify(camera);
-    if (cameraKey !== lastStoryCamera) {
-      lastStoryCamera = cameraKey;
-      map.jumpTo(camera);
+    if (map) {
+      const ca = cams[i], cb = cams[i + 1];
+      const merc = new maplibregl.MercatorCoordinate(lerp(ca.x, cb.x, e), lerp(ca.y, cb.y, e));
+      const camera = { center: merc.toLngLat(), zoom: lerp(ca.zoom, cb.zoom, e), pitch: lerp(ca.pitch, cb.pitch, e), bearing: lerpAngle(ca.bearing, cb.bearing, e), padding: experience.mixPadding(ca.padding, cb.padding, e) };
+      const cameraKey = JSON.stringify(camera);
+      if (cameraKey !== lastStoryCamera) {
+        lastStoryCamera = cameraKey;
+        map.jumpTo(camera);
+      }
+      syncElevation();
     }
-    syncElevation();
     apply(STEPS[i], STEPS[i + 1], e, p);
     // header
     // Only write to the page when something changed, so scrolling stays smooth.
@@ -2478,6 +2496,7 @@
   // Territory colours, one per ruler.
   let romeOn = false, romeEra = 'birth', romeOp = -1;
   function setRome(era, op) {
+    if (!map) return;
     if (era !== romeEra) { romeEra = era; ['rome-fill', 'rome-line'].forEach((l) => map.setFilter(l, ['==', ['get', 'era'], era])); }
     const o = Math.round(op * 100) / 100;
     if (o === romeOp) return;
@@ -2496,10 +2515,23 @@
     map[kind](layer, name, value);
   }
   let lastOverlayKey = '';
+  function applyStoryColors(C, a, b, e) {
+    root.setProperty('--m-txt', rgb(C.txt));
+    root.setProperty('--m-muted', rgb(C.muted));
+    root.setProperty('--m-accent', rgb(C.accent));
+    root.setProperty('--m-trad', rgb(C.trad));
+    root.setProperty('--m-land', rgb(C.land));
+    root.setProperty('--m-label', rgb(mixA(C.land, C.txt, 0.45)));
+    root.setProperty('--m-water', rgb(mixA(C.river, C.txt, 0.2)));
+    root.setProperty('--m-track', rgb(mixA(C.land, C.txt, 0.18)));
+    root.setProperty('--torch', lerp(a.torch || 0, b.torch || 0, e).toFixed(3));
+    document.body.style.backgroundColor = rgb(C.land);
+  }
   function apply(a, b, e, p) {
     const A = PALETTES[a.pal], B = PALETTES[b.pal];
     const C = {};
     ['sea', 'land', 'coast', 'lake', 'river', 'txt', 'muted', 'accent', 'trad'].forEach((k) => { C[k] = mixA(hx(A[k]), hx(B[k]), e); });
+    if (!map) { applyStoryColors(C, a, b, e); return; }
 
     // light
     const plan = lerp(a.plan || 0, b.plan || 0, e);
@@ -2590,16 +2622,7 @@
     sceneProperty('setPaintProperty', 'area-line', 'line-color', rgb(C.accent));
     sceneProperty('setPaintProperty', 'link', 'line-color', rgb(mixA(C.land, C.txt, 0.5)));
 
-    root.setProperty('--m-txt', rgb(C.txt));
-    root.setProperty('--m-muted', rgb(C.muted));
-    root.setProperty('--m-accent', rgb(C.accent));
-    root.setProperty('--m-trad', rgb(C.trad));
-    root.setProperty('--m-land', rgb(C.land));
-    root.setProperty('--m-label', rgb(mixA(C.land, C.txt, 0.45)));
-    root.setProperty('--m-water', rgb(mixA(C.river, C.txt, 0.2)));
-    root.setProperty('--m-track', rgb(mixA(C.land, C.txt, 0.18)));
-    root.setProperty('--torch', lerp(a.torch || 0, b.torch || 0, e).toFixed(3));
-    document.body.style.backgroundColor = rgb(C.land);
+    applyStoryColors(C, a, b, e);
 
     // visibility of places, areas and routes
     const showA = experience.visible(a), showB = experience.visible(b);
@@ -2666,6 +2689,7 @@
 
   let started = false;
   function setHandlers(on) {
+    if (!map) return;
     ['dragPan', 'dragRotate', 'scrollZoom', 'touchZoomRotate', 'touchPitch', 'doubleClickZoom', 'keyboard', 'boxZoom']
       .forEach((h) => { if (map[h]) on ? map[h].enable() : map[h].disable(); });
   }
@@ -2673,8 +2697,10 @@
     if (started) return;
     started = true;
     setHandlers(false);
-    try { map.setTerrain({ source: 'terrain', exaggeration: 1.1 }); } catch (err) { /* terrain unavailable: the model still draws */ }
-    map.setLight({ anchor: 'viewport', color: '#ffffff', intensity: 0.38, position: [1.3, 210, 35] });
+    if (map) {
+      try { map.setTerrain({ source: 'terrain', exaggeration: 1.1 }); } catch (err) { /* terrain unavailable: the model still draws */ }
+      map.setLight({ anchor: 'viewport', color: '#ffffff', intensity: 0.38, position: [1.3, 210, 35] });
+    }
     measure();
     computeCams();
     const hashIdx = sections.findIndex((sec) => '#' + sec.id === location.hash);
@@ -2683,6 +2709,7 @@
     render();
     document.body.classList.add('ready');
     showBack();
+    if (!map) return;
     // The 3D models are the largest files; fetch them after the first draw so
     // the land, sea and names come first on a slow connection.
     let late = false;
@@ -2695,9 +2722,14 @@
     setTimeout(loadLate, 2500);
   }
   // Start as soon as the style is ready; do not wait for terrain tiles.
-  map.on('style.load', start);
-  map.on('load', start);
-  if (map.isStyleLoaded()) start();
+  map?.on('style.load', start);
+  map?.on('load', start);
+  if (map?.isStyleLoaded()) start();
+  if (!map) {
+    // Let the browser finish its initial fragment jump before restoring the caption below the header.
+    if (document.readyState === 'complete') requestAnimationFrame(start);
+    else window.addEventListener('load', () => requestAnimationFrame(start), { once: true });
+  }
   window.addEventListener('scroll', queue, { passive: true });
   window.addEventListener('resize', () => {
     syncTools();
@@ -2737,7 +2769,7 @@
     });
     queueDeclutter();
   }
-  map.on('zoom', exploreLabels);
+  map?.on('zoom', exploreLabels);
   const small = () => window.innerWidth < 900;
   const exPad = () => (small() ? { top: 70, bottom: 230, left: 0, right: 0 } : { top: 70, bottom: 40, left: 0, right: 0 });
   const VIEWS = {
@@ -2787,7 +2819,7 @@
     } catch (err) { /* terrain not ready */ }
   }
   let flyToken = 0, userMoved = false;
-  ['dragstart', 'zoomstart', 'rotatestart', 'pitchstart'].forEach((ev) => map.on(ev, (e) => { if (e.originalEvent) userMoved = true; }));
+  ['dragstart', 'zoomstart', 'rotatestart', 'pitchstart'].forEach((ev) => map?.on(ev, (e) => { if (e.originalEvent) userMoved = true; }));
   function flyView(v) {
     const token = ++flyToken;
     userMoved = false;
@@ -2815,6 +2847,7 @@
     return { center: [p.lng, p.lat], zoom: z, pitch: z > 13 ? 58 : 45, bearing: 0 };
   }
   function openExplore(target) {
+    if (!map) return;
     if (tour) endTour(false);
     const v = typeof target === 'object' && target ? target : (VIEWS[target] || VIEWS.land);
     if (toc.open) toc.close();
