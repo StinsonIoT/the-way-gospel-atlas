@@ -573,10 +573,13 @@
     });
   }
   if (LOOK) { maplibregl.addProtocol('atlasrelief', reliefTile); maplibregl.addProtocol('atlasdepth', depthTile); }
+  // These soft colour overlays can stretch a 256 px DEM tile across 512 screen pixels.
+  // That needs fewer downloads and PNG conversions; terrain, hillshade and contours keep their full detail.
+  const LOOK_TILE_SIZE = 512;
   const lookSources = LOOK ? {
-    relief: { type: 'raster', tiles: ['atlasrelief://{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
-    depth: { type: 'raster', tiles: ['atlasdepth://fine/{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
-    depthwide: { type: 'raster', tiles: ['atlasdepth://wide/{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
+    relief: { type: 'raster', tiles: ['atlasrelief://{z}/{x}/{y}'], tileSize: LOOK_TILE_SIZE, maxzoom: 13 },
+    depth: { type: 'raster', tiles: ['atlasdepth://fine/{z}/{x}/{y}'], tileSize: LOOK_TILE_SIZE, maxzoom: 13 },
+    depthwide: { type: 'raster', tiles: ['atlasdepth://wide/{z}/{x}/{y}'], tileSize: LOOK_TILE_SIZE, maxzoom: 13 },
     seacover: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
     seacoverwide: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } }
   } : {};
@@ -828,9 +831,8 @@
   // and tops[i + 1] the map travels to the next scene.
   let tops = [], ends = [];
   const headBottom = () => document.querySelector('.top').getBoundingClientRect().bottom;
-  function captionPin(h) {
+  function captionPin(h, head = headBottom()) {
     const vh = window.innerHeight, vw = window.innerWidth;
-    const head = headBottom();
     const gap = vw >= 900 ? 28 : 14;
     if (vw >= 900 && h <= vh - head - 40) return Math.max(head + 16, Math.round((vh - h) / 2));
     // Phones and tablets: rest at the bottom, the map above. A caption taller
@@ -839,17 +841,25 @@
   }
   function measure() {
     tops = []; ends = [];
-    sections.forEach((sec, i) => {
+    // Reading geometry after each sticky-top write forces a layout for every scene.
+    // Sticky offsets do not change flow, so collect all geometry before applying them.
+    const head = headBottom();
+    const rows = sections.map((sec, i) => {
       const cap = sec.firstElementChild;
-      if (i === 0 || !cap) { tops.push(sec.offsetTop); ends.push(sec.offsetTop); return; }
-      const h = cap.offsetHeight, pin = captionPin(h);
-      if (cap._pin !== pin) { cap.style.top = pin + 'px'; cap._pin = pin; }
+      const top = sec.offsetTop;
+      if (i === 0 || !cap) return { top };
+      const h = cap.offsetHeight, pin = captionPin(h, head);
       const gap = parseFloat(getComputedStyle(sec).paddingTop) || 0;
+      return { cap, top, height: sec.offsetHeight, h, pin, gap };
+    });
+    rows.forEach(({ cap, top, height, h, pin, gap }) => {
+      if (!cap) { tops.push(top); ends.push(top); return; }
+      if (cap._pin !== pin) { cap.style.top = pin + 'px'; cap._pin = pin; }
       // A caption taller than the screen counts as arrived when its top is
       // just below the header, so a jump to it starts at the beginning.
-      const start = sec.offsetTop + gap - Math.max(pin, headBottom() + 8);
-      tops.push(Math.max(sec.offsetTop, start));
-      ends.push(Math.max(tops[i], sec.offsetTop + sec.offsetHeight - pin - h));
+      const start = top + gap - Math.max(pin, head + 8);
+      tops.push(Math.max(top, start));
+      ends.push(Math.max(tops[tops.length - 1], top + height - pin - h));
     });
   }
   if ('ResizeObserver' in window) {
