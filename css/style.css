@@ -18,6 +18,14 @@ a { color: inherit; }
 #map { position: fixed; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.6s ease; }
 body.ready #map { opacity: 1; }
 .maplibregl-canvas { outline: none; }
+.map-status { position: relative; z-index: 1; max-width: 600px; margin: 0 0 20px; padding: 14px 18px; border-radius: 12px; background: #F4EEE2; color: #1C2A25; font: 400 14px/1.5 var(--sans); }
+body.map-unavailable #map, body.map-unavailable .story-atmosphere,
+body.map-unavailable #story-stage, body.map-unavailable #explore-open,
+body.map-unavailable .explore-ui, body.map-unavailable [data-explore] { display: none !important; }
+body.map-unavailable .step:not(.step-title) { align-items: center; padding: 32px max(16px, env(safe-area-inset-left)) 24px; }
+body.map-unavailable .step:not(.step-title) > :first-child { position: relative; top: auto !important; opacity: 1 !important; max-width: 680px; }
+body.map-unavailable .step-hold { display: none; }
+body.map-unavailable .top, body.map-unavailable.opening .top { background: #F4EEE2; color: #1C2A25; }
 
 .mk { position: absolute; width: 0; height: 0; pointer-events: none; will-change: opacity; }
 .mk .lbl { position: absolute; top: 0; transform: translateY(-50%); white-space: nowrap; display: flex; flex-direction: column; gap: 1px; color: var(--m-txt); font-size: 12.5px; line-height: 1.15;
