@@ -82,7 +82,7 @@ test('coast mask choice follows its water layer even for parent tiles', async ()
 });
 
 test('water fills and depth masks switch together at fractional map zooms', () => {
-  const context = vm.createContext({ LOOK: true, DEPTH_FINE_FROM: 7 });
+  const context = vm.createContext({ LOOK: true, DEPTH_FINE_FROM: 7, LOOK_TILE_SIZE: 512 });
   vm.runInContext(source.slice(source.indexOf('const lookSources ='), source.indexOf('const map = new maplibregl.Map'))
     + '\nthis.sources = lookSources; this.layers = lookWaterLayers;', context);
   for (const [zoom, expected] of [[6.4, 'wide'], [6.9, 'wide'], [7, 'fine'], [7.5, 'fine']]) {
