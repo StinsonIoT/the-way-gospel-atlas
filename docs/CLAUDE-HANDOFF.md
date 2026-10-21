@@ -2,6 +2,21 @@
 
 Written by Codex after Mike requested a handoff. Status checked **2026-10-21 04:33 UTC** (2026-10-20 evening in Phoenix). Recheck GitHub before relying on any branch, PR, or deployment status below.
 
+> **Status update by Claude Code, 2026-10-21, after 05:28 UTC.** Codex's text below is kept as written; the lines marked
+> **Update** were added afterwards. What changed since Codex wrote this (all verified on GitHub, with a Pages build for each):
+>
+> - **#22** (loading performance) was merged: `88a4b78`.
+> - **#21** (WebGL fallback) was **integrated onto `main` as #23** and merged: `84e59cf`. Codex's commit `c93f60b` was cherry-picked
+>   (`2f3eb86`, still authored by Codex), the three `app.js` conflicts were resolved, and two source-slicing tests were adapted
+>   (`9ebd2fa`, assertions unchanged). Fresh versions: `app.js?v=79`, `style.css?v=67`, cache `the-way-v61`. **Draft #21 itself is
+>   still open but superseded**; it can be closed.
+> - **#16** (flaky Search test) was merged: `8474084`. **#20** (the Claude-to-Codex handoff) was merged, refreshed first: `3e67168`.
+> - Integration checks, run one at a time: layout test, the 6 tile tests, all logic suites, `browser-smoke` 10 of 10 (twice),
+>   `--map-fallback`, `--journey-review` 15 of 15, and, with a working map and the look off, 10 of 10 frames pixel-identical
+>   between `main` and the integrated branch. Still **not** tested on a real iPhone.
+> - Not changed by any of this: Mike's local, unpublished `codex/guided-journey` work (section 7). Claude cannot see that
+>   machine and did not touch it.
+
 Read `AGENTS.md`, `CLAUDE.md`, and the five atlas planning documents first: `PROJECT-VISION.md`, `ATLAS-MASTER-PLAN.md`, `HISTORICAL-ACCURACY.md`, `MAP-DESIGN-SYSTEM.md`, and `IMPLEMENTATION-ROADMAP.md`. The earlier Claude-to-Codex handoff remains on branch `docs/codex-handoff` in `docs/CODEX-HANDOFF.md`, PR #20. This document supplements and updates it; it does not authorize further implementation or merges.
 
 ## 1. What Mike asked, and where we stopped
@@ -12,19 +27,21 @@ The visual direction is acceptable to Mike based on that preview. He has not yet
 
 **No merge or deployment was performed by Codex.** GitHub shows that #18 and #19 were merged separately while this work was underway. Main publishes to GitHub Pages: obtain explicit permission before merging or deploying anything else.
 
+**Update:** Mike has since authorised, one at a time, the merges listed in the status update above. The rule still stands for anything further.
+
 ## 2. Verified GitHub state
 
 Repository: https://github.com/StinsonIoT/the-way-gospel-atlas
 
 | Item | State at handoff |
 | --- | --- |
-| `main` | `4f018b643d2a05a83b830e706ddc23282f62d7bd` — merge of #19 |
+| `main` | `4f018b643d2a05a83b830e706ddc23282f62d7bd` — merge of #19. **Update:** now `3e6716852cf6a7925b6934f553ffb3e6cd74ebac` (merge of #20); Pages run 74 succeeded |
 | [#18](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/18), depth-mask/cancellation fixes | Merged into `feature/atlas-look-depth`; fix commit `51c1ef7`, merge `c705498` |
 | [#19](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/19), water-depth branch | Merged into main as `4f018b6` |
-| [#21](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/21), WebGL startup fallback | **Open draft, conflicts with current main** (`mergeable: false`, `mergeable_state: dirty`). Branch `codex/map-unavailable-fallback`, commit `c93f60b81631dcb4c47b1200eb2c6a45ccaf243b` |
-| [#22](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/22), loading performance | Open draft, mergeable at last check. Branch `codex/atlas-depth-fixes`, commit `79c6a0c2b10f68601018f5d49d73668997378890`, targets main |
-| [#20](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/20), earlier Codex handoff | Open, branch `docs/codex-handoff` |
-| [#16](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/16), flaky Search test | Open, branch `fix/flaky-search-test` |
+| [#21](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/21), WebGL startup fallback | **Open draft, conflicts with current main** (`mergeable: false`, `mergeable_state: dirty`). Branch `codex/map-unavailable-fallback`, commit `c93f60b81631dcb4c47b1200eb2c6a45ccaf243b`. **Update: superseded by #23** (merged as `84e59cf`, Pages run 72 succeeded); #21 is still open and can be closed |
+| [#22](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/22), loading performance | Open draft, mergeable at last check. Branch `codex/atlas-depth-fixes`, commit `79c6a0c2b10f68601018f5d49d73668997378890`, targets main. **Update: merged** as `88a4b78` (Pages run 71 succeeded) |
+| [#20](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/20), earlier Codex handoff | Open, branch `docs/codex-handoff`. **Update: merged** as `3e67168` (refreshed first), Pages run 74 succeeded |
+| [#16](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/16), flaky Search test | Open, branch `fix/flaky-search-test`. **Update: merged** as `8474084`, Pages run 73 succeeded; re-verified on current `main` (journey review 4 of 4) |
 
 The [Pages run for `4f018b6`](https://github.com/StinsonIoT/the-way-gospel-atlas/actions/runs/39543196852) reports completed/success. Codex did not independently inspect the public site's rendering after that deployment. Public URL: https://stinsoniot.github.io/the-way-gospel-atlas/ . The richer look remains opt-in with `?look=atlas`.
 
@@ -41,6 +58,8 @@ The branch name for #22 is reused from merged #18. **#22 contains the later perf
 **Correction to the initial review:** rectangular patches in early screenshots disappeared once all tiles finished loading. Those screenshots were not proof of the zoom/mask bug. The mask-selection mismatch was established from the code and regression tests. Use settled screenshots and check source loading before diagnosing visual defects.
 
 ## 4. Draft #21: keep reading usable when WebGL cannot start
+
+**Update:** done. See #23 (merged). The conflicts described below were resolved by cherry-picking `c93f60b` onto `main` and merging the three `app.js` hunks by hand, as this section advises; the combined result was tested.
 
 This branch was built from older main `8c99b63`, before the merged water-depth changes, and now requires conflict resolution. Do not replace current `app.js` wholesale with the fallback branch's older copy.
 
@@ -91,6 +110,8 @@ Validation:
 - No physical iPhone testing. Do not claim that all scenes, every zoom level, or every device were visually tested.
 
 ## 6. Integrating #21 and #22
+
+**Update:** done for both: #22 merged first, then #21 integrated as #23 on top of it, with coherent fresh versions. The notes below remain useful as the checklist that was followed, including the warning that `tests/atlas-tiles.cjs` and `tests/layout-batching.cjs` cut code out of `app.js` by text markers (they needed small edits after the merge; their assertions did not change).
 
 Neither draft is approved for merge by this handoff. If Mike authorizes integration, resolve conflicts in an isolated checkout and preserve both branches' behavior. They have been tested separately, **not together**.
 
@@ -182,9 +203,9 @@ For regular captures use `tools/capture-scenes.cjs`. Compare with equal settle t
 
 Immediate priorities for the next authorized task:
 
-1. Let Mike review the optimized preview and #22. It is mergeable at handoff, but not merged.
-2. Resolve #21's conflicts only if that implementation task is requested, preserving both current depth behavior and fallback behavior. Validate the combined result before merging.
-3. Obtain a real-device check before release. Browser simulations are useful but not a substitute.
+1. Let Mike review the optimized preview and #22. It is mergeable at handoff, but not merged. **Update: merged.**
+2. Resolve #21's conflicts only if that implementation task is requested, preserving both current depth behavior and fallback behavior. Validate the combined result before merging. **Update: done as #23, merged.**
+3. Obtain a real-device check before release. Browser simulations are useful but not a substitute. **Update: still open**, and now also covers the look's load time and the WebGL fallback.
 
 Other items remain from the earlier handoff; they were not implemented here:
 
