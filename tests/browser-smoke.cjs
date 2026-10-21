@@ -190,7 +190,7 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v56').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has('the-way-v58').then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
@@ -386,13 +386,27 @@ async function navigate(url) {
   await waitFor(`location.pathname === '/holyweek.html' && Math.abs(scrollY - ${guideY}) < 5`);
   console.log('PASS: a Holy Week place link provides a persistent return button, internal map Back still works, and the guide restores the exact reading position.');
   // The opt-in atlas look (?look=atlas) adds its own map layers; without the flag the map has none of them.
-  const lookLayers = `['relief', 'sea-cover', 'sea-cover-wide', 'sea-shallows'].map(id => !!window.__wayMap.getLayer(id))`;
+  const lookLayers = `['relief', 'sea-cover', 'sea-cover-wide', 'sea-depth', 'sea-depth-wide', 'sea-shallows'].map(id => !!window.__wayMap.getLayer(id))`;
   await navigate(base + '/?look=atlas');
   await waitFor(`document.body.classList.contains('ready') && window.__wayMap && window.__wayMap.getLayer('relief') && window.__wayMap.getLayoutProperty('relief', 'visibility') === 'visible'`);
-  assert.deepEqual(await evaluate(`({ layers: ${lookLayers}, mode: document.documentElement.dataset.look })`), { layers: [true, true, true, true], mode: 'atlas' }, 'the atlas look adds its layers');
+  assert.deepEqual(await evaluate(`({ layers: ${lookLayers}, mode: document.documentElement.dataset.look })`), { layers: [true, true, true, true, true, true], mode: 'atlas' }, 'the atlas look adds its layers');
+  await evaluate(`document.querySelector('#s-land').scrollIntoView({ block: 'start' })`);
+  await waitFor(`document.body.dataset.moment === 'land'`);
+  await sleep(500);
+  for (const [zoom, fine] of [[6.4, false], [6.9, false], [7, true], [7.5, true], [6.9, false]]) {
+    await evaluate(`(async () => {
+      const map = window.__wayMap;
+      await new Promise(resolve => { map.once('render', resolve); map.jumpTo({ zoom: ${zoom} }); });
+    })()`);
+    // The vendored MapLibre source cache reports actual activation, including retained parent tiles.
+    await waitFor(`window.__wayMap.style.sourceCaches.depth.used === ${fine} && window.__wayMap.style.sourceCaches.depthwide.used === ${!fine}`);
+    assert.deepEqual(await evaluate(`({ fine: window.__wayMap.style.sourceCaches.depth.used, wide: window.__wayMap.style.sourceCaches.depthwide.used })`),
+      { fine, wide: !fine }, `one matching depth source is active at map zoom ${zoom}`);
+  }
+  console.log('PASS: actual depth sources switch with the water layers across fractional zooms in both directions.');
   await navigate(base + '/');
   await waitFor(`document.body.classList.contains('ready') && !!window.__wayMap`);
-  assert.deepEqual(await evaluate(`({ layers: ${lookLayers}, mode: document.documentElement.dataset.look || null })`), { layers: [false, false, false, false], mode: null }, 'without ?look=atlas the map has none of the atlas layers');
+  assert.deepEqual(await evaluate(`({ layers: ${lookLayers}, mode: document.documentElement.dataset.look || null })`), { layers: [false, false, false, false, false, false], mode: null }, 'without ?look=atlas the map has none of the atlas layers');
   console.log('PASS: the atlas look is opt-in: ?look=atlas adds its layers, and the default map has none.');
   assert.equal(errors.length, 0, 'no uncaught browser errors');
 })().catch(err => { console.error(err); process.exitCode = 1; }).finally(async () => {

@@ -446,42 +446,152 @@
       { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [world, ...outers] } },
       ...holes.map((h) => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [h] } }))] };
   }
-  async function reliefTile(params, abortController) {
-    const m = /(\d+)\/(\d+)\/(\d+)$/.exec(params.url);
-    const res = await fetch(DEM_URL.replace('{z}', m[1]).replace('{x}', m[2]).replace('{y}', m[3]), { signal: abortController && abortController.signal });
-    if (!res.ok) throw new Error('Terrain tile ' + res.status);
-    const blob = await res.blob();
-    // Heights are stored in the colour channels, so ask the browser not to colour-manage or premultiply them.
-    const bmp = await createImageBitmap(blob, { colorSpaceConversion: 'none', premultiplyAlpha: 'none' }).catch(() => createImageBitmap(blob));
-    const canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(bmp.width, bmp.height) : Object.assign(document.createElement('canvas'), { width: bmp.width, height: bmp.height });
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(bmp, 0, 0);
-    const img = ctx.getImageData(0, 0, bmp.width, bmp.height), d = img.data;
-    for (let i = 0; i < d.length; i += 4) {
-      const e = d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768;
-      const k = clamp(Math.round((e - LOOK_LUT_MIN) / LOOK_LUT_STEP), 0, LOOK_LUT_N - 1) * 3;
-      d[i] = LOOK_LUT[k]; d[i + 1] = LOOK_LUT[k + 1]; d[i + 2] = LOOK_LUT[k + 2]; d[i + 3] = 255;
+  // The terrain tiles are decoded once and shared by the tint and the water depth.
+  const demCache = new Map();
+  const demUrl = (z, x, y) => DEM_URL.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+  function demTile(z, x, y, signal) {
+    signal?.throwIfAborted();
+    const key = z + '/' + x + '/' + y;
+    if (!demCache.has(key)) {
+      const entry = { controller: new AbortController(), users: 0, settled: false };
+      const load = (async () => {
+        const res = await fetch(demUrl(z, x, y), { signal: entry.controller.signal });
+        if (!res.ok) throw new Error('Terrain tile ' + res.status);
+        const blob = await res.blob();
+        // Heights are stored in the colour channels, so ask the browser not to colour-manage or premultiply them.
+        const bmp = await createImageBitmap(blob, { colorSpaceConversion: 'none', premultiplyAlpha: 'none' }).catch(() => createImageBitmap(blob));
+        const ctx = lookCanvas(bmp.width, bmp.height).getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(bmp, 0, 0);
+        const d = ctx.getImageData(0, 0, bmp.width, bmp.height).data, h = new Int16Array(bmp.width * bmp.height);
+        for (let i = 0, k = 0; i < d.length; i += 4, k++) h[k] = Math.round(d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768);
+        return { w: bmp.width, h };
+      })();
+      entry.promise = load;
+      demCache.set(key, entry);
+      load.then(() => { entry.settled = true; }, () => {
+        entry.settled = true;
+        if (demCache.get(key) === entry) demCache.delete(key);
+      });
+      if (demCache.size > 90) demCache.delete(demCache.keys().next().value);
     }
+    const entry = demCache.get(key);
+    entry.users++;
+    return new Promise((resolve, reject) => {
+      let released = false;
+      const release = () => {
+        if (released) return;
+        released = true;
+        signal?.removeEventListener('abort', abort);
+        if (--entry.users === 0 && !entry.settled) {
+          if (demCache.get(key) === entry) demCache.delete(key);
+          entry.controller.abort();
+        }
+      };
+      const abort = () => { release(); reject(signal.reason); };
+      signal?.addEventListener('abort', abort, { once: true });
+      entry.promise.then((dem) => { release(); resolve(dem); }, (err) => { release(); reject(err); });
+    });
+  }
+  const lookCanvas = (w, h) => (typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h }));
+  async function lookPng(w, h, fill) {
+    const canvas = lookCanvas(w, h), ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const img = ctx.createImageData(w, h);
+    fill(img.data);
     ctx.putImageData(img, 0, 0);
     const out = canvas.convertToBlob ? await canvas.convertToBlob({ type: 'image/png' }) : await new Promise((r) => canvas.toBlob(r, 'image/png'));
     return { data: await out.arrayBuffer() };
   }
-  if (LOOK) maplibregl.addProtocol('atlasrelief', reliefTile);
+  const tileOf = (params) => { const m = /(\d+)\/(\d+)\/(\d+)$/.exec(params.url); return [+m[1], +m[2], +m[3]]; };
+  async function reliefTile(params, abortController) {
+    const signal = abortController?.signal;
+    const [z, x, y] = tileOf(params), dem = await demTile(z, x, y, signal);
+    signal?.throwIfAborted();
+    return lookPng(dem.w, dem.w, (d) => {
+      for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+        const c = clamp(Math.round((dem.h[k] - LOOK_LUT_MIN) / LOOK_LUT_STEP), 0, LOOK_LUT_N - 1) * 3;
+        d[i] = LOOK_LUT[c]; d[i + 1] = LOOK_LUT[c + 1]; d[i + 2] = LOOK_LUT[c + 2]; d[i + 3] = 255;
+      }
+    });
+  }
+  // Water depth: the sea floor in the same elevation data, painted from pale shallows to deep blue-green. Only the sea is
+  // painted, using the land outline as a mask (the Dead Sea valley and the Sea of Galilee are land below sea level).
+  // The depths are approximate; offshore data is coarse and this says nothing about the ancient coastline.
+  const DEPTH_RAMP = [[0, '#9CC3BC'], [30, '#8FBAB4'], [100, '#80AEA9'], [250, '#719D9B'], [600, '#659090'], [1200, '#587F82'], [2000, '#4C7076'], [3000, '#42626A']];
+  const DEPTH_STEP = 10, DEPTH_N = 301;
+  const DEPTH_LUT = (() => {
+    const lut = new Uint8Array(DEPTH_N * 3), stops = DEPTH_RAMP.map(([e, h]) => [e, hx(h)]);
+    for (let i = 0; i < DEPTH_N; i++) {
+      const e = i * DEPTH_STEP;
+      let k = 0;
+      while (k < stops.length - 2 && e > stops[k + 1][0]) k++;
+      const [e0, c0] = stops[k], [e1, c1] = stops[k + 1];
+      mixA(c0, c1, clamp((e - e0) / (e1 - e0), 0, 1)).forEach((v, j) => { lut[i * 3 + j] = Math.round(v); });
+    }
+    return lut;
+  })();
+  const lookLand = LOOK ? {
+    fine: fetch('data/land.json?v=9').then((r) => r.json()).catch(() => null),
+    wide: fetch('data/land-wide.json?v=1').then((r) => r.json()).catch(() => null)
+  } : null;
+  const ringsOf = (fcp) => fcp.then((fc) => fc && fc.features.flatMap((f) => (f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates)
+    .flatMap((poly) => poly.map((pts) => {
+      let a = 1e9, b = 1e9, c = -1e9, e = -1e9;
+      pts.forEach(([lng, lat]) => { a = Math.min(a, lng); c = Math.max(c, lng); b = Math.min(b, lat); e = Math.max(e, lat); });
+      return { pts, box: [a, b, c, e] };
+    }))));
+  const lookRings = LOOK ? { fine: ringsOf(lookLand.fine), wide: ringsOf(lookLand.wide) } : null;
+  const DEPTH_FINE_FROM = 7; // map zoom; each water layer keeps its own mask, including cached parent tiles
+  async function depthTile(params, abortController) {
+    const signal = abortController?.signal;
+    const [z, x, y] = tileOf(params);
+    const [dem, rings] = await Promise.all([demTile(z, x, y, signal), params.url.startsWith('atlasdepth://fine/') ? lookRings.fine : lookRings.wide]);
+    signal?.throwIfAborted();
+    if (!rings) throw new Error('Land outline unavailable');
+    const size = dem.w, n = 2 ** z;
+    const mercY = (lat) => { const sn = Math.sin(lat * Math.PI / 180); return 0.5 - Math.log((1 + sn) / (1 - sn)) / (4 * Math.PI); };
+    const lng0 = x / n * 360 - 180, lng1 = (x + 1) / n * 360 - 180;
+    const latOf = (ty) => Math.atan(Math.sinh(Math.PI * (1 - 2 * ty / n))) * 180 / Math.PI;
+    const latTop = latOf(y), latBottom = latOf(y + 1);
+    const mask = lookCanvas(size, size).getContext('2d', { willReadFrequently: true });
+    mask.fillStyle = '#000';
+    mask.beginPath();
+    rings.forEach((r) => {
+      if (r.box[2] < lng0 || r.box[0] > lng1 || r.box[3] < latBottom || r.box[1] > latTop) return;
+      r.pts.forEach(([lng, lat], i) => {
+        const px = ((lng + 180) / 360 * n - x) * size, py = (mercY(lat) * n - y) * size;
+        if (i) mask.lineTo(px, py); else mask.moveTo(px, py);
+      });
+      mask.closePath();
+    });
+    mask.fill('evenodd');
+    const land = mask.getImageData(0, 0, size, size).data;
+    return lookPng(size, size, (d) => {
+      for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+        const c = clamp(Math.round(Math.max(0, -dem.h[k]) / DEPTH_STEP), 0, DEPTH_N - 1) * 3;
+        d[i] = DEPTH_LUT[c]; d[i + 1] = DEPTH_LUT[c + 1]; d[i + 2] = DEPTH_LUT[c + 2]; d[i + 3] = 255 - land[i + 3];
+      }
+    });
+  }
+  if (LOOK) { maplibregl.addProtocol('atlasrelief', reliefTile); maplibregl.addProtocol('atlasdepth', depthTile); }
   const lookSources = LOOK ? {
     relief: { type: 'raster', tiles: ['atlasrelief://{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
+    depth: { type: 'raster', tiles: ['atlasdepth://fine/{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
+    depthwide: { type: 'raster', tiles: ['atlasdepth://wide/{z}/{x}/{y}'], tileSize: 256, maxzoom: 13 },
     seacover: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
     seacoverwide: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } }
   } : {};
   // Below the hillshade: the tint, hidden until the water outline is ready (so it never tints the sea).
   const lookReliefLayers = LOOK ? [
     { id: 'relief', type: 'raster', source: 'relief', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.7, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } }] : [];
-  // Above the hillshade and contours: opaque water over the sea, and a soft shallow edge along the coast.
+  // Above the hillshade and contours: opaque water over the sea, its depth painted over that, and a faint edge along the coast.
   const lookWaterLayers = LOOK ? [
-    { id: 'sea-cover-wide', type: 'fill', source: 'seacoverwide', maxzoom: 6.5, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
-    { id: 'sea-cover', type: 'fill', source: 'seacover', minzoom: 6.5, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
-    { id: 'sea-shallows', type: 'line', source: 'seacover', minzoom: 6.5, layout: { 'line-join': 'round' },
-      paint: { 'line-color': '#FFFFFF', 'line-opacity': 0.3, 'line-width': ['interpolate', ['linear'], ['zoom'], 6.5, 6, 9, 16, 12, 30], 'line-blur': ['interpolate', ['linear'], ['zoom'], 6.5, 5, 9, 12, 12, 24],
-        'line-offset': ['interpolate', ['linear'], ['zoom'], 6.5, 3, 9, 8, 12, 15] } }] : [];
+    { id: 'sea-cover-wide', type: 'fill', source: 'seacoverwide', maxzoom: DEPTH_FINE_FROM, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
+    { id: 'sea-cover', type: 'fill', source: 'seacover', minzoom: DEPTH_FINE_FROM, paint: { 'fill-color': '#719D9B', 'fill-antialias': false } },
+    { id: 'sea-depth-wide', type: 'raster', source: 'depthwide', maxzoom: DEPTH_FINE_FROM, layout: { visibility: 'none' }, paint: { 'raster-opacity': 1, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
+    { id: 'sea-depth', type: 'raster', source: 'depth', minzoom: DEPTH_FINE_FROM, layout: { visibility: 'none' }, paint: { 'raster-opacity': 1, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
+    { id: 'sea-shallows', type: 'line', source: 'seacover', minzoom: DEPTH_FINE_FROM, layout: { 'line-join': 'round' },
+      paint: { 'line-color': '#FFFFFF', 'line-opacity': 0.2, 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 8, 9, 16, 12, 30], 'line-blur': ['interpolate', ['linear'], ['zoom'], 7, 6, 9, 12, 12, 24],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 7, 4, 9, 8, 12, 15] } }] : [];
   const map = new maplibregl.Map({
     container: 'map',
     interactive: true,
@@ -568,16 +678,17 @@
   if (LOOK) {
     // Build the water from the land outlines, then reveal the tint (which must never show over the sea).
     const ready = { seacover: false, seacoverwide: false };
-    const water = (url, id) => fetch(url).then((r) => r.json()).then((fc) => {
+    const water = (landPromise, id) => landPromise.then((fc) => {
+      if (!fc) return;
       const put = () => {
         map.getSource(id).setData(seaFromLand(fc));
         ready[id] = true;
-        if (ready.seacover && ready.seacoverwide) map.setLayoutProperty('relief', 'visibility', 'visible');
+        if (ready.seacover && ready.seacoverwide) ['relief', 'sea-depth', 'sea-depth-wide'].forEach((l) => map.setLayoutProperty(l, 'visibility', 'visible'));
       };
       if (map.getSource(id)) put(); else map.once('load', put);
-    }).catch(() => { /* without the outline the tint stays hidden and the map looks as it does without ?look=atlas */ });
-    water('data/land.json?v=9', 'seacover');
-    water('data/land-wide.json?v=1', 'seacoverwide');
+    });
+    water(lookLand.fine, 'seacover');
+    water(lookLand.wide, 'seacoverwide');
   }
 
   // ---------- markers (HTML, constant size on screen) ----------
@@ -2390,12 +2501,14 @@
       const lit = (x, lo, hi) => { const t = clamp((x - lo) / (hi - lo), 0, 1); return t * t * (3 - 2 * t); };
       const water = mixA(C.sea, hx('#719D9B'), 0.9 * lit(lum(C.sea), 0.08, 0.5));
       const dayness = lit(lum(C.land), 0.06, 0.5);
-      C.lake = mixA(water, [255, 255, 255], 0.1); // the lakes share the sea's colour, a touch lighter
+      C.lake = water; // the lakes and the sea are one colour
       sceneProperty('setPaintProperty', 'sea', 'background-color', rgb(water));
       sceneProperty('setPaintProperty', 'sea-cover', 'fill-color', rgb(water));
       sceneProperty('setPaintProperty', 'sea-cover-wide', 'fill-color', rgb(water));
       sceneProperty('setPaintProperty', 'sea-shallows', 'line-color', rgb(mixA(water, [255, 255, 255], 0.55)));
-      sceneProperty('setPaintProperty', 'sea-shallows', 'line-opacity', 0.1 + 0.4 * dayness);
+      sceneProperty('setPaintProperty', 'sea-shallows', 'line-opacity', 0.04 + 0.16 * dayness);
+      sceneProperty('setPaintProperty', 'sea-depth', 'raster-opacity', lit(lum(C.sea), 0.08, 0.5));
+      sceneProperty('setPaintProperty', 'sea-depth-wide', 'raster-opacity', lit(lum(C.sea), 0.08, 0.5));
       sceneProperty('setPaintProperty', 'relief', 'raster-opacity', 0.78 * dayness);
       sceneProperty('setPaintProperty', 'hillshade', 'hillshade-exaggeration', 0.34);
     }
