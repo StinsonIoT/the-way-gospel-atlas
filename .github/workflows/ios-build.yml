@@ -51,3 +51,10 @@ jobs:
           -derivedDataPath "$RUNNER_TEMP/TheWayDerivedData"
           CODE_SIGNING_ALLOWED=NO
           build
+      - name: Upload iPhone simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: TheWay-iPhone-Simulator
+          path: ${{ runner.temp }}/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app
+          if-no-files-found: error
+          retention-days: 14
