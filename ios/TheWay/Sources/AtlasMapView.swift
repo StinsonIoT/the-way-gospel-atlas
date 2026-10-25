@@ -38,7 +38,7 @@ struct AtlasMapView: UIViewRepresentable {
             let camera = map.camera
             camera.pitch = CGFloat(scene.pitch > 0 ? scene.pitch : (scene.temple != 0 ? 55 : 0))
             camera.heading = scene.bearing
-            map.setCamera(camera, withDuration: 0.9)
+            map.setCamera(camera, withDuration: 0.9, animationTimingFunction: nil)
             context.coordinator.lastCameraSceneID = scene.id
         }
         if let style = map.style, context.coordinator.lastAppliedSceneID != scene.id {
