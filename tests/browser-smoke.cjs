@@ -6,7 +6,7 @@ const path = require('node:path');
 const { spawn } = require('node:child_process');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const root = path.resolve(__dirname, '..');
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg' };
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg' };
 let serveOldWorker = true;
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
@@ -110,7 +110,7 @@ async function navigate(url) {
       for (const scene of ['title', 'voice', 'pray', 'risen']) {
         if (scene !== 'title') await evaluate(`(() => { const i = [...document.querySelectorAll('.step')].findIndex(s => s.dataset.scene === '${scene}'); document.querySelector('#toc-body [data-i="'+i+'"]').click(); })()`);
         await sleep(4000);
-        const diagnostic = await evaluate(`(() => { const m = window.__wayMap; const el = document.querySelector('.mk.is-focus'); return { center: m.getCenter(), elevation: m.transform.elevation, relative: m.queryTerrainElevation(m.getCenter()), marker: el && { transform: el.style.transform, opacity: getComputedStyle(el).opacity, text: el.innerText } }; })()`);
+        const diagnostic = await evaluate(`(() => { const m = window.__wayMap; const el = document.querySelector('.mk.is-focus'); return { center: m.getCenter(), elevation: m.transform?.elevation, relative: m.queryTerrainElevation(m.getCenter()), marker: el && { transform: el.style.transform, opacity: getComputedStyle(el).opacity, text: el.innerText } }; })()`);
         console.log(label, scene, JSON.stringify(diagnostic));
         const shot = await send('Page.captureScreenshot', { format: 'png' });
         fs.writeFileSync(path.join(output, label + '-' + scene + '.png'), Buffer.from(shot.data, 'base64'));
@@ -378,7 +378,7 @@ async function navigate(url) {
   const guideY = await evaluate('scrollY');
   assert(guideY > 1000, 'test starts well into the guide');
   await evaluate(`document.querySelector('a.scene[href*="s-burial"]').click()`);
-  await waitFor(`location.search.includes('guide=holyweek') && document.body.classList.contains('ready') && document.querySelector('#back-name')?.textContent === 'Holy Week guide'`);
+  await waitFor(`location.search.includes('guide=holyweek') && !!document.body && document.body.classList.contains('ready') && document.querySelector('#back-name')?.textContent === 'Holy Week guide'`);
   await evaluate(`window.scrollBy(0, 2000)`);
   await sleep(200);
   assert(await evaluate(`!document.querySelector('#back-pill').hidden`), 'guide return survives scrolling');
@@ -404,8 +404,9 @@ async function navigate(url) {
       await new Promise(resolve => { map.once('render', resolve); map.jumpTo({ zoom: ${zoom} }); });
     })()`);
     // The vendored MapLibre source cache reports actual activation, including retained parent tiles.
-    await waitFor(`window.__wayMap.style.sourceCaches.depth.used === ${fine} && window.__wayMap.style.sourceCaches.depthwide.used === ${!fine}`);
-    assert.deepEqual(await evaluate(`({ fine: window.__wayMap.style.sourceCaches.depth.used, wide: window.__wayMap.style.sourceCaches.depthwide.used })`),
+    // MapLibre 6 renamed the style's source caches to tileManagers (same retained-tile used bookkeeping, keyed by source id).
+    await waitFor(`window.__wayMap.style.tileManagers.depth.used === ${fine} && window.__wayMap.style.tileManagers.depthwide.used === ${!fine}`);
+    assert.deepEqual(await evaluate(`({ fine: window.__wayMap.style.tileManagers.depth.used, wide: window.__wayMap.style.tileManagers.depthwide.used })`),
       { fine, wide: !fine }, `one matching depth source is active at map zoom ${zoom}`);
   }
   console.log('PASS: actual depth sources switch with the water layers across fractional zooms in both directions.');

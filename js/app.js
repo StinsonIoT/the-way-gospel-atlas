@@ -2814,11 +2814,11 @@
   function syncElevation() {
     try {
       if (!map.getTerrain || !map.getTerrain()) return;
-      const rel = map.queryTerrainElevation(map.getCenter()); // relative to the current camera ground height
-      if (rel == null || !isFinite(rel) || Math.abs(rel) < 1) return;
-      map.transform.elevation = map.transform.elevation + rel;
-      // Refresh the camera and DOM markers together after changing ground height.
-      // A repaint alone leaves markers projected against the previous elevation.
+      // MapLibre 4 never refreshed the camera's ground height after a programmed
+      // move, so it was corrected by hand from the terrain under the centre.
+      // MapLibre 6 clamps the camera centre to the ground (centerClampedToGround
+      // defaults to true) and refreshes the elevation from the terrain itself on
+      // every programmed move, so only the marker refresh remains.
       map.jumpTo({});
     } catch (err) { /* terrain not ready */ }
   }
