@@ -29,7 +29,7 @@ final class AtlasFlowUITests: XCTestCase {
         ).firstMatch
         XCTAssertTrue(sceneTitle.waitForExistence(timeout: 10))
 
-        let detailsButton = app.buttons["Go deeper"]
+        let detailsButton = app.buttons["scene-details-zechariah"]
         XCTAssertTrue(detailsButton.waitForExistence(timeout: 10))
         detailsButton.tap()
 

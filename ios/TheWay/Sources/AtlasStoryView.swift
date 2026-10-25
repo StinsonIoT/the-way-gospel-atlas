@@ -155,6 +155,7 @@ struct AtlasStoryView: View {
                     Label("Go deeper", systemImage: "arrow.up.right")
                         .font(.callout.weight(.semibold)).foregroundStyle(Color(hex: colors.accent))
                 }.padding(.top, 2)
+                    .accessibilityIdentifier("scene-details-\(scene.id)")
             }
             Spacer(minLength: 35)
         }
