@@ -17,7 +17,9 @@ const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html'
   'data/land-wide.json?v=1', 'data/rome.json?v=1', 'data/land.json?v=9',
   'data/lakes.json?v=11', 'data/rivers.json?v=9', 'data/jerusalem.json?v=10',
   'data/jerusalem3d.json?v=10', 'data/capernaum3d.json?v=12',
-  'vendor/maplibre-gl.mjs', 'vendor/maplibre-gl-worker.mjs', 'vendor/maplibre-gl-init.mjs', 'vendor/maplibre-gl.css',
+  // MapLibre appends its own version to the worker URL at runtime, so the
+  // precache entry must carry the same ?v= or an offline start misses the worker.
+  'vendor/maplibre-gl.mjs', 'vendor/maplibre-gl-worker.mjs?v=6.16.0', 'vendor/maplibre-gl-init.mjs', 'vendor/maplibre-gl.css',
   'fonts/newsreader.woff2', 'fonts/newsreader-italic.woff2', 'fonts/instrument-sans-400.woff2', 'fonts/instrument-sans-500.woff2', 'fonts/instrument-sans-600.woff2'];
 
 self.addEventListener('install', (e) => {
