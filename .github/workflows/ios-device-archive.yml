@@ -1,0 +1,105 @@
+name: iOS Device Archive
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate signing secrets and write temporary API key
+        shell: bash
+        env:
+          ASC_PRIVATE_KEY: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          for name in APPLE_TEAM_ID ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing required GitHub Actions secret for ${name}."
+              exit 1
+            fi
+          done
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          printf '%s' "$ASC_PRIVATE_KEY" > "$KEY_PATH"
+          chmod 600 "$KEY_PATH"
+          echo "ASC_API_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Export reviewed content
+        run: node tools/export-ios-content.cjs
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Archive signed iPhone app
+        working-directory: ios
+        shell: bash
+        run: |
+          xcodebuild archive \
+            -project TheWay.xcodeproj \
+            -scheme TheWay \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/TheWay.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/TheWayDeviceDerivedData" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_API_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION=1.0.0 \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            archive
+      - name: Export App Store Connect IPA
+        working-directory: ios
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/TheWay.xcarchive" \
+            -exportPath "$RUNNER_TEMP/TheWay-IPA" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_API_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+      - name: Remove temporary signing key
+        if: always()
+        shell: bash
+        run: |
+          if [[ -n "${ASC_API_KEY_PATH:-}" && -f "$ASC_API_KEY_PATH" ]]; then
+            rm -f "$ASC_API_KEY_PATH"
+          fi
+      - name: Upload signed IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TheWay-iOS-AppStore-IPA
+          path: ${{ runner.temp }}/TheWay-IPA/*.ipa
+          if-no-files-found: error
+          retention-days: 14

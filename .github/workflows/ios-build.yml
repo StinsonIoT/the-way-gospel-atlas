@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - ".github/workflows/ios-build.yml"
+      - ".github/workflows/ios-device-archive.yml"
       - "ios/**"
       - "js/scenes.js"
       - "js/study.js"
@@ -14,6 +15,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/ios-build.yml"
+      - ".github/workflows/ios-device-archive.yml"
       - "ios/**"
       - "js/scenes.js"
       - "js/study.js"
