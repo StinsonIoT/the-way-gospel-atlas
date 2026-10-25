@@ -51,10 +51,23 @@ jobs:
           -derivedDataPath "$RUNNER_TEMP/TheWayDerivedData"
           CODE_SIGNING_ALLOWED=NO
           build
+      - name: Launch on iPhone simulator
+        shell: bash
+        run: |
+          DEVICE_ID="$(xcrun simctl list devices available --json | node -e 'let data="";process.stdin.on("data",part=>data+=part).on("end",()=>{const device=Object.values(JSON.parse(data).devices).flat().find(item=>item.isAvailable&&item.name.startsWith("iPhone"));if(!device){console.error("No available iPhone simulator was found.");process.exit(1)}console.log(device.udid)})')"
+          APP_PATH="$RUNNER_TEMP/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app"
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+          xcrun simctl launch "$DEVICE_ID" com.stinsoniot.theway
+          sleep 8
+          xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/TheWay-first-launch.png"
       - name: Upload iPhone simulator app
         uses: actions/upload-artifact@v4
         with:
           name: TheWay-iPhone-Simulator
-          path: ${{ runner.temp }}/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app
+          path: |
+            ${{ runner.temp }}/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app
+            ${{ runner.temp }}/TheWay-first-launch.png
           if-no-files-found: error
           retention-days: 14
