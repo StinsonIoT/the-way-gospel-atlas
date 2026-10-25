@@ -24,7 +24,7 @@ struct PassageSheet: View {
                                 }
                                 ForEach(chapter.verses) { verse in
                                     HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                        Text("\(verse.number)").font(.system(.caption, weight: .semibold, design: .rounded)).foregroundStyle(.secondary)
+                                        Text("\(verse.number)").font(.system(.caption, design: .rounded).weight(.semibold)).foregroundStyle(.secondary)
                                         Text(verse.text).font(.system(.body, design: .serif)).lineSpacing(4)
                                     }.frame(maxWidth: .infinity, alignment: .leading)
                                 }

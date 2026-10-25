@@ -53,10 +53,10 @@ struct AtlasStoryView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("THE WAY").font(.system(.caption2, weight: .bold, design: .rounded)).tracking(2)
+                Text("THE WAY").font(.system(.caption2, design: .rounded).weight(.bold)).tracking(2)
                 Button { sheet = .chapters } label: {
                     HStack(spacing: 4) {
-                        Text(activeScene.chapter).font(.system(.body, weight: .medium, design: .serif))
+                        Text(activeScene.chapter).font(.system(.body, design: .serif).weight(.medium))
                         Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
                     }
                 }.accessibilityLabel("Choose a chapter")
@@ -87,7 +87,7 @@ struct AtlasStoryView: View {
         return VStack(alignment: .leading, spacing: 12) {
             Spacer(minLength: 120)
             if !scene.kicker.isEmpty {
-                Text(scene.kicker.uppercased()).font(.system(.caption, weight: .bold)).tracking(1.6)
+                Text(scene.kicker.uppercased()).font(.system(.caption).weight(.bold)).tracking(1.6)
                     .foregroundStyle(Color(hex: colors.accent))
             }
             if !displayTitle.isEmpty {
@@ -170,10 +170,10 @@ struct AtlasStoryView: View {
 
     private func legendRow(mark: String, color: String, title: String, detail: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
-            Text(mark).font(.system(.body, weight: .semibold, design: .monospaced))
+            Text(mark).font(.system(.body, design: .monospaced).weight(.semibold))
                 .foregroundStyle(Color(hex: color)).frame(width: 30)
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.system(.subheadline, weight: .semibold, design: .rounded))
+                Text(title).font(.system(.subheadline, design: .rounded).weight(.semibold))
                 Text(detail).font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
         }.foregroundStyle(Color(hex: palette.txt))
@@ -305,7 +305,7 @@ struct MapExploreSheet: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(scene.title.replacingOccurrences(of: "<em>", with: "").replacingOccurrences(of: "</em>", with: ""))
-                        .font(.system(.headline, weight: .medium, design: .serif)).lineLimit(2)
+                        .font(.system(.headline, design: .serif).weight(.medium)).lineLimit(2)
                     Text("Drag, pinch, or rotate to explore").font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
