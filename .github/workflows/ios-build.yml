@@ -58,6 +58,7 @@ jobs:
           APP_PATH="$RUNNER_TEMP/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app"
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist"
           xcrun simctl install "$DEVICE_ID" "$APP_PATH"
           xcrun simctl launch "$DEVICE_ID" com.stinsoniot.theway
           sleep 8
