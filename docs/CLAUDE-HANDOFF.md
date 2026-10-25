@@ -1,5 +1,25 @@
 # Handoff to Claude Code — The Way Gospel Atlas
 
+## Current update — iOS app, ink storyboard, and Claude handoff (2026-10-25)
+
+Mike asked to continue building The Way as an iPhone app, selected Jesus's birth as the first ink-painted story sequence, then asked that the work be pushed for a move to Claude.
+
+### GitHub branches and artifacts
+
+- **Native iOS app:** [PR #25](https://github.com/StinsonIoT/the-way-gospel-atlas/pull/25), branch `codex/ios-app-build`, head `143b6c69a0eb3a06451ee17cf617abfb85072a23`. The PR is open, draft, and unmerged. It contains the current app implementation, iOS build/archive workflows, offline passage UI flow, and the written birth-ink storyboard.
+- **Latest iOS code verification:** [workflow run 40229681780](https://github.com/StinsonIoT/the-way-gospel-atlas/actions/runs/40229681780) passed simulator/device builds, the search → offline passage → scene details UI flow, simulator launch, and artifact upload. It ran on code head `3728ba4fdbf9f2725f56e2798ac1a8890b3968a1`; the later head `143b6c6` only adds the storyboard document.
+- **Guided website and ink concept:** branch `codex/guided-journey`, head `9e3cfbe77410794c9681e700502a78a5f48da0e9`. It contains the pending website/journey changes and the ink concept image at `docs/design/ink-storyboard-birth.png` with its storyboard at `docs/design/ink-storyboard-birth.md`. This branch was pushed; no PR has been opened for it yet.
+- The image is a four-frame concept sheet (Temple, journey, birth, shepherds), not production art and not yet included in the iOS app. The actual ink reveal/camera/route animation still needs implementation. Start with `journey` → `birth` → `shepherds`.
+- The old untracked local `ios/`, `.github/workflows/ios-build.yml`, and `tools/export-ios-content.cjs` copies were not included on `codex/guided-journey`; they are an earlier copy. Use `codex/ios-app-build` as the iOS source of truth.
+
+### Release state
+
+- GitHub Actions currently has zero repository secrets. The signed archive job skips; no signed IPA or physical-device install has been produced.
+- To build a signed IPA, configure `APPLE_TEAM_ID`, `APPSTORE_CONNECT_KEY_ID`, `APPSTORE_CONNECT_ISSUER_ID`, and `APPSTORE_CONNECT_PRIVATE_KEY` in repository Actions secrets. Do not request that the private key be pasted into chat.
+- An App Store Connect app record and final company support/privacy links are still needed before distribution.
+- The birth storyboard is a design plan. The image is a preview; do not present it as approved production artwork or geographic evidence.
+
+
 Written by Codex after Mike requested a handoff. Status checked **2026-10-21 04:33 UTC** (2026-10-20 evening in Phoenix). Recheck GitHub before relying on any branch, PR, or deployment status below.
 
 > **Status update by Claude Code, 2026-10-21, after 05:28 UTC.** Codex's text below is kept as written; the lines marked
