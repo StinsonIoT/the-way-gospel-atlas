@@ -2,6 +2,10 @@
 
 A scroll-driven atlas of the whole Gospel story, in 90 scenes and eight chapters: Origins, Beginnings, In Galilee, Beyond Galilee, Toward Jerusalem, Holy Week, Resurrection, and The Spirit comes (the ascension and Pentecost). It is built for iPhone first and also works on desktop.
 
+## Native iOS app
+
+The repository also contains a native SwiftUI app in [`ios/`](ios/README.md). It reuses the reviewed scene and map data and includes an offline Scripture reader.
+
 ## What it does
 
 - **One screen of scroll per scene.** While a caption is on screen the map holds still. As the next caption scrolls in, the camera moves, the light changes and routes draw.

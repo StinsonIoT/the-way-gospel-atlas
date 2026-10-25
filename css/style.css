@@ -17,7 +17,7 @@ a { color: inherit; }
 /* ---------- map ---------- */
 #map { position: fixed; inset: 0; z-index: 0; opacity: 0; transition: opacity 0.6s ease; }
 body.ready #map { opacity: 1; }
-.maplibregl-canvas { outline: none; }
+.maplibregl-canvas { outline: none; filter: saturate(.84) contrast(1.025) sepia(.035); }
 
 .mk { position: absolute; width: 0; height: 0; pointer-events: none; will-change: opacity; }
 .mk .lbl { position: absolute; top: 0; transform: translateY(-50%); white-space: nowrap; display: flex; flex-direction: column; gap: 1px; color: var(--m-txt); font-size: 12.5px; line-height: 1.15;
@@ -84,7 +84,11 @@ body[data-moment="annunciation"] .mk-named .nm { font-weight: 700; }
 .cue svg { width: 12px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.2; }
 
 .card { width: 100%; max-width: 520px; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 12px;
-  background: var(--c-bg); color: var(--c-fg); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18); }
+  background-color: var(--c-bg); background-image: url('../data/paper-grain.svg'), linear-gradient(var(--c-bg), var(--c-bg)); background-size: 192px 192px, auto; background-blend-mode: multiply, normal;
+  color: var(--c-fg); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18); }
+.step[data-profile="place"] > .card { border-inline-start: 3px solid color-mix(in srgb, var(--c-accent) 78%, transparent); border-radius: 5px 18px 18px 5px; }
+.step[data-profile="journey"] > .card { border-inline-start: 2px dashed color-mix(in srgb, var(--c-accent) 78%, transparent); border-radius: 5px 18px 18px 5px; }
+.chapter-arrival > .card::before, .chapter-arrival > .verse::before { content: attr(data-chapter-title); display: block; padding: 0 0 8px; border-bottom: 1px solid color-mix(in srgb, var(--c-accent, var(--m-accent)) 35%, transparent); color: var(--c-accent, var(--m-accent)); font: 600 10px/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; }
 .card-light { --c-bg: #F4EEE2; --c-fg: #1C2A25; --c-muted: #3E4C46; --c-accent: #9A4E2A; --c-line: #DDD2BC; --c-trad: #2F4F6B; }
 .card-dawn  { --c-bg: #FBF7EF; --c-fg: #1C2A25; --c-muted: #3E4C46; --c-accent: #B4532A; --c-line: #E3D8C2; --c-trad: #2F4F6B; }
 .card-dark  { --c-bg: #141A1C; --c-fg: #EAE6DC; --c-muted: #B9C0BE; --c-accent: #E0A458; --c-line: #2F3A3D; --c-trad: #A9C3DA; }
@@ -411,6 +415,14 @@ html.following .explore-open { top: calc(122px + env(safe-area-inset-top)); }
 .d-num { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 600 12px var(--sans); border: 1px solid var(--c-line); color: var(--c-muted); }
 .plan-days .done .d-num { background: var(--c-accent); color: #fff; border-color: transparent; }
 .plan-days .next .d-num { border: 2px solid var(--c-accent); color: var(--c-accent); }
+.journey-hub { margin: 0 0 20px; padding: 14px; border: 1px solid var(--c-line); border-radius: 16px; background: color-mix(in srgb, var(--c-line) 28%, transparent); }
+.journey-hub h3 { margin: 4px 0 10px; font: 400 23px var(--serif); }
+.journey-position { width: 100%; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 2px; border: 0; border-top: 1px solid var(--c-line); background: transparent; color: var(--c-fg); text-align: left; cursor: pointer; }
+.journey-position > span:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.journey-position b { font: 600 13px var(--sans); }
+.journey-position small { overflow: hidden; color: var(--c-muted); font: 400 12px/1.35 var(--sans); text-overflow: ellipsis; }
+.journey-position > span:last-child { flex: none; color: var(--c-accent); font: 600 12px var(--sans); }
+.journey-forget { min-height: 40px; padding: 0 2px; border: 0; background: transparent; color: var(--c-muted); font: 400 12px var(--sans); text-decoration: underline; cursor: pointer; }
 .d-t { display: flex; flex-direction: column; gap: 2px; font: 400 16px var(--serif); }
 .d-t small { font: 400 11.5px/1.35 var(--sans); color: var(--c-muted); }
 .plan-days .done .d-t { color: var(--c-muted); }
@@ -697,9 +709,13 @@ html.og .story-stage { display: none !important; }
 
 /* Three art-directed moments. The atmosphere is decorative; all geography stays intact. */
 .story-atmosphere { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+.story-atmosphere::before { content: ''; position: absolute; inset: -5%; pointer-events: none; opacity: .5; mix-blend-mode: soft-light; }
 body[data-moment="title"] .story-atmosphere { opacity: 1; background: linear-gradient(180deg, #0f1a1c10 20%, transparent 40%, #0f1a1c9c), radial-gradient(ellipse at 80% 24%, transparent 20%, #0f1a1c65 90%); }
+body[data-moment="title"] .story-atmosphere::before { background: radial-gradient(ellipse at 20% 68%, #d5a65b48, transparent 44%), radial-gradient(ellipse at 77% 22%, #8ea89c38, transparent 39%); }
 body[data-moment="pray"] .story-atmosphere { opacity: 1; background: radial-gradient(ellipse at 60% 32%, transparent 15%, #050c1070 90%); }
+body[data-moment="pray"] .story-atmosphere::before { opacity: .38; background: radial-gradient(ellipse at 26% 72%, #59675d55, transparent 42%), radial-gradient(ellipse at 83% 20%, #354a5860, transparent 45%); }
 body[data-moment="risen"] .story-atmosphere { opacity: 1; background: linear-gradient(180deg, #fff8df15, transparent 60%, #f5ebd749); }
+body[data-moment="risen"] .story-atmosphere::before { background: radial-gradient(ellipse at 70% 24%, #edca8060, transparent 43%), radial-gradient(ellipse at 17% 76%, #b1b9a24a, transparent 48%); }
 html.exploring .story-atmosphere, html.og .story-atmosphere { display: none; }
 .step-art-directed[data-scene="title"] .hero { max-width: 490px; padding-top: 12px; }
 .step-art-directed[data-scene="title"] h1 { font-size: clamp(64px, 23vw, 164px); line-height: .88; letter-spacing: -.04em; }
@@ -716,7 +732,7 @@ html.exploring .story-atmosphere, html.og .story-atmosphere { display: none; }
 .moment-source-label { font: 500 10px/1.5 var(--sans); color: var(--m-muted); text-transform: uppercase; letter-spacing: .1em; }
 .step-art-directed .full-prayer { font-size: 20px; line-height: 1.6; margin: 12px 0 18px; }
 .moment-original-title { font: 400 22px/1.25 var(--serif); margin: 12px 0; }
-.step-art-directed > .moment-resurrection { border: 0; border-radius: 2px; padding: 21px 23px; box-shadow: 0 8px 40px #9c884414; background: linear-gradient(100deg, #fbf7effa, #fbf7eff2); gap: 12px; }
+.step-art-directed > .moment-resurrection { border: 0; border-radius: 2px; padding: 21px 23px; box-shadow: 0 8px 40px #9c884414; background-color: #FBF7EF; background-image: url('../data/paper-grain.svg'), radial-gradient(ellipse at 82% 4%, #d9ba7240, transparent 54%), linear-gradient(100deg, #fbf7effa, #fbf7eff2); background-size: 192px 192px, auto, auto; background-blend-mode: multiply, normal, normal; gap: 12px; }
 .step-art-directed .moment-resurrection h2 { font-size: clamp(43px, 11.6vw, 64px); line-height: 1; letter-spacing: -.025em; }
 .step-art-directed .moment-resurrection .text { font-size: 18px; line-height: 1.5; max-width: 36ch; }
 .step-art-directed .moment-resurrection .moment-certainty { font-size: 12px; }

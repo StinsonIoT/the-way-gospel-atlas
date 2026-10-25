@@ -14,6 +14,7 @@
   const TRAVEL_HOLD = 0.12;
   const experience = window.WAY_EXPERIENCE;
   const LISTEN = window.WAY_LISTEN;
+  const JOURNEY = window.WAY_JOURNEY;
 
   // ---------- small helpers ----------
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -295,11 +296,17 @@
   STEPS.forEach((s, i) => {
     const sec = document.createElement('section');
     sec.className = 'step step-' + (s.kind || 'scene');
+    sec.dataset.profile = experience.profile(s);
     sec.id = i === 0 ? 'top' : 's-' + s.id;
     if (experience.focused(s.id)) sec.classList.add('step-focus');
     sec.dataset.scene = s.id;
     if (experience.artDirected(s.id)) sec.classList.add('step-art-directed');
     sec.innerHTML = cardHTML(s);
+    if (i > 0 && STEPS[i - 1].ch !== s.ch) {
+      sec.classList.add('chapter-arrival');
+      const name = String(s.ch || '').replace(/^[IVX]+\s·\s/, '');
+      if (sec.firstElementChild && name) sec.firstElementChild.dataset.chapterTitle = name;
+    }
     // Each caption settles and holds while the reader scrolls through this
     // spacer; then it moves on and the map travels to the next place.
     if (i > 0) sec.insertAdjacentHTML('beforeend', '<div class="step-hold" aria-hidden="true"></div>');
@@ -751,33 +758,40 @@
     hashTimer = setTimeout(() => {
       try { history.replaceState(null, '', r === 0 ? location.pathname + location.search : '#' + sections[r].id); } catch (err) { /* ignore */ }
       // Remember the reader's place (only once they are into the story).
-      if (r >= 3) { try { localStorage.setItem('the-way:last', STEPS[r].id); } catch (err) { /* private mode */ } }
+      if (r >= 3 && journeyMode() !== 'listening') { try { localStorage.setItem('the-way:last', STEPS[r].id); } catch (err) { /* private mode */ } }
     }, 500);
   }
   // ---------- Continue where you left off ----------
+  function journeyMode() {
+    try { return localStorage.getItem('the-way:mode') || 'reading'; } catch (err) { return 'reading'; }
+  }
+  function rememberJourneyMode(mode) {
+    try { JOURNEY.rememberMode(mode, localStorage); } catch (err) { /* private mode */ }
+  }
+  function journeySnapshot() {
+    let readingId = null;
+    try { readingId = localStorage.getItem('the-way:last'); } catch (err) { /* storage unavailable */ }
+    const days = PLAN.map((d) => [d.title, d.steps.map((i) => STEPS[i].id)]);
+    return JOURNEY.snapshot({ scenes: STEPS, days, readingId, listening: LISTEN.read(STEPS), preferredMode: journeyMode(),
+      seenIds: [...seen], savedIds: [...saved] });
+  }
   function offerResume() {
-    let last = null;
-    try { last = localStorage.getItem('the-way:last'); } catch (err) { return; }
-    const i = STEPS.findIndex((st) => st.id === last);
+    const state = journeySnapshot();
     const box = document.getElementById('resume');
-    const listening = LISTEN.read(STEPS);
-    if (i < 3 && !listening) { box.hidden = true; box.innerHTML = ''; return; }
-    if (listening) {
-      const scene = STEPS.find(st => st.id === listening.scene);
-      const reader = listening.settings.reader;
-      box.innerHTML = `<div class="resume-choices"><button type="button" class="resume-go resume-listen"><span class="resume-k">Resume listening</span><span class="resume-t">${esc(stepLabel(scene))}</span><small>${esc(reader ? reader.charAt(0).toUpperCase() + reader.slice(1) : 'Scripture audio')} · ${listening.settings.rate}×</small></button>${i >= 3 ? '<button type="button" class="resume-read">Or continue reading</button>' : ''}</div><button type="button" class="resume-x" aria-label="Forget saved listening position">×</button>`;
-      box.hidden = false;
-      box.querySelector('.resume-listen').addEventListener('click', () => { box.hidden = true; resumeListening(listening); });
-      const read = box.querySelector('.resume-read');
-      if (read) read.addEventListener('click', () => { box.hidden = true; goTo(i); });
-      box.querySelector('.resume-x').addEventListener('click', () => { LISTEN.clear(); offerResume(); });
-      return;
-    }
-    const g = groups.find((gg) => gg.steps.includes(i));
-    box.innerHTML = `<button type="button" class="resume-go"><span class="resume-k">Continue where you left off</span><span class="resume-t">${esc(stepLabel(STEPS[i]))}</span><small>${esc(g && g.num ? g.num + ' · ' + g.title : '')}</small></button><button type="button" class="resume-x" aria-label="Start from the beginning instead">×</button>`;
+    if (!state.primary) { box.hidden = true; box.innerHTML = ''; return; }
+    const primary = state.primary;
+    const idx = STEPS.findIndex((st) => st.id === primary.scene);
+    const step = STEPS[idx];
+    const group = groups.find((gg) => gg.steps.includes(idx));
+    const label = primary.mode === 'listening' ? 'Continue listening' : 'Continue reading';
+    box.innerHTML = `<div class="resume-choices"><button type="button" class="resume-go"><span class="resume-k">Continue your journey · ${label}</span><span class="resume-t">${esc(stepLabel(step))}</span><small>${esc(group && group.num ? group.num + ' · ' + group.title : '')}</small></button><button type="button" class="resume-read resume-hub">Your journey</button></div>`;
     box.hidden = false;
-    box.querySelector('.resume-go').addEventListener('click', () => { box.hidden = true; goTo(i); });
-    box.querySelector('.resume-x').addEventListener('click', () => { box.hidden = true; try { localStorage.removeItem('the-way:last'); } catch (err) { /* ignore */ } });
+    box.querySelector('.resume-go').addEventListener('click', () => {
+      box.hidden = true;
+      if (primary.mode === 'listening' && state.listening) resumeListening(state.listening);
+      else { rememberJourneyMode('reading'); goTo(idx); }
+    });
+    box.querySelector('.resume-hub').addEventListener('click', () => { showTab('plan'); openToc(); });
   }
 
   // Jump to a scene. On iPhone (WebKit), closing a dialog or the keyboard can
@@ -865,6 +879,7 @@
 
   function goTo(i, opts) {
     opts = opts || {};
+    rememberJourneyMode('reading');
     if (!opts.quiet) noteJump(progress(), i);
     if (exploring) closeExplore();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
@@ -1430,7 +1445,7 @@
   let seenTimer = 0;
   function noteSeen(r) {
     clearTimeout(seenTimer);
-    if (r < 1 || exploring) return;
+    if (r < 1 || exploring || tour) return;
     const id = STEPS[r].id;
     if (seen.has(id)) return;
     seenTimer = setTimeout(() => { if (Math.round(progress()) === r) { seen.add(id); saveSet('the-way:seen', seen); } }, 1500);
@@ -1457,6 +1472,7 @@
   let resetArmed = false;
   function renderPlan() {
     resetArmed = false;
+    const journey = journeySnapshot();
     const doneDay = (d) => d.steps.every((i) => seen.has(STEPS[i].id));
     const next = PLAN.findIndex((d) => !doneDay(d));
     const days = PLAN.filter(doneDay).length;
@@ -1468,7 +1484,23 @@
     const savedHTML = '<h3 class="plan-h" id="saved-h">Saved scenes</h3>' + (list.length
       ? '<ul class="saved-list">' + list.map((i) => { const st = STEPS[i]; return `<li><button type="button" data-i="${i}">${esc(stepLabel(st))}${st.ref ? `<small>${esc(st.ref[0])}</small>` : ''}</button><button type="button" class="unsave" data-unsave="${st.id}" aria-label="Remove ${esc(stepLabel(st))} from saved">${BOOKMARK}</button></li>`; }).join('') + '</ul>'
       : `<p class="q-hint">Tap the bookmark ${BOOKMARK} on any scene to save it here.</p>`);
-    let html = list.length ? savedHTML : '';
+    let html = `<section class="journey-hub" aria-labelledby="journey-hub-title"><p class="plan-k">Your journey</p><h3 id="journey-hub-title">Pick up where you left off</h3>`;
+    if (journey.reading) {
+      const i = STEPS.findIndex((st) => st.id === journey.reading.scene), g = groups.find((gg) => gg.steps.includes(i));
+      html += `<button type="button" class="journey-position" data-journey-read="${i}"><span><b>Reading</b><small>${esc(stepLabel(STEPS[i]))}${g && g.num ? ` · ${esc(g.num)} · ${esc(g.title)}` : ''}</small></span><span>Resume</span></button>`;
+    }
+    if (journey.listening) {
+      const i = STEPS.findIndex((st) => st.id === journey.listening.scene);
+      html += `<div class="journey-listening"><button type="button" class="journey-position" data-journey-listen><span><b>Listening</b><small>${esc(stepLabel(STEPS[i]))}</small></span><span>Resume</span></button><button type="button" class="journey-forget" data-journey-forget>Forget listening position</button></div>`;
+    }
+    if (journey.nextDay != null) {
+      const day = PLAN[journey.nextDay];
+      const remaining = day.steps.filter((i) => !seen.has(STEPS[i].id)).map((i) => STEPS[i].id);
+      const range = JOURNEY.planRange(remaining, STEPS);
+      if (range) html += `<button type="button" class="journey-position" data-journey-day="${range.start}"><span><b>Next plan day · ${journey.nextDay + 1}</b><small>${esc(day.title)}</small></span><span>Continue</span></button>`;
+    } else html += '<p class="plan-sub">You have read every day in the plan.</p>';
+    html += '</section>';
+    html += list.length ? savedHTML : '';
     html += `<div class="plan-head"><p class="plan-k">Reading plan</p><h3>30 days through the Gospels</h3>
       <p class="plan-sub">About three scenes a day, at your own pace. A day is ticked once you have scrolled through its scenes.</p>
       <div class="plan-bar" aria-hidden="true"><i style="width:${(100 * read / total).toFixed(1)}%"></i></div>
@@ -1569,6 +1601,12 @@
     }
   }
   planBody.addEventListener('click', (ev) => {
+    const read = ev.target.closest('[data-journey-read]');
+    if (read) { goTo(+read.dataset.journeyRead); return; }
+    if (ev.target.closest('[data-journey-listen]')) { const bookmark = LISTEN.read(STEPS); if (bookmark) resumeListening(bookmark); return; }
+    if (ev.target.closest('[data-journey-forget]')) { LISTEN.clear(); renderPlan(); offerResume(); return; }
+    const day = ev.target.closest('[data-journey-day]');
+    if (day) { goTo(+day.dataset.journeyDay); return; }
     if (ev.target.closest('.plan-cancel')) { cancelOffline(); return; }
     const off = ev.target.closest('.plan-offline');
     if (off) { saveOffline(off); return; }
@@ -2178,7 +2216,7 @@
     saveListening(true);
     if (sleepOver()) return;
     // If the reader scrolled away, stop here and let them pick up from there.
-    if (Math.round(progress()) !== tour.i) { tour.ended = true; setTourPlaying(false); tSub.textContent = 'Paused · tap play to listen from here'; return; }
+    if (Math.round(progress()) !== tour.i) { rememberJourneyMode('reading'); tour.ended = true; setTourPlaying(false); tSub.textContent = 'Paused · tap play to listen from here'; return; }
     const n = tourNext(tour.i);
     if (n < 0) { endTour(true); return; }
     const token = tourToken;
@@ -2234,6 +2272,7 @@
   tourEl.addEventListener('seeked', () => saveListening(true));
   const groupEnd = (i) => { const g = groups.find((gg) => gg.steps.includes(i)); return g ? g.steps[g.steps.length - 1] : N - 1; };
   function startTourAt(i, end, bookmark) {
+    rememberJourneyMode('listening');
     const from = Math.max(1, i);
     tourEnd = end != null ? end : N - 1;
     if (TS.sleep === 'chapter') tourEnd = Math.min(tourEnd, groupEnd(from));
