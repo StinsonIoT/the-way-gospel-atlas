@@ -38,6 +38,24 @@ targets:
     dependencies:
       - package: MapLibre
         product: MapLibre
+  TheWayUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: TheWayUITests
+    dependencies:
+      - target: TheWay
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.stinsoniot.theway.uitests
+schemes:
+  TheWay:
+    build:
+      targets:
+        TheWay: all
+    test:
+      targets:
+        - TheWayUITests
 packages:
   MapLibre:
     url: https://github.com/maplibre/maplibre-gl-native-distribution

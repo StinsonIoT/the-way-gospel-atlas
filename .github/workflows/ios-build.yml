@@ -59,6 +59,14 @@ jobs:
           CODE_SIGNING_REQUIRED=NO
           CODE_SIGN_IDENTITY=-
           build
+      - name: Run iPhone UI smoke tests
+        working-directory: ios
+        shell: bash
+        run: |
+          DEVICE_ID="$(xcrun simctl list devices available --json | node -e 'let data="";process.stdin.on("data",part=>data+=part).on("end",()=>{const device=Object.values(JSON.parse(data).devices).flat().find(item=>item.isAvailable&&item.name.startsWith("iPhone"));if(!device){console.error("No available iPhone simulator was found.");process.exit(1)}console.log(device.udid)})')"
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcodebuild -project TheWay.xcodeproj -scheme TheWay -destination "platform=iOS Simulator,id=$DEVICE_ID" -derivedDataPath "$RUNNER_TEMP/TheWayDerivedData" CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=- test
       - name: Launch on iPhone simulator
         shell: bash
         run: |
