@@ -12,6 +12,15 @@ for (const file of ['js/scenes.js', 'js/study.js', 'js/guide.js', 'js/places.js'
 }
 
 const way = context.window.WAY;
+const oldTestament = context.window.WAY_OT || {};
+const topics = (context.window.WAY_TOPICS || []).map(topic => topic.items === 'ot'
+  ? {
+      ...topic,
+      items: way.STEPS
+        .filter(step => oldTestament[step.id])
+        .map(step => [step.id, oldTestament[step.id].map(link => link.ot).join('; ')])
+    }
+  : topic);
 const sampleBezier = (points, count = 64) => Array.from({ length: count + 1 }, (_, i) => {
   const t = i / count, u = 1 - t;
   const weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
@@ -67,11 +76,11 @@ const content = {
   routes,
   readingPlan: (context.window.WAY_PLAN || []).map(([title, sceneIds]) => ({ title, sceneIds })),
   harmony: context.window.WAY_HARMONY || {},
-  oldTestament: context.window.WAY_OT || {},
+  oldTestament,
   reflection: context.window.WAY_ASK || {},
   people: context.window.WAY_PEOPLE || [],
   words: context.window.WAY_WORDS || [],
-  topics: context.window.WAY_TOPICS || [],
+  topics,
   periods: (context.window.WAY_WHEN || {}).periods || [],
   timeline: (context.window.WAY_WHEN || {}).timeline || [],
   placeProfiles: context.window.WAY_INFO || {},
