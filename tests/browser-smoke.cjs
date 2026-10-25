@@ -40,7 +40,15 @@ async function evaluate(expression) {
 }
 async function waitFor(expression, timeout = 20000) {
   const deadline = Date.now() + timeout;
-  while (Date.now() < deadline) { if (await evaluate(expression)) return; await sleep(100); }
+  while (Date.now() < deadline) {
+    try { if (await evaluate(expression)) return; }
+    catch (err) {
+      // A poll can land exactly on a navigation boundary, while the execution
+      // context is being replaced; that is a "not ready yet", not a failure.
+      if (!/Inspected target (navigated or closed|crashed)|Execution context was destroyed/.test(String(err && err.message))) throw err;
+    }
+    await sleep(100);
+  }
   const diagnostic = await evaluate(`({ url: location.href, title: document.title, steps: document.querySelectorAll('.step').length, reader: document.querySelector('#reader')?.innerText, text: document.body.innerText.slice(0, 150) })`);
   throw Error('Timed out: ' + expression + '\n' + JSON.stringify({ diagnostic, errors }));
 }
@@ -110,7 +118,7 @@ async function navigate(url) {
       for (const scene of ['title', 'voice', 'pray', 'risen']) {
         if (scene !== 'title') await evaluate(`(() => { const i = [...document.querySelectorAll('.step')].findIndex(s => s.dataset.scene === '${scene}'); document.querySelector('#toc-body [data-i="'+i+'"]').click(); })()`);
         await sleep(4000);
-        const diagnostic = await evaluate(`(() => { const m = window.__wayMap; const el = document.querySelector('.mk.is-focus'); return { center: m.getCenter(), elevation: m.transform?.elevation, relative: m.queryTerrainElevation(m.getCenter()), marker: el && { transform: el.style.transform, opacity: getComputedStyle(el).opacity, text: el.innerText } }; })()`);
+        const diagnostic = await evaluate(`(() => { const m = window.__wayMap; const el = document.querySelector('.mk.is-focus'); return { center: m.getCenter(), terrainRelative: m.queryTerrainElevation(m.getCenter()), marker: el && { transform: el.style.transform, opacity: getComputedStyle(el).opacity, text: el.innerText } }; })()`);
         console.log(label, scene, JSON.stringify(diagnostic));
         const shot = await send('Page.captureScreenshot', { format: 'png' });
         fs.writeFileSync(path.join(output, label + '-' + scene + '.png'), Buffer.from(shot.data, 'base64'));
@@ -353,8 +361,11 @@ async function navigate(url) {
   await send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 });
   await navigate(base + '/');
   await waitFor(`document.querySelectorAll('.step').length === 90`);
+  // The map needs its worker; if the map initializes offline, the worker was
+  // served from the installed shell, not a runtime network fetch.
+  await waitFor(`window.__wayMap && window.__wayMap.isStyleLoaded()`);
   assert.equal(errors.length, 0, 'no uncaught JavaScript exceptions after offline reload');
-  console.log('PASS: installed app reopens offline with all 90 scenes and no uncaught JavaScript exceptions.');
+  console.log('PASS: installed app reopens offline with all 90 scenes, a working map worker, and no uncaught JavaScript exceptions.');
   await send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
   // Page-level fetch interception also covers requests handled by the worker.
   // Keep Bible requests pending until the reader's actual AbortSignal fires.

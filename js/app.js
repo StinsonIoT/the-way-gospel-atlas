@@ -2809,8 +2809,8 @@
   // and lands aimed at the wrong spot. So fly in looking straight down, where
   // ground height does not shift the view, wait for the terrain under the new
   // spot, then tilt into the final view, unless the reader takes over first.
-  // MapLibre does not refresh the camera's ground height after a programmed
-  // move, so set it from the terrain under the current centre.
+  // MapLibre 6 clamps the camera to the terrain on every programmed move, so
+  // the ground height is already right when the tilt begins.
   function syncElevation() {
     try {
       if (!map.getTerrain || !map.getTerrain()) return;
