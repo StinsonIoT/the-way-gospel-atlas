@@ -55,7 +55,9 @@ jobs:
           -scheme TheWay
           -destination 'generic/platform=iOS Simulator'
           -derivedDataPath "$RUNNER_TEMP/TheWayDerivedData"
-          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_ALLOWED=YES
+          CODE_SIGNING_REQUIRED=NO
+          CODE_SIGN_IDENTITY=-
           build
       - name: Launch on iPhone simulator
         shell: bash
@@ -64,7 +66,10 @@ jobs:
           APP_PATH="$RUNNER_TEMP/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app"
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
+          plutil -p "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist"
+          codesign --verify --deep --strict "$APP_PATH"
+          codesign -dv --verbose=2 "$APP_PATH" 2>&1
           xcrun simctl install "$DEVICE_ID" "$APP_PATH"
           xcrun simctl launch "$DEVICE_ID" com.stinsoniot.theway
           sleep 8
