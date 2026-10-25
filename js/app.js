@@ -606,6 +606,10 @@
     // Keep the terrain canvas at retina resolution without rendering nine
     // pixels per CSS pixel on phones with a 3x display. DOM text stays native.
     pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+    // MapLibre 5+ defaults the canvas to antialias: true, which costs GPU memory
+    // and fill rate on phones; MapLibre 4 defaulted to false. Keep the old
+    // behavior: the extruded models are flat-shaded and do not need MSAA.
+    canvasContextAttributes: { antialias: false },
     center: [35.3, 32.1],
     zoom: 7,
     style: {
