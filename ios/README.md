@@ -17,7 +17,7 @@ The repository's `.github/workflows/ios-build.yml` also regenerates the content 
 ## Project notes
 
 - `project.yml` is the XcodeGen project definition; regenerate the Xcode project after changing it.
-- `Resources/data/bsb/` is copied from the website's public-domain BSB fallback. The website's `data/` remains authoritative.
+- `AtlasBundle/data/bsb/` is copied from the website's public-domain BSB fallback. The website's `data/` remains authoritative.
 - `TheWay/Assets.xcassets/AppIcon.appiconset/` contains the 1024-pixel App Store icon artwork.
 - `TheWay/PrivacyInfo.xcprivacy` declares the app's on-device UserDefaults use and no collected data.
 - Before release, select your Apple Developer team and registered bundle ID, and verify App Store privacy details and support links against the final company website.

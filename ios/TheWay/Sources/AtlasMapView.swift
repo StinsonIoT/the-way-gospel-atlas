@@ -9,7 +9,7 @@ struct AtlasMapView: UIViewRepresentable {
     var interactive = false
 
     func makeUIView(context: Context) -> MLNMapView {
-        let map = MLNMapView(frame: .zero, styleURL: Bundle.main.url(forResource: "AtlasStyle", withExtension: "json", subdirectory: "Resources"))
+        let map = MLNMapView(frame: .zero, styleURL: Bundle.main.url(forResource: "AtlasStyle", withExtension: "json", subdirectory: "AtlasBundle"))
         map.delegate = context.coordinator
         map.showsLogoView = false
         map.showsAttributionButton = false
@@ -69,7 +69,7 @@ struct AtlasMapView: UIViewRepresentable {
             addEmpireOverlay(style: style, palette: palette)
             addHistoricalModel(style: style, palette: palette)
             if style.source(withIdentifier: "rivers") == nil,
-               let url = Bundle.main.url(forResource: "rivers", withExtension: "json", subdirectory: "Resources/data") {
+               let url = Bundle.main.url(forResource: "rivers", withExtension: "json", subdirectory: "AtlasBundle/data") {
                 let source = MLNShapeSource(identifier: "rivers", url: url, options: nil)
                 style.addSource(source)
                 let layer = MLNLineStyleLayer(identifier: "rivers-line", source: source)
@@ -147,7 +147,7 @@ struct AtlasMapView: UIViewRepresentable {
             if let existing = style.source(withIdentifier: name) as? MLNShapeSource {
                 source = existing
             } else {
-                guard let url = Bundle.main.url(forResource: name, withExtension: "json", subdirectory: "Resources/data") else { return }
+                guard let url = Bundle.main.url(forResource: name, withExtension: "json", subdirectory: "AtlasBundle/data") else { return }
                 source = MLNShapeSource(identifier: name, url: url, options: nil)
                 style.addSource(source)
             }
@@ -178,7 +178,7 @@ struct AtlasMapView: UIViewRepresentable {
             let source: MLNShapeSource
             if let existing = style.source(withIdentifier: sourceName) as? MLNShapeSource { source = existing }
             else {
-                guard let url = Bundle.main.url(forResource: sourceName, withExtension: "json", subdirectory: "Resources/data") else { return }
+                guard let url = Bundle.main.url(forResource: sourceName, withExtension: "json", subdirectory: "AtlasBundle/data") else { return }
                 source = MLNShapeSource(identifier: sourceName, url: url, options: nil)
                 style.addSource(source)
             }
@@ -250,7 +250,7 @@ struct AtlasMapView: UIViewRepresentable {
             let source: MLNShapeSource
             if let existing = style.source(withIdentifier: sourceID) as? MLNShapeSource { source = existing }
             else {
-                guard let url = Bundle.main.url(forResource: "rome", withExtension: "json", subdirectory: "Resources/data") else { return }
+                guard let url = Bundle.main.url(forResource: "rome", withExtension: "json", subdirectory: "AtlasBundle/data") else { return }
                 source = MLNShapeSource(identifier: sourceID, url: url, options: nil)
                 style.addSource(source)
             }

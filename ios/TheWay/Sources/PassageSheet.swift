@@ -139,7 +139,7 @@ struct BibleLibrary {
     func passage(for reference: AtlasReference?) throws -> BiblePassage {
         guard let reference, let citation = Self.reference(from: reference.label) else { throw LibraryError.noReference }
         let bookCode = Self.bookCodes[citation.book.lowercased()] ?? citation.book.uppercased()
-        guard let url = Bundle.main.url(forResource: bookCode, withExtension: "json", subdirectory: "Resources/data/bsb") else {
+        guard let url = Bundle.main.url(forResource: bookCode, withExtension: "json", subdirectory: "AtlasBundle/data/bsb") else {
             throw LibraryError.missingBook(citation.book)
         }
         let book = try JSONDecoder().decode(Book.self, from: Data(contentsOf: url))

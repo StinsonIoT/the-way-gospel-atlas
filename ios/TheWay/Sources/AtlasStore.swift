@@ -17,7 +17,7 @@ final class AtlasStore: ObservableObject {
         let atlas: AtlasContent
         let contentLoadError: String?
         do {
-            guard let url = Bundle.main.url(forResource: "AtlasContent", withExtension: "json", subdirectory: "Resources") else {
+            guard let url = Bundle.main.url(forResource: "AtlasContent", withExtension: "json", subdirectory: "AtlasBundle") else {
                 throw StoreError.missingContent
             }
             let loaded = try JSONDecoder().decode(AtlasContent.self, from: Data(contentsOf: url))

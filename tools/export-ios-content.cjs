@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
-const out = path.join(root, 'ios', 'Resources');
+const out = path.join(root, 'ios', 'AtlasBundle');
 const context = { window: {} };
 vm.createContext(context);
 for (const file of ['js/scenes.js', 'js/study.js', 'js/guide.js', 'js/places.js']) {
@@ -88,4 +88,4 @@ fs.writeFileSync(path.join(out, 'AtlasStyle.json'), JSON.stringify({
   version: 8, name: 'The Way', sources: {},
   layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#0F1A1C' } }]
 }));
-console.log(`Wrote ${content.scenes.length} scenes and bundled local data to ios/Resources.`);
+console.log(`Wrote ${content.scenes.length} scenes and bundled local data to ios/AtlasBundle.`);
