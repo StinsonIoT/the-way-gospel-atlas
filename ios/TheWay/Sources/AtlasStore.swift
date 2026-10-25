@@ -14,21 +14,25 @@ final class AtlasStore: ObservableObject {
     private let completedPlansKey = "atlas.completedReadingPlans"
 
     init() {
+        let atlas: AtlasContent
+        let contentLoadError: String?
         do {
             guard let url = Bundle.main.url(forResource: "AtlasContent", withExtension: "json", subdirectory: "Resources") else {
                 throw StoreError.missingContent
             }
             let loaded = try JSONDecoder().decode(AtlasContent.self, from: Data(contentsOf: url))
             guard !loaded.scenes.isEmpty else { throw StoreError.emptyContent }
-            content = loaded
-            loadError = nil
+            atlas = loaded
+            contentLoadError = nil
         } catch {
-            content = .empty
-            loadError = error.localizedDescription
+            atlas = .empty
+            contentLoadError = error.localizedDescription
         }
+        content = atlas
+        loadError = contentLoadError
         let defaults = UserDefaults.standard
         let storedID = defaults.string(forKey: progressKey)
-        currentSceneID = content.scenes.first(where: { $0.id == storedID })?.id ?? content.scenes.first?.id ?? ""
+        currentSceneID = atlas.scenes.first(where: { $0.id == storedID })?.id ?? atlas.scenes.first?.id ?? ""
         savedSceneIDs = Set(defaults.stringArray(forKey: savedKey) ?? [])
         completedReadingPlanIDs = Set(defaults.stringArray(forKey: completedPlansKey) ?? [])
     }
