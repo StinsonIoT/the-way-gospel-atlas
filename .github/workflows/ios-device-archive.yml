@@ -2,6 +2,7 @@ name: iOS Device Archive
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -16,11 +17,32 @@ jobs:
       ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
     steps:
+      - name: Check whether signing secrets are configured
+        id: signing
+        shell: bash
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+          PRIVATE_KEY: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          if [[ -n "$TEAM_ID" && -n "$KEY_ID" && -n "$ISSUER_ID" && -n "$PRIVATE_KEY" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "::error::Configure all four Apple signing secrets before dispatching this workflow."
+            exit 1
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "Apple signing secrets are not configured; skipping the signed archive."
+          fi
       - uses: actions/checkout@v4
+        if: steps.signing.outputs.available == 'true'
       - uses: actions/setup-node@v4
+        if: steps.signing.outputs.available == 'true'
         with:
           node-version: 22
-      - name: Validate signing secrets and write temporary API key
+      - name: Write temporary API key
+        if: steps.signing.outputs.available == 'true'
         shell: bash
         env:
           ASC_PRIVATE_KEY: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
@@ -36,13 +58,17 @@ jobs:
           chmod 600 "$KEY_PATH"
           echo "ASC_API_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
       - name: Install XcodeGen
+        if: steps.signing.outputs.available == 'true'
         run: brew install xcodegen
       - name: Export reviewed content
+        if: steps.signing.outputs.available == 'true'
         run: node tools/export-ios-content.cjs
       - name: Generate Xcode project
+        if: steps.signing.outputs.available == 'true'
         working-directory: ios
         run: xcodegen generate
       - name: Archive signed iPhone app
+        if: steps.signing.outputs.available == 'true'
         working-directory: ios
         shell: bash
         run: |
@@ -62,6 +88,7 @@ jobs:
             CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
             archive
       - name: Export App Store Connect IPA
+        if: steps.signing.outputs.available == 'true'
         working-directory: ios
         shell: bash
         run: |
@@ -90,13 +117,14 @@ jobs:
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
       - name: Remove temporary signing key
-        if: always()
+        if: always() && steps.signing.outputs.available == 'true'
         shell: bash
         run: |
           if [[ -n "${ASC_API_KEY_PATH:-}" && -f "$ASC_API_KEY_PATH" ]]; then
             rm -f "$ASC_API_KEY_PATH"
           fi
       - name: Upload signed IPA artifact
+        if: steps.signing.outputs.available == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: TheWay-iOS-AppStore-IPA

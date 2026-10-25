@@ -15,7 +15,7 @@ The package manifest pins MapLibre Native 6.31.0. The map uses local GeoJSON, so
 ## Build and signing workflows
 
 - `.github/workflows/ios-build.yml` regenerates reviewed content, builds the iPhone Simulator app, runs a UI smoke test from search through the scene details sheet, launches the app, and retains a screenshot and simulator artifact.
-- `.github/workflows/ios-device-archive.yml` is a manual signed device-archive workflow. It produces a signed IPA artifact for App Store Connect or TestFlight; it does not upload or submit the app.
+- `.github/workflows/ios-device-archive.yml` produces a signed IPA artifact for App Store Connect or TestFlight; it does not upload or submit the app. Same-repository pull requests also invoke it through the iOS build workflow when all signing secrets are configured. If they are absent, the signed archive job reports a skip. Manual dispatch requires all four secrets.
 
 To use the device archive workflow, create an App Store Connect **Team API key** with Developer access, then add these repository Actions secrets:
 

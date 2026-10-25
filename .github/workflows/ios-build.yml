@@ -104,3 +104,8 @@ jobs:
             ${{ runner.temp }}/TheWay-first-launch.png
           if-no-files-found: error
           retention-days: 14
+
+  signed-device-archive:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    uses: ./.github/workflows/ios-device-archive.yml
+    secrets: inherit
