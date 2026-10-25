@@ -29,6 +29,18 @@ final class AtlasFlowUITests: XCTestCase {
         ).firstMatch
         XCTAssertTrue(sceneTitle.waitForExistence(timeout: 10))
 
+        let passageButton = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS %@", "Luke 1:5")
+        ).firstMatch
+        XCTAssertTrue(passageButton.waitForExistence(timeout: 10))
+        passageButton.tap()
+
+        let offlineVerse = app.staticTexts.matching(
+            NSPredicate(format: "label CONTAINS %@", "In the time of Herod king of Judea")
+        ).firstMatch
+        XCTAssertTrue(offlineVerse.waitForExistence(timeout: 10))
+        app.buttons["Done"].tap()
+
         let detailsButton = app.buttons["scene-details-zechariah"]
         XCTAssertTrue(detailsButton.waitForExistence(timeout: 10))
         detailsButton.tap()
