@@ -1,0 +1,111 @@
+name: iOS Build
+
+on:
+  push:
+    paths:
+      - ".github/workflows/ios-build.yml"
+      - ".github/workflows/ios-device-archive.yml"
+      - "ios/**"
+      - "js/scenes.js"
+      - "js/study.js"
+      - "js/guide.js"
+      - "js/places.js"
+      - "data/**"
+      - "tools/export-ios-content.cjs"
+  pull_request:
+    paths:
+      - ".github/workflows/ios-build.yml"
+      - ".github/workflows/ios-device-archive.yml"
+      - "ios/**"
+      - "js/scenes.js"
+      - "js/study.js"
+      - "js/guide.js"
+      - "js/places.js"
+      - "data/**"
+      - "tools/export-ios-content.cjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Check selected Xcode and Simulator runtimes
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes available
+      - name: Export reviewed content
+        run: node tools/export-ios-content.cjs
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build for iPhone simulator
+        working-directory: ios
+        run: >-
+          xcodebuild
+          -project TheWay.xcodeproj
+          -scheme TheWay
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath "$RUNNER_TEMP/TheWayDerivedData"
+          CODE_SIGNING_ALLOWED=YES
+          CODE_SIGNING_REQUIRED=NO
+          CODE_SIGN_IDENTITY=-
+          build
+      - name: Build for iPhone device
+        working-directory: ios
+        run: >-
+          xcodebuild
+          -project TheWay.xcodeproj
+          -scheme TheWay
+          -destination 'generic/platform=iOS'
+          -derivedDataPath "$RUNNER_TEMP/TheWayDeviceDerivedData"
+          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_REQUIRED=NO
+          build
+      - name: Run iPhone UI smoke tests
+        working-directory: ios
+        shell: bash
+        run: |
+          DEVICE_ID="$(xcrun simctl list devices available --json | node -e 'let data="";process.stdin.on("data",part=>data+=part).on("end",()=>{const device=Object.values(JSON.parse(data).devices).flat().find(item=>item.isAvailable&&item.name.startsWith("iPhone"));if(!device){console.error("No available iPhone simulator was found.");process.exit(1)}console.log(device.udid)})')"
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcodebuild -project TheWay.xcodeproj -scheme TheWay -destination "platform=iOS Simulator,id=$DEVICE_ID" -derivedDataPath "$RUNNER_TEMP/TheWayDerivedData" CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=- test
+      - name: Launch on iPhone simulator
+        shell: bash
+        run: |
+          DEVICE_ID="$(xcrun simctl list devices available --json | node -e 'let data="";process.stdin.on("data",part=>data+=part).on("end",()=>{const device=Object.values(JSON.parse(data).devices).flat().find(item=>item.isAvailable&&item.name.startsWith("iPhone"));if(!device){console.error("No available iPhone simulator was found.");process.exit(1)}console.log(device.udid)})')"
+          APP_PATH="$RUNNER_TEMP/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app"
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          plutil -p "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist"
+          codesign --verify --deep --strict "$APP_PATH"
+          codesign -dv --verbose=2 "$APP_PATH" 2>&1
+          xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+          xcrun simctl launch "$DEVICE_ID" com.stinsoniot.theway
+          sleep 8
+          xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/TheWay-first-launch.png"
+      - name: Upload iPhone simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: TheWay-iPhone-Simulator
+          path: |
+            ${{ runner.temp }}/TheWayDerivedData/Build/Products/Debug-iphonesimulator/TheWay.app
+            ${{ runner.temp }}/TheWay-first-launch.png
+          if-no-files-found: error
+          retention-days: 14
+
+  signed-device-archive:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    uses: ./.github/workflows/ios-device-archive.yml
+    secrets: inherit
