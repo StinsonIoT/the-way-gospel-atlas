@@ -5,19 +5,21 @@
 //   URLs carry a version number, so a new version is a new file.
 // - Bible passages and terrain tiles: kept in their own caches, which survive
 //   app updates. Terrain keeps the most recent tiles only.
-const APP = 'the-way-v61';
+const APP = 'the-way-v62';
 const BIBLE = 'the-way-bible';
 const TILES = 'the-way-tiles';
 const TILE_LIMIT = 900;
 const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html', 'css/page.css?v=5', 'js/reader-lite.js?v=4', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
   'css/fonts.css?v=1', 'css/style.css?v=67',
   'js/scenes.js?v=58', 'js/places.js?v=7', 'js/study.js?v=12', 'js/otrefs.js?v=1',
-  'js/guide.js?v=4', 'js/tour.js?v=2', 'js/audio-boundaries.js?v=1', 'js/experience.js?v=50', 'js/app.js?v=79',
-  'vendor/maplibre-contour.min.js?v=47',
+  'js/guide.js?v=4', 'js/tour.js?v=2', 'js/audio-boundaries.js?v=1', 'js/experience.js?v=50', 'js/app.js?v=80',
+  'vendor/maplibre-contour.min.js?v=48',
   'data/land-wide.json?v=1', 'data/rome.json?v=1', 'data/land.json?v=9',
   'data/lakes.json?v=11', 'data/rivers.json?v=9', 'data/jerusalem.json?v=10',
   'data/jerusalem3d.json?v=10', 'data/capernaum3d.json?v=12',
-  'vendor/maplibre-gl.js', 'vendor/maplibre-gl.css',
+  // MapLibre appends its own version to the worker URL at runtime, so the
+  // precache entry must carry the same ?v= or an offline start misses the worker.
+  'vendor/maplibre-gl.mjs', 'vendor/maplibre-gl-worker.mjs?v=6.16.0', 'vendor/maplibre-gl-init.mjs', 'vendor/maplibre-gl.css',
   'fonts/newsreader.woff2', 'fonts/newsreader-italic.woff2', 'fonts/instrument-sans-400.woff2', 'fonts/instrument-sans-500.woff2', 'fonts/instrument-sans-600.woff2'];
 
 self.addEventListener('install', (e) => {

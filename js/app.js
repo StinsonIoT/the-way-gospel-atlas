@@ -606,6 +606,10 @@
     // Keep the terrain canvas at retina resolution without rendering nine
     // pixels per CSS pixel on phones with a 3x display. DOM text stays native.
     pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+    // MapLibre 5+ defaults the canvas to antialias: true, which costs GPU memory
+    // and fill rate on phones; MapLibre 4 defaulted to false. Keep the old
+    // behavior: the extruded models are flat-shaded and do not need MSAA.
+    canvasContextAttributes: { antialias: false },
     center: [35.3, 32.1],
     zoom: 7,
     style: {
@@ -2805,16 +2809,16 @@
   // and lands aimed at the wrong spot. So fly in looking straight down, where
   // ground height does not shift the view, wait for the terrain under the new
   // spot, then tilt into the final view, unless the reader takes over first.
-  // MapLibre does not refresh the camera's ground height after a programmed
-  // move, so set it from the terrain under the current centre.
+  // MapLibre 6 clamps the camera to the terrain on every programmed move, so
+  // the ground height is already right when the tilt begins.
   function syncElevation() {
     try {
       if (!map.getTerrain || !map.getTerrain()) return;
-      const rel = map.queryTerrainElevation(map.getCenter()); // relative to the current camera ground height
-      if (rel == null || !isFinite(rel) || Math.abs(rel) < 1) return;
-      map.transform.elevation = map.transform.elevation + rel;
-      // Refresh the camera and DOM markers together after changing ground height.
-      // A repaint alone leaves markers projected against the previous elevation.
+      // MapLibre 4 never refreshed the camera's ground height after a programmed
+      // move, so it was corrected by hand from the terrain under the centre.
+      // MapLibre 6 clamps the camera centre to the ground (centerClampedToGround
+      // defaults to true) and refreshes the elevation from the terrain itself on
+      // every programmed move, so only the marker refresh remains.
       map.jumpTo({});
     } catch (err) { /* terrain not ready */ }
   }
