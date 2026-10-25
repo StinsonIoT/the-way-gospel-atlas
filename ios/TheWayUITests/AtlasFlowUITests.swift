@@ -36,7 +36,7 @@ final class AtlasFlowUITests: XCTestCase {
         passageButton.tap()
 
         let offlineVerse = app.staticTexts.matching(
-            NSPredicate(format: "label CONTAINS %@", "In the time of Herod king of Judea")
+            NSPredicate(format: "label CONTAINS %@", "there was a priest named Zechariah, who belonged to the priestly division of Abijah")
         ).firstMatch
         XCTAssertTrue(offlineVerse.waitForExistence(timeout: 10))
         app.buttons["Done"].tap()
