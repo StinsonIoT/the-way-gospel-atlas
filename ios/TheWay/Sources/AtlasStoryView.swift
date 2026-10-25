@@ -133,6 +133,10 @@ struct AtlasStoryView: View {
                     Image(systemName: store.savedSceneIDs.contains(scene.id) ? "bookmark.fill" : "bookmark")
                 }
                 .buttonStyle(.bordered).tint(Color(hex: colors.accent))
+                .accessibilityLabel(store.savedSceneIDs.contains(scene.id) ? "Remove saved scene" : "Save scene")
+                .accessibilityHint(store.savedSceneIDs.contains(scene.id)
+                    ? "Removes this scene from your saved scenes."
+                    : "Adds this scene to your saved scenes.")
                 ShareLink(
                     item: URL(string: "https://stinsoniot.github.io/the-way-gospel-atlas/#s-\(scene.id)" )!,
                     subject: Text("The Way: \(plainTitle.isEmpty ? scene.id.capitalized : plainTitle)"),
