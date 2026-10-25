@@ -350,6 +350,12 @@ struct ReadingPlanSheet: View {
                 Section("Continue") {
                     Text("Scene \(store.currentIndex + 1) of \(store.content.scenes.count)")
                     ProgressView(value: Double(store.currentIndex + 1), total: Double(store.content.scenes.count))
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label("Continue reading", systemImage: "arrow.right.circle.fill")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
                 Section("Saved scenes") {
                     ForEach(store.content.scenes.filter { store.savedSceneIDs.contains($0.id) }) { scene in
