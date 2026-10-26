@@ -1,0 +1,41 @@
+name: Web tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run tests
+        run: |
+          for t in tests/*.cjs; do
+            case "$t" in *browser*) continue;; esac
+            echo "::group::$t"; node "$t" || exit 1; echo "::endgroup::"
+          done
+
+  browser:
+    runs-on: ubuntu-latest
+    # shortcut: browser tests have only run on Windows; make required once green here.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run browser tests
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          for t in tests/*browser*.cjs; do
+            echo "::group::$t"; node "$t" || exit 1; echo "::endgroup::"
+          done
