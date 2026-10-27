@@ -1,0 +1,52 @@
+name: Web tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # tests/experience.cjs compares against a baseline commit with `git show`.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run logic tests
+        run: |
+          # browser-smoke.cjs, journeys.cjs and map-fallback.cjs need Chrome and run in the
+          # browser job; journeys.cjs and map-fallback.cjs only export a function, so
+          # running them directly would pass without testing anything.
+          for t in tests/*.cjs; do
+            case "$t" in
+              tests/browser-smoke.cjs|tests/journeys.cjs|tests/map-fallback.cjs) continue;;
+            esac
+            echo "::group::$t"; node "$t" || exit 1; echo "::endgroup::"
+          done
+
+  browser:
+    runs-on: ubuntu-latest
+    # Browser tests have so far only been run on desktop machines; make this required
+    # once it is green here.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run browser tests
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          for flag in "" "--map-fallback" "--journey-review"; do
+            echo "::group::browser-smoke $flag"; node tests/browser-smoke.cjs $flag || exit 1; echo "::endgroup::"
+          done
