@@ -1,0 +1,17 @@
+# Not part of the site: keep these off the public host.
+.git
+.github
+.hallmark
+.wrangler
+.DS_Store
+.nojekyll
+node_modules
+wrangler.jsonc
+.assetsignore
+AGENTS.md
+CLAUDE.md
+README.md
+docs
+tests
+tools
+worker.js
