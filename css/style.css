@@ -6,8 +6,8 @@
   --sans: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: #1B2624; color: #F1E9DA; font-family: var(--sans); }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body { margin: 0; background: var(--m-land); color: var(--m-txt); font-family: var(--sans); overflow-x: clip; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--m-accent); outline-offset: 3px; border-radius: 4px; }
 
@@ -70,10 +70,10 @@ html[data-look="atlas"] .mk-water .nm { font-size: 14.5px; color: color-mix(in s
   box-shadow: 0 1px 0 color-mix(in srgb, var(--m-txt) 10%, transparent); }
 .timeline { display: flex; gap: 3px; height: 12px; padding: 0 2px; }
 .timeline button { flex: 1 1 0; min-width: 6px; height: 12px; padding: 0; border: 0; background: transparent; cursor: pointer; display: block; }
-.timeline .seg { display: block; height: 3px; background: var(--m-track); border-radius: 0 0 2px 2px; overflow: hidden; transition: height .2s ease; }
+.timeline .seg { display: block; height: 3px; background: var(--m-track); border-radius: 0 0 2px 2px; overflow: hidden; transform-origin: top; transition: transform .2s ease; }
 .timeline .seg i { display: block; height: 100%; width: 0; background: var(--m-accent); }
-.timeline button.on .seg { height: 5px; }
-.timeline button:hover .seg { height: 5px; }
+.timeline button.on .seg { transform: scaleY(1.667); }
+.timeline button:hover .seg { transform: scaleY(1.667); }
 .top-row { height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 10px 0 20px; }
 .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.22em; min-height: 44px; }
 .brand svg { width: 14px; height: 14px; fill: var(--m-accent); }
@@ -248,7 +248,7 @@ dialog::backdrop { background: rgba(10, 14, 15, 0.5); }
 .pl .toc-head > span:nth-child(2) { display: flex; flex-direction: column; gap: 1px; }
 .pl .toc-head small { font-size: 11.5px; color: var(--c-muted); font-weight: 400; }
 .pl-sym svg { width: 26px; height: 18px; display: block; }
-#q { width: 100%; min-height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--c-line); background: #fff; color: var(--c-fg); font: 16px var(--sans); }
+#q { width: 100%; min-height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--c-line); background: #FBF7EF; color: var(--c-fg); font: 16px var(--sans); }
 #q:focus { outline: 2px solid var(--c-accent); outline-offset: 1px; }
 .q-hint { margin: 10px 2px; font-size: 13px; color: var(--c-muted); }
 .results { list-style: none; margin: 10px 0 0; padding: 0; }
@@ -486,7 +486,7 @@ html.og body::after { content: 'THE WAY · A GOSPEL ATLAS'; position: fixed; z-i
   padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--m-land) 80%, transparent); }
 .plan-offline { width: 100%; min-height: 46px; border: 1px solid var(--c-line); border-radius: 12px; background: transparent; color: var(--c-fg); font: 600 14px var(--sans); cursor: pointer; }
 .plan-offline[data-done] { color: var(--c-muted); font-weight: 500; }
-.plan-offline:disabled { opacity: .7; cursor: default; }
+.plan-offline:disabled { opacity: 1; background: color-mix(in srgb, var(--c-line) 45%, transparent); border-color: transparent; color: var(--c-muted); cursor: not-allowed; }
 .plan-off-sub { margin-top: 4px; }
 .extra-ask { background: color-mix(in srgb, #8A5A8E 12%, transparent); border-color: #8A5A8E; font-family: var(--serif); font-size: 17px; line-height: 1.45; }
 .extra-ask b { color: #74477A; font-family: var(--sans); }
@@ -819,7 +819,7 @@ html.og .hero-second { display: none !important; }
 .ts-row { display: flex; gap: 10px; }
 .ts-row > .ts-field { flex: 1; }
 .ts-field { display: flex; flex-direction: column; min-width: 0; }
-.ts-field select { min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--c-line); background: #fff; color: var(--c-fg); font: 15px var(--sans); }
+.ts-field select { min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--c-line); background: #FBF7EF; color: var(--c-fg); font: 15px var(--sans); }
 .ts-form[data-how="silent"] .ts-listen, .ts-form[data-how="listen"] .ts-silent { display: none; }
 .ts-start { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; margin-top: 2px; border: 0; border-radius: 12px; background: var(--c-fg); color: var(--c-bg); font: 600 15px var(--sans); cursor: pointer; }
 .ts-start svg { width: 12px; height: 12px; fill: currentColor; }
