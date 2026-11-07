@@ -125,3 +125,23 @@ Not yet added (they need an approved key, licence or catalogue check first): aud
 ## Credits
 
 Scripture quotations are from the Berean Standard Bible (public domain). Map data from Natural Earth (public domain). Sea of Galilee shoreline from Who's On First. Terrain from Terrain Tiles on AWS (Mapzen; SRTM and other public sources), loaded in the browser. Built with MapLibre GL JS. Passage text from the Free Use Bible API (bible.helloao.org).
+
+## Regression checks
+
+Run the dependency-free checks from the repository root with Node.js 22 or newer:
+
+```sh
+for test in tests/atlas-tiles.cjs tests/audio.cjs tests/experience.cjs tests/layout-batching.cjs tests/network-recovery.cjs tests/offline-download.cjs tests/offline.cjs tests/tour-transitions.cjs tests/worker-writes.cjs tests/reader-reliability.cjs tests/atlas-reader-reliability.cjs; do
+  node "$test" || exit 1
+done
+```
+
+For browser checks, install Chrome and set `CHROME_PATH` to its executable:
+
+```sh
+node tests/browser-smoke.cjs
+node tests/browser-smoke.cjs --reader-review
+node tests/browser-smoke.cjs --atlas-reader-review
+```
+
+The guide and main-atlas reader reviews check bundled Scripture fallback, study-note retry, keyboard tabs, focus restoration and viewport overflow at phone and desktop sizes. It simulates an API outage at the browser fetch boundary; it does not test the external service's availability. Browser profiles and screenshots are written to the operating system's temporary directory.

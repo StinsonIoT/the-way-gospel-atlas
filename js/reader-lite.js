@@ -62,7 +62,7 @@
       .then((j) => { if (!isBSB(j)) throw new Error('unexpected reply'); return j; })
       .catch(() => {
         if (!books.has(code)) {
-          const p = fetch(`data/bsb/${code}.json?v=1`).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+          const p = get(`data/bsb/${code}.json?v=1`).then((b) => { if (!b) throw new Error('missing saved copy'); return b; });
           p.catch(() => books.delete(code));
           books.set(code, p);
         }
@@ -91,14 +91,14 @@
   dlg.setAttribute('aria-labelledby', 'rd-title');
   dlg.innerHTML = `<div class="rd-head"><h2 id="rd-title"></h2><button type="button" class="rd-x" aria-label="Close">
       <svg viewBox="0 0 18 18" aria-hidden="true"><line x1="3" y1="3" x2="15" y2="15"/><line x1="15" y1="3" x2="3" y2="15"/></svg></button></div>
-    <div class="rd-tabs" role="tablist"><button type="button" role="tab" data-t="text" aria-selected="true">Text</button><button type="button" role="tab" data-t="notes" aria-selected="false">Study notes</button></div>
-    <div class="rd-body" data-p="text"></div><div class="rd-body" data-p="notes" hidden></div>
+    <div class="rd-tabs" role="tablist"><button type="button" id="rd-tab-text" role="tab" aria-controls="rd-panel-text" tabindex="0" data-t="text" aria-selected="true">Text</button><button type="button" id="rd-tab-notes" role="tab" aria-controls="rd-panel-notes" tabindex="-1" data-t="notes" aria-selected="false">Study notes</button></div>
+    <div class="rd-body" id="rd-panel-text" role="tabpanel" aria-labelledby="rd-tab-text" tabindex="0" data-p="text"></div><div class="rd-body" id="rd-panel-notes" role="tabpanel" aria-labelledby="rd-tab-notes" tabindex="0" data-p="notes" hidden></div>
     <p class="rd-foot">Berean Standard Bible · public domain · <a class="rd-hub" target="_blank" rel="noopener">Open on BibleHub</a> · Listen in the atlas</p>`;
   document.body.appendChild(dlg);
   const title = dlg.querySelector('#rd-title');
   const textEl = dlg.querySelector('[data-p="text"]');
   const notesEl = dlg.querySelector('[data-p="notes"]');
-  let current = [], token = 0, notesFor = -1;
+  let current = [], token = 0, notesFor = -1, opener = null;
 
   async function loadText(t) {
     const parts = [];
@@ -106,7 +106,9 @@
     for (const sp of current.slice(0, 4)) {
       const last = Math.min(sp.c2, sp.c1 + 3);
       for (let c = sp.c1; c <= last; c++) {
+        if (t !== token) return;
         const json = await getText(sp.book, c);
+        if (t !== token) return;
         if (json.savedCopy) saved = true;
         const from = c === sp.c1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
         const vs = json.chapter.content.filter((x) => x.type === 'verse' && x.number >= from && x.number <= to);
@@ -122,7 +124,9 @@
     for (const sp of current.slice(0, 4)) {
       const last = Math.min(sp.c2, sp.c1 + 3);
       for (let c = sp.c1; c <= last; c++) {
+        if (t !== token) return;
         const json = await get(`https://bible.helloao.org/api/c/tyndale/${sp.book}/${c}.json`);
+        if (t !== token) return;
         if (!json || !json.chapter) continue;
         const from = c === sp.c1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
         json.chapter.content.filter((x) => x.type === 'verse' && x.number >= from && x.number <= to)
@@ -142,15 +146,36 @@
       + '<p class="rd-credit">From the <a href="https://tyndaleopenresources.com/" target="_blank" rel="noopener">Tyndale Open Study Notes</a> © 2022 Tyndale House Publishers, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, shown unchanged.</p>';
   }
   function tab(name) {
-    dlg.querySelectorAll('[data-t]').forEach((b) => b.setAttribute('aria-selected', b.dataset.t === name ? 'true' : 'false'));
+    dlg.querySelectorAll('[data-t]').forEach((b) => {
+      const selected = b.dataset.t === name;
+      b.setAttribute('aria-selected', String(selected)); b.tabIndex = selected ? 0 : -1;
+    });
     textEl.hidden = name !== 'text'; notesEl.hidden = name !== 'notes';
     if (name === 'notes' && notesFor !== token) {
       notesEl.innerHTML = '<p class="rd-status">Loading study notes…</p>';
       const t = token;
-      loadNotes(t).catch(() => { if (t === token) notesEl.innerHTML = '<p class="rd-status">The study notes couldn’t be loaded right now.</p>'; });
+      notesFor = t; // Repeated tab clicks share the pending load.
+      loadNotes(t).catch(() => {
+        if (t !== token) return;
+        notesFor = -1;
+        notesEl.innerHTML = '<p class="rd-status">The study notes couldn’t be loaded right now.</p><button type="button" class="rd-retry">Try again</button>';
+      });
     }
   }
   dlg.querySelectorAll('[data-t]').forEach((b) => b.addEventListener('click', () => tab(b.dataset.t)));
+  dlg.querySelector('.rd-tabs').addEventListener('keydown', (ev) => {
+    const tabs = [...dlg.querySelectorAll('[data-t]')];
+    const at = tabs.indexOf(ev.target);
+    if (at < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) return;
+    ev.preventDefault();
+    const next = ev.key === 'Home' ? 0 : ev.key === 'End' ? tabs.length - 1 : (at + (ev.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    tab(tabs[next].dataset.t); tabs[next].focus();
+  });
+  notesEl.addEventListener('click', (ev) => { if (ev.target.closest('.rd-retry')) tab('notes'); });
+  dlg.addEventListener('close', () => {
+    ++token; notesFor = -1;
+    if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+  });
   dlg.querySelector('.rd-x').addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', (ev) => { if (ev.target === dlg) dlg.close(); });
 
@@ -165,6 +190,7 @@
     const sp = spans(a.dataset.ref);
     if (!sp.length) return; // not a book this reader knows: follow the link
     ev.preventDefault();
+    opener = a;
     current = sp;
     const t = ++token;
     title.textContent = a.dataset.ref;

@@ -69,6 +69,16 @@ async function navigate(url) {
   });
   handlers.set('Runtime.exceptionThrown', p => errors.push(p.exceptionDetails));
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
+  if (process.argv.includes('--atlas-reader-review')) {
+    serveOldWorker = false;
+    await require('./atlas-reader-journeys.cjs')({ evaluate, send, navigate, waitFor, sleep, base, errors });
+    return;
+  }
+  if (process.argv.includes('--reader-review')) {
+    serveOldWorker = false;
+    await require('./reader-journeys.cjs')({ evaluate, send, navigate, waitFor, base, errors });
+    return;
+  }
   if (process.argv.includes('--map-fallback')) {
     serveOldWorker = false;
     await require('./map-fallback.cjs')({ evaluate, send, navigate, waitFor, base, errors });
@@ -195,7 +205,7 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v61').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has('the-way-v63').then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
