@@ -1794,7 +1794,7 @@
   function loadLocalChapter(book, c) {
     const code = API_BOOK[book];
     if (!localBooks.has(code)) {
-      const pr = fetch(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      const pr = fetchJSON(`data/bsb/${code}.json?v=${BSB_LOCAL_V}`);
       pr.catch(() => localBooks.delete(code));
       localBooks.set(code, pr);
     }
@@ -1881,13 +1881,16 @@
   async function showNotes() {
     const token = notesToken;
     if (notesShown === token) return;
+    notesShown = token; // Repeated tab activation shares the pending operation.
     pNotes.innerHTML = '<p class="p-status">Loading study notes…</p>';
     try {
       const out = [];
       for (const sp of notesFor.slice(0, 3)) {
         const last = Math.min(sp.c2, sp.c1 + 2);
         for (let c = sp.c1; c <= last; c++) {
+          if (token !== notesToken) return;
           const json = await loadNotes(sp.book, c);
+          if (token !== notesToken) return;
           if (!json || !json.chapter) continue;
           const from = c === sp.c1 && sp.v1 ? sp.v1 : 1, to = c === sp.c2 ? sp.v2 : 999;
           (json.chapter.content || []).filter((v) => v.type === 'verse' && v.number >= from && v.number <= to)
@@ -1899,16 +1902,27 @@
       pNotes.innerHTML = (out.length ? out.join('') : '<p class="p-status">No study notes for these verses.</p>')
         + '<p class="n-credit">From the <a href="https://tyndaleopenresources.com/" target="_blank" rel="noopener">Tyndale Open Study Notes</a> © 2022 Tyndale House Publishers, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. The notes are the editors’ own, shown unchanged.</p>';
     } catch (err) {
-      if (token === notesToken) pNotes.innerHTML = '<p class="p-status">The study notes couldn’t be loaded right now.</p><button type="button" class="notes-retry">Try again</button>';
+      if (token === notesToken) {
+        notesShown = -1;
+        pNotes.innerHTML = '<p class="p-status">The study notes couldn’t be loaded right now.</p><button type="button" class="notes-retry">Try again</button>';
+      }
     }
   }
   function showPassageTab(name) {
     const notes = name === 'notes';
     ptText.setAttribute('aria-selected', notes ? 'false' : 'true');
     ptNotes.setAttribute('aria-selected', notes ? 'true' : 'false');
+    ptText.tabIndex = notes ? -1 : 0; ptNotes.tabIndex = notes ? 0 : -1;
     pBody.hidden = notes; pNotes.hidden = !notes;
     if (notes) { pNotes.scrollTop = 0; showNotes(); }
   }
+  ptText.parentElement.addEventListener('keydown', ev => {
+    const tabs = [ptText, ptNotes], at = tabs.indexOf(ev.target);
+    if (at < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) return;
+    ev.preventDefault();
+    const next = ev.key === 'Home' ? 0 : ev.key === 'End' ? 1 : 1 - at;
+    showPassageTab(next ? 'notes' : 'text'); tabs[next].focus();
+  });
   ptText.addEventListener('click', () => showPassageTab('text'));
   ptNotes.addEventListener('click', () => showPassageTab('notes'));
   pNotes.addEventListener('click', ev => { if (ev.target.closest('.notes-retry')) showNotes(); });
@@ -1938,7 +1952,9 @@
       for (const sp of spans.slice(0, 4)) {
         const last = Math.min(sp.c2, sp.c1 + 2);
         for (let c = sp.c1; c <= last; c++) {
+          if (token !== passageToken) return true;
           const json = await loadChapter(sp.book, c);
+          if (token !== passageToken) return true;
           const from = c === sp.c1 && sp.v1 ? sp.v1 : 1;
           const to = c === sp.c2 ? sp.v2 : 999;
           const head = spans.length > 1 || sp.c1 !== sp.c2 ? `<h3 class="p-ch">${esc(json.book && json.book.commonName ? json.book.commonName : label.split(' ')[0])} ${c}</h3>` : '';
@@ -2016,6 +2032,7 @@
       if (!reader) return;
       const out = [];
       for (const sg of segs) {
+        if (token !== passageToken) return;
         const url = (sg.json.thisChapterAudioLinks || {})[reader];
         if (!url) break;
         let start = 0, end = null;
@@ -2023,6 +2040,7 @@
         if (tl) {
           try {
             const t = await fetchJSON(new URL(tl, 'https://bible.helloao.org/').href);
+            if (token !== passageToken) return;
             const bounds = audioBounds(sg.json, t, sg.from, sg.to);
             if (!bounds) continue;
             ({ start, end } = bounds);
@@ -2076,6 +2094,7 @@
   document.getElementById('passage-close').addEventListener('click', () => passage.close());
   passage.addEventListener('click', (ev) => { if (ev.target === passage) passage.close(); });
   passage.addEventListener('close', () => {
+    ++passageToken; ++notesToken;
     resetAudio();
     if (passageOpener && passageOpener.focus) { try { passageOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
     passageOpener = null;

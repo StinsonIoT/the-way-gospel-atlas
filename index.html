@@ -130,10 +130,10 @@
   <audio id="p-audio" preload="none"></audio>
   <div class="p-tabs" role="tablist" aria-label="Passage">
     <button type="button" role="tab" id="pt-text" aria-controls="passage-body" aria-selected="true">Text</button>
-    <button type="button" role="tab" id="pt-notes" aria-controls="passage-notes" aria-selected="false">Study notes</button>
+    <button type="button" role="tab" id="pt-notes" tabindex="-1" aria-controls="passage-notes" aria-selected="false">Study notes</button>
   </div>
-  <div id="passage-body" class="p-body" role="tabpanel" aria-labelledby="pt-text"></div>
-  <div id="passage-notes" class="p-body p-notes" role="tabpanel" aria-labelledby="pt-notes" hidden></div>
+  <div id="passage-body" tabindex="0" class="p-body" role="tabpanel" aria-labelledby="pt-text"></div>
+  <div id="passage-notes" tabindex="0" class="p-body p-notes" role="tabpanel" aria-labelledby="pt-notes" hidden></div>
   <p class="p-foot">Berean Standard Bible · public domain · audio via the Free Use Bible API · <a id="passage-hub" href="https://biblehub.com/bsb/" target="_blank" rel="noopener">Open on BibleHub</a></p>
 </dialog>
 
@@ -212,6 +212,6 @@
 <script src="js/tour.js?v=2"></script>
 <script src="js/audio-boundaries.js?v=1"></script>
 <script src="js/experience.js?v=50"></script>
-<script src="js/app.js?v=79"></script>
+<script src="js/app.js?v=80"></script>
 </body>
 </html>
