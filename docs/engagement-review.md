@@ -1,5 +1,11 @@
 # Engagement review — November 7, 2026
 
+## Status refresh — November 8, 2026
+
+The recommendations below record the earlier review. The subsequent polish pass implemented day listening with day/Gospel boundaries, explicit day completion and reflection, pause/next-day choices, journal exports and collection clearing, final-scene discovery routes, and study/Scripture keyboard tabs. See `complete-polish.md` for current behavior and verification. These items are no longer an implementation backlog.
+
+Still open: a reviewed short purpose for each plan day, one relevant contextual study invitation, an observed session with a new reader, and physical iPhone checks. See `release-readiness.md` for branch integration and release work.
+
 The atlas already supports reading, listening, map exploration, Gospel comparisons, topics, people, places, saved scenes, and a reading plan. The largest opportunity is helping readers discover these paths at the right moment and understand what to do next. These are design judgments from inspecting the current flows, not measured retention results.
 
 ## Implemented in this pass
