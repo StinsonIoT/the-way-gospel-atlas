@@ -20,6 +20,12 @@ assert(listening.position({ ...bookmark, segment: { ...bookmark.segment, offset:
 for (const invalid of [null, { ...bookmark, v: 2 }, { ...bookmark, scene: 'unknown' }, { ...bookmark, end: 'voice' }, { ...bookmark, settings: { ...bookmark.settings, rate: 99 } }, { ...bookmark, segment: { ...bookmark.segment, offset: -1 } }, { ...bookmark, segment: { ...bookmark.segment, offset: Infinity } }]) {
   assert.equal(listening.validate(invalid, scenes), null, 'invalid bookmarks cannot restore playback');
 }
+const scoped = { ...bookmark, scope: ['voice', 'trials', 'finished'] };
+assert(listening.write(scoped, scenes));
+assert.deepEqual(plain(listening.read(scenes)), scoped, 'the exact lower and upper scope survives reload');
+for (const scope of [['trials', 'trials', 'finished'], ['unknown', 'trials', 'finished'], ['finished', 'trials'], ['voice', 'finished'], ['voice', 'trials'], null]) {
+  assert.equal(listening.validate({ ...bookmark, scope }, scenes), null, 'malformed supplied scopes cannot restore playback');
+}
 listening.clear(); assert.equal(listening.read(scenes), null);
 values.set('the-way:listening', '{broken json'); assert.equal(listening.read(scenes), null);
 Object.defineProperty(ctx.window, 'localStorage', { get: () => { throw Error('storage denied'); } });

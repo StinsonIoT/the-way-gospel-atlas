@@ -6,6 +6,8 @@ const os = require('node:os');
 const root = path.resolve(__dirname, '..');
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.txt': 'text/plain' };
 const folders = new Set(['css', 'js', 'data', 'vendor', 'fonts', 's']);
+const previewPort = Number(process.env.PORT || 8001);
+const previewHost = process.env.HOST || '0.0.0.0';
 http.createServer((req, res) => {
   let pathname;
   try { pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); }
@@ -19,9 +21,9 @@ http.createServer((req, res) => {
     res.writeHead(err ? 404 : 200, { 'Content-Type': types[path.extname(file)], 'Cache-Control': 'no-cache' });
     res.end(err ? 'Not found' : data);
   });
-}).listen(8001, '0.0.0.0', () => {
-  console.log('Computer preview: http://localhost:8001/');
+}).listen(previewPort, previewHost, () => {
+  console.log('Computer preview: http://localhost:' + previewPort + '/');
   for (const [name, addresses] of Object.entries(os.networkInterfaces())) {
-    for (const address of addresses) if (address.family === 'IPv4' && !address.internal && !address.address.startsWith('169.254.')) console.log(name + ': http://' + address.address + ':8001/');
+    for (const address of addresses) if (address.family === 'IPv4' && !address.internal && !address.address.startsWith('169.254.')) console.log(name + ': http://' + address.address + ':' + previewPort + '/');
   }
 });

@@ -5,19 +5,19 @@
 //   URLs carry a version number, so a new version is a new file.
 // - Bible passages and terrain tiles: kept in their own caches, which survive
 //   app updates. Terrain keeps the most recent tiles only.
-const APP = 'the-way-v57';
+const APP = 'the-way-app-965bed9fbca6';
 const BIBLE = 'the-way-bible';
 const TILES = 'the-way-tiles';
 const MODELS = 'the-way-models';
 const TILE_LIMIT = 900;
-const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html', 'css/page.css?v=5', 'js/reader-lite.js?v=4', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
-  'css/fonts.css?v=1', 'css/style.css?v=66',
-  'js/scenes.js?v=55', 'js/places.js?v=7', 'js/study.js?v=11', 'js/otrefs.js?v=1',
-  'js/guide.js?v=2', 'js/tour.js?v=2', 'js/audio-boundaries.js?v=1', 'js/experience.js?v=51', 'js/listening.js?v=1', 'js/journey.js?v=1', 'js/app.js?v=75',
-  'vendor/maplibre-contour.min.js?v=47',
+const SHELL = ['./', 'index.html', 'about.html', 'sources.html', 'holyweek.html', 'css/page.css?v=ccfd8c74ecdd', 'js/reader-lite.js?v=5cd183ff9113', 'manifest.webmanifest', 'icon-192.png', 'apple-touch-icon.png',
+  'css/fonts.css?v=1413b6528dbb', 'css/style.css?v=f033bbae0519', 'css/refinement.css?v=2131b90a9d51', 'css/reading.css?v=f7b987ff4159',
+  'js/scenes.js?v=35bd50024dd5', 'js/places.js?v=725d8aafda9b', 'js/study.js?v=c862157291a2', 'js/otrefs.js?v=a0477debc084',
+  'js/guide.js?v=dde28f2fd8d5', 'js/tour.js?v=64c11d1e8cfe', 'js/audio-boundaries.js?v=fefa57bf1795', 'js/experience.js?v=e49ff37b5e3b', 'js/listening.js?v=b98f9e3474b3', 'js/journey.js?v=c91f2ffb258a', 'js/session.js?v=80e5454ea0d4', 'js/journal.js?v=78291cfaf291', 'js/player.js?v=8d8b83dbc9f7', 'js/app.js?v=8d62b724d2e4',
+  'vendor/maplibre-contour.min.js?v=e558b23125a1',
   'data/land-wide.json?v=1', 'data/rome.json?v=1', 'data/land.json?v=9',
-  'data/lakes.json?v=11', 'data/rivers.json?v=9', 'data/jerusalem.json?v=10', 'data/paper-grain.svg',
-  'vendor/maplibre-gl.js', 'vendor/maplibre-gl.css',
+  'data/lakes.json?v=11', 'data/rivers.json?v=9', 'data/jerusalem.json?v=10', 'data/paper-grain.svg?v=919abff60a2e',
+  'vendor/maplibre-gl.js?v=be9633c4d870', 'vendor/maplibre-gl.css?v=576b085fdd94',
   'fonts/newsreader.woff2', 'fonts/newsreader-italic.woff2', 'fonts/instrument-sans-400.woff2', 'fonts/instrument-sans-500.woff2', 'fonts/instrument-sans-600.woff2'];
 
 self.addEventListener('install', (e) => {
@@ -25,7 +25,7 @@ self.addEventListener('install', (e) => {
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys()
-    .then((ks) => Promise.all(ks.filter((k) => k.startsWith('the-way-v') && k !== APP).map((k) => caches.delete(k))))
+    .then((ks) => Promise.all(ks.filter((k) => /^the-way-(?:v\d+|app-[a-f0-9]+|[a-f0-9]{12})$/.test(k) && k !== APP).map((k) => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
 

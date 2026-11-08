@@ -12,6 +12,8 @@ assert.equal(J.snapshot({...state, readingId:'gone', listening:{scene:'gone'}}).
 assert.equal(J.snapshot({...state, readingId:'word', listening:null}).primary.scene, 'word');
 assert.equal(J.snapshot({...state, seenIds:['word','birth','close']}).nextDay, null);
 assert.equal(J.nextDay(days,['word','birth']), 1);
+assert.equal(J.nextDay(days, [], [0]), 1);
+assert.equal(J.snapshot({...state, completedDays:[0,1]}).nextDay, null);
 assert.equal(J.rememberMode('reading',{setItem(){throw Error('denied')}}), false);
 assert.equal(J.rememberMode('other',{setItem(){throw Error('must not call')}}), false);
 const plain = x => JSON.parse(JSON.stringify(x));

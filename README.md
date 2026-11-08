@@ -39,7 +39,7 @@ Tapping a Scripture reference (on a card, under a verse, or inside a note) opens
 
 ## Getting around
 
-The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with six tabs: **Chapters** (every chapter and scene, with a filter for the scenes each Gospel tells), **Topics** (see below), **People** (who's who: about thirty people, from Mary and Joseph to Pilate and Caiaphas, each with a short profile and the scenes they appear in), **Plan** (your saved scenes, then a 30-day reading plan, about three scenes a day, ticked off as you read), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”; with the box empty it lists the words to know). The magnifier in the header opens Search directly. 
+The line at the top is a timeline split into the eight chapters (plus a short prologue); it fills as you read, and tapping a chapter on it jumps there. Tapping the chapter name opens a menu with six tabs: **Chapters** (every chapter and scene, with a filter for the scenes each Gospel tells), **Topics** (see below), **People** (who's who: about thirty people, from Mary and Joseph to Pilate and Caiaphas, each with a short profile and the scenes they appear in), **Plan** (your saved scenes, then a 30-day reading plan, about three scenes a day, with visited markers and explicit day completion), **Places** (every town, site, landmark and region, with a short profile — in Jesus' day, today, and how sure the identification is — and the scenes it appears in; tapping a place's label on the map opens its profile) and **Search** (words, people, places, or a Bible reference such as “John 4” or “Mark 14:36”; with the box empty it lists the words to know). The magnifier in the header opens Search directly.
 
 **Who, what and when.** In each scene, the first mention of a key person (Peter, Herod Antipas, Mary Magdalene) and of up to two words readers often trip over (Pharisees, Sabbath, Passover) is lightly underlined: tap it for a short explanation, with Scripture references and, for people, the other scenes they appear in. A small clock line on each card gives the period (“The birth · about 6–4 BC”, “Holy Week · AD 30 or 33”); tapping it opens a timeline of the dates that can be fixed, giving both views where scholars differ. The data lives in `js/guide.js`.
 
@@ -71,7 +71,35 @@ Each scene card keeps to the story: title, summary and a note. One **Go deeper**
 
 ## Reflect
 
+In the Plan tab, each of the 30 days expands into a scene preview with Scripture references and visited markers. Read or listen to a day, continue from its first unvisited scene, or open a specific scene. At the day's end, review its reflection question and explicitly mark the day complete. Visited scenes and completed days are tracked separately. Saved reflections appear together under **Your reflections** in the same tab, with links back to their questions, and saved discoveries can be downloaded as Markdown or JSON.
+
 Each scene has a **Reflect** tab with one open question for personal reflection or a small group (`WAY_ASK` in `js/study.js`). The questions stay with what the passage says and do not presume an answer.
+
+The Reflect tab also offers a personal note field. **Save reflection** stores the note in this browser on this device; clearing the field and saving removes it. Drafts remain available while switching study tabs during the visit, and a failed save is clearly reported. Notes do not sync between devices and are lost if the browser's site data is cleared.
+
+## Reading, listening, and keeping discoveries
+
+Every story scene has Previous and Next controls. **Reading view** switches to a simple text layout with the same Scripture, study tools, and historical qualifiers. **Map view** returns to the same scene. The choice is remembered on this device. Left and Right arrow keys navigate scenes when a dialog or text field is not active; the chapter, study, and Scripture tabs have their own arrow-key navigation.
+
+Start a day in Plan to keep scene navigation within that day. **Listen to this day** also keeps playback within its selection, including after a saved listening position is resumed. Changing narrator or speed retains the selection unless another range is explicitly chosen. Tap the listening title for the current passage segment's position and seeking controls. Unknown recording bounds leave seeking unavailable rather than displaying an invented duration.
+
+At the end of a selected day, readers can pause, write a reflection, mark the day finished, or preview the next day. Visited scenes and explicitly finished days are distinct. Plan also offers readable Markdown and structured JSON downloads of saved reflections and scenes. Clearing saved reflections requires a second confirmation tap; reading progress and saved scenes have their own controls.
+
+## Development checks
+
+The site remains static and can be served with `npm run dev` (port 8001 by default). Install development dependencies with `npm ci` to use the Playwright suite. On Windows the test configuration uses installed Chrome by default; set `PLAYWRIGHT_CHANNEL` to use another installed channel. CI installs Playwright Chromium.
+
+```text
+npm run check:content
+npm run assets
+npm run check:assets
+npm run test:unit
+npm run test:e2e
+```
+
+Run `npm run assets` after changing release files. It derives asset URLs and the service-worker cache name from file contents, and updates the four root pages, `sw.js`, and `assets.json`. The check command verifies these files without modifying them. Reviewed scene IDs, references, reading-plan coverage, and related content are validated from the same sources used by the iOS content exporter.
+
+Playwright exercises phone and desktop reading, day completion, scoped audio resume and settings, note downloads, and offline reading. Failed runs retain screenshots and traces in the Playwright report. The older browser smoke flow remains available with `node tests/browser-smoke.cjs`.
 
 ## Accessibility
 

@@ -1,4 +1,8 @@
 .backups/
+node_modules/
+playwright-report/
+test-results/
+.playwright-mcp/
 .superpowers/
 ios/AtlasBundle/
 ios/*.xcodeproj/

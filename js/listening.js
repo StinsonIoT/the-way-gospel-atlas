@@ -19,8 +19,15 @@
         || s.end !== null && (!Number.isFinite(s.end) || s.end <= s.start)) return null;
       segment = { id: s.id, start: s.start, end: s.end, offset: s.offset };
     }
-    return { v: 1, scene: value.scene, end: value.end, follow: value.follow, ref: value.ref,
+    const result = { v: 1, scene: value.scene, end: value.end, follow: value.follow, ref: value.ref,
       settings: { reader: settings.reader, rate: settings.rate, len: settings.len }, segment };
+    if (value.scope !== undefined) {
+      if (!Array.isArray(value.scope) || !value.scope.length || !value.scope.includes(value.scene) || value.scope.at(-1) !== value.end) return null;
+      const indices = value.scope.map(id => scenes.findIndex(s => s.id === id));
+      if (indices.some((i, k) => i < 1 || k > 0 && i <= indices[k - 1])) return null;
+      result.scope = value.scope.slice();
+    }
+    return result;
   }
   function read(scenes) {
     try { return validate(JSON.parse(window.localStorage.getItem(KEY) || 'null'), scenes); } catch (err) { return null; }

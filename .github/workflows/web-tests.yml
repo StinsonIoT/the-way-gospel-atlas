@@ -18,24 +18,25 @@ jobs:
           node-version: 22
       - name: Run tests
         run: |
-          for t in tests/*.cjs; do
-            case "$t" in *browser*) continue;; esac
-            echo "::group::$t"; node "$t" || exit 1; echo "::endgroup::"
-          done
+          node tools/version-assets.cjs --check
+          node tools/validate-content.cjs
+          node tools/test-units.cjs
 
   browser:
     runs-on: ubuntu-latest
-    # shortcut: browser tests have only run on Windows; make required once green here.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run browser tests
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
-        run: |
-          for t in tests/*browser*.cjs; do
-            echo "::group::$t"; node "$t" || exit 1; echo "::endgroup::"
-          done
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check:assets
+      - run: npm run check:content
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

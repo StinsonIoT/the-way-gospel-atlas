@@ -50,7 +50,7 @@ console.log('PASS: held scenes skip repeated work; matching palettes avoid globa
 // only on camera or palette changes.
 {
   let collisions = 0;
-  const env = { N: 2, cams: [{ x: 0, y: 0, zoom: 1 }, { x: 0, y: 0, zoom: 1 }], STEPS: [{ id: 'a' }, { id: 'b' }],
+  const env = { readerMode: false, N: 2, cams: [{ x: 0, y: 0, zoom: 1 }, { x: 0, y: 0, zoom: 1 }], STEPS: [{ id: 'a' }, { id: 'b' }],
     progress: () => 0, storyModels() {}, sections: [{ firstElementChild: { getBoundingClientRect: () => ({ top: 100 }) } }],
     exploreBtn: { offsetTop: 0, offsetHeight: 0, classList: { toggle() {} } }, TRAVEL_HOLD: .12, reduceMotion: false,
     experience: { mixPadding: () => ({}), stage: () => '' },

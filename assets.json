@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "cacheName": "the-way-app-965bed9fbca6",
+  "assets": {
+    "css/fonts.css": "1413b6528dbb",
+    "css/page.css": "ccfd8c74ecdd",
+    "css/reading.css": "f7b987ff4159",
+    "css/refinement.css": "2131b90a9d51",
+    "css/style.css": "f033bbae0519",
+    "data/paper-grain.svg": "919abff60a2e",
+    "js/app.js": "8d62b724d2e4",
+    "js/audio-boundaries.js": "fefa57bf1795",
+    "js/experience.js": "e49ff37b5e3b",
+    "js/guide.js": "dde28f2fd8d5",
+    "js/journal.js": "78291cfaf291",
+    "js/journey.js": "c91f2ffb258a",
+    "js/listening.js": "b98f9e3474b3",
+    "js/otrefs.js": "a0477debc084",
+    "js/places.js": "725d8aafda9b",
+    "js/player.js": "8d8b83dbc9f7",
+    "js/reader-lite.js": "5cd183ff9113",
+    "js/scenes.js": "35bd50024dd5",
+    "js/session.js": "80e5454ea0d4",
+    "js/study.js": "c862157291a2",
+    "js/tour.js": "64c11d1e8cfe",
+    "vendor/maplibre-contour.min.js": "e558b23125a1",
+    "vendor/maplibre-gl.css": "576b085fdd94",
+    "vendor/maplibre-gl.js": "be9633c4d870"
+  }
+}

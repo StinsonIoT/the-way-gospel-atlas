@@ -1,0 +1,17 @@
+{
+  "name": "the-way-gospel-atlas",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "node tools/preview.cjs",
+    "assets": "node tools/version-assets.cjs",
+    "check:assets": "node tools/version-assets.cjs --check",
+    "check:content": "node tools/validate-content.cjs",
+    "test:unit": "node tools/test-units.cjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0"
+  }
+}

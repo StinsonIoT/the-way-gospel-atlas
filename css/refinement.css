@@ -1,0 +1,121 @@
+/* Museum atlas: quiet surfaces, clear reading levels, deliberate scene forms. */
+.card { padding: 24px; gap: 14px; box-shadow: 0 12px 36px #18252212; }
+.card h2 { font-size: clamp(34px, 8.8vw, 42px); line-height: 1.1; letter-spacing: -.025em; }
+.card .text { font-size: 18px; line-height: 1.55; }
+.kicker { font-size: 11px; line-height: 1.5; letter-spacing: .13em; gap: 10px; flex-wrap: wrap; }
+#toc .tabs { overflow-x: auto; scrollbar-width: thin; }
+#toc .tabs button { min-width: max-content; }
+.kicker .ref { font-size: 12px; }
+.card .chips { gap: 6px; }
+.card .chip { padding: 4px 8px 4px 5px; border-color: transparent; border-radius: 5px; font-size: 12px; }
+.card .chip svg { width: 23px; }
+.scene-context { border-top-color: color-mix(in srgb, var(--c-line) 75%, transparent); }
+.scene-context summary { font-size: 13px; line-height: 1.45; padding: 12px 0; }
+.scene-context .note { margin-bottom: 4px; padding: 0 0 10px; background: none; font-size: 14px; line-height: 1.6; border-radius: 0; }
+.study { border-top-color: color-mix(in srgb, var(--c-line) 75%, transparent); padding-top: 10px; }
+.xp { text-decoration-style: solid; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--c-accent, var(--m-accent)) 40%, transparent); text-underline-offset: 4px; }
+.xp:hover, .xp:focus-visible { text-decoration-color: var(--c-accent, var(--m-accent)); }
+.when span:first-of-type { text-decoration-style: solid; text-decoration-color: color-mix(in srgb, currentColor 25%, transparent); }
+
+/* Places read as labels on the map, with their certainty symbols intact. */
+.mk-named .nm, .mk-trad .nm, .mk-proposal .nm, .mk-hist .nm { font-size: 13.5px; }
+.mk.is-focus .lbl, body[data-moment="birth"] .mk-trad .lbl {
+  padding: 5px 8px; border-radius: 6px; background: color-mix(in srgb, var(--m-land) 92%, transparent);
+  box-shadow: 0 2px 12px #00000009; text-shadow: none;
+}
+body[data-moment="birth"] .mk-trad .nm { font-size: 15px; font-weight: 600; }
+.mk.is-focus .nt { font-size: 12px; }
+
+/* Shared tools stay familiar while the caption form follows the scene. */
+.step[data-profile="place"] > .card { border-inline-start-width: 2px; border-radius: 5px 18px 18px 5px; }
+.step[data-profile="journey"] > .card { border-inline-start-width: 2px; border-radius: 5px 18px 18px 5px; }
+.step[data-profile="journey"] .kicker { letter-spacing: .17em; }
+.step[data-profile="teaching"] > .card, .step[data-profile="teaching"] > .verse {
+  border-inline-start: 0; border-top: 2px solid var(--c-accent, var(--m-accent)); border-radius: 18px;
+}
+.step[data-profile="teaching"] .text, .step[data-profile="teaching"] .after { line-height: 1.65; }
+.chapter-arrival > .card::before, .chapter-arrival > .verse::before { font-size: 11px; padding-bottom: 12px; }
+.step-art-directed > .moment-prayer { padding: 24px; gap: 16px; }
+.step-art-directed > .moment-resurrection { padding: 26px; gap: 16px; }
+.moment-certainty { line-height: 1.6; }
+
+/* The return action replaces Begin as the visual priority when a place is saved. */
+.hero:has(.resume:not([hidden])) h1 { font-size: clamp(56px, 19vw, 82px); }
+.hero:has(.resume:not([hidden])) .lede { margin-top: 16px; }
+.hero:has(.resume:not([hidden])) .resume { margin-top: 18px; }
+.hero:has(.resume:not([hidden])) .resume-go { background: #E0A458; color: #182522; border-color: #E0A458; border-radius: 10px; }
+.hero:has(.resume:not([hidden])) .resume-k { color: #344235; font-size: 10px; letter-spacing: .1em; }
+.hero:has(.resume:not([hidden])) .resume-go small { color: #344235; }
+.hero:has(.resume:not([hidden])) .resume-read { min-height: 36px; padding: 6px 2px; }
+.hero:has(.resume:not([hidden])) .hero-meta { margin: 8px 0 12px; }
+.hero:has(.resume:not([hidden])) .hero-begin { min-height: 44px; width: auto; padding: 0; gap: 16px; background: transparent; color: #F1E9DA; border: 0; text-decoration: underline; text-underline-offset: 4px; }
+.hero:has(.resume:not([hidden])) .hero-second { margin-top: 6px; }
+.hero:has(.resume:not([hidden])) .cue { display: none; }
+
+@media (min-width: 900px) {
+  .step > .card { max-width: 470px; padding: 28px; gap: 16px; }
+  .step > .verse-story { max-width: 490px; padding: 28px; }
+  .step[data-profile="teaching"] > .card { max-width: 500px; padding: 32px; }
+  .step[data-profile="journey"] > .card { max-width: 450px; }
+  .card .text { font-size: 19px; }
+  .step-art-directed[data-scene="title"] .hero { max-width: 620px; padding: 24px 0 52px; }
+  .step-art-directed[data-scene="title"] h1 { font-size: clamp(94px, 10vw, 142px); }
+  .step-art-directed[data-scene="title"] .lede { max-width: 370px; font-size: 17px; }
+  .hero:has(.resume:not([hidden])) h1 { font-size: clamp(72px, 7.8vw, 110px); }
+  .hero:has(.resume:not([hidden])) .resume { max-width: 440px; }
+  .hero:has(.resume:not([hidden])) .hero-second { gap: 18px; }
+  #toc { width: min(880px, calc(100vw - 80px)); max-height: min(86vh, 860px); padding: 28px; border-radius: 24px; }
+  #toc .toc-top { top: -28px; margin: -28px -28px 0; padding: 22px 28px 12px; }
+  #toc .dlg-head h2 { font-size: 32px; }
+  #toc .tabs { max-width: 650px; margin-bottom: 12px; }
+  #toc .tabs button { min-height: 44px; font-size: 14px; }
+  #toc-body, #places-body, .plan-days { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; align-items: start; }
+  #toc-body > .toc-ch:has(.toc-head[aria-expanded="true"]), #places-body > .pl:has(.toc-head[aria-expanded="true"]),
+  #places-body > .pl-group, #places-body > .pl-explore, .plan-days > li:has(.plan-day[open]) { grid-column: 1 / -1; }
+  #toc .toc-scenes button { font-size: 17px; }
+  #toc .toc-scenes button small { font-size: 12.5px; }
+  .pl-body .pl-info { max-width: 65ch; }
+  .plan-day-scenes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+  .plan-days .plan-day-scenes button { height: 100%; margin: 0; }
+  .plan-days .plan-day-read { max-width: 340px; }
+  .plan-head, .journey-hub { padding: 20px; }
+}
+@media (max-width: 359px) {
+  .card { padding: 20px; gap: 12px; }
+  .card .text { font-size: 17px; }
+  .kicker { flex-wrap: wrap; gap: 2px 10px; }
+  .hero:has(.resume:not([hidden])) .hero-meta { display: none; }
+  .hero:has(.resume:not([hidden])) .hero-play { font-size: 13px; padding: 0 12px; }
+  .hero:has(.resume:not([hidden])) .hero-maplink { font-size: 12px; }
+  .hero:has(.resume:not([hidden])) .hero-second { gap: 4px 10px; }
+}
+@media (max-height: 650px) and (max-width: 899px) {
+  .step-art-directed[data-scene="title"] .hero { padding-top: 16px; padding-bottom: 24px; }
+  .step-art-directed[data-scene="title"] h1 { font-size: 58px; }
+  .hero:has(.resume:not([hidden])) h1 { font-size: 48px; }
+  .hero:has(.resume:not([hidden])) .eyebrow { margin-bottom: 10px; }
+  .hero:has(.resume:not([hidden])) .lede { margin-top: 12px; font-size: 15px; }
+  .hero:has(.resume:not([hidden])) .lede { display: none; }
+  .hero:has(.resume:not([hidden])) .resume { margin-top: 12px; }
+}
+@media (orientation: landscape) and (min-width: 640px) and (max-width: 899px) and (max-height: 540px) {
+  .card, .step-focus > .card { padding: 20px; gap: 10px; }
+  .card h2, .step-focus .card h2 { font-size: 32px; }
+  .card .text { font-size: 17px; line-height: 1.5; }
+  .hero:has(.resume:not([hidden])) h1 { font-size: 44px; }
+  .step-art-directed[data-scene="title"] .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding: 12px 0; }
+  .step-art-directed[data-scene="title"] .eyebrow { grid-column: 1 / -1; margin: 0; font-size: 9px; }
+  .step-art-directed[data-scene="title"] h1 { grid-column: 1; grid-row: 2 / 5; font-size: 48px; align-self: start; }
+  .step-art-directed[data-scene="title"] .lede { grid-column: 2; grid-row: 2; margin: 0; font-size: 13px; line-height: 1.45; }
+  .step-art-directed[data-scene="title"] .hero-meta { grid-column: 2; grid-row: 3; margin: 0; font-size: 10px; }
+  .step-art-directed[data-scene="title"] .hero-begin { grid-column: 2; grid-row: 4; width: 100%; min-height: 44px; padding: 0 10px; gap: 10px; font-size: 12px; }
+  .step-art-directed[data-scene="title"] .hero-second { grid-column: 1 / -1; grid-row: 5; margin: 0; }
+  .step-art-directed[data-scene="title"] .cue { display: none; }
+  .hero:has(.resume:not([hidden])) h1 { grid-row: 2; font-size: 44px; }
+  .hero:has(.resume:not([hidden])) .resume { grid-column: 2; grid-row: 2 / 5; margin: 0; }
+  .hero:has(.resume:not([hidden])) .resume { align-self: start; }
+  .hero:has(.resume:not([hidden])) .resume-go { flex: none; padding: 10px 12px; }
+  .hero:has(.resume:not([hidden])) .resume-t { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .hero:has(.resume:not([hidden])) .hero-meta { grid-column: 1; grid-row: 3; }
+  .hero:has(.resume:not([hidden])) .hero-begin { grid-column: 1; padding: 0; justify-self: start; }
+}

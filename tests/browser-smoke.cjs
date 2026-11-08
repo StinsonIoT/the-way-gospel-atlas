@@ -6,6 +6,7 @@ const path = require('node:path');
 const { spawn } = require('node:child_process');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const root = path.resolve(__dirname, '..');
+const applicationCache = /const APP = '([^']+)'/.exec(fs.readFileSync(path.join(root, 'sw.js'), 'utf8'))[1];
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg' };
 let serveOldWorker = true;
 const server = http.createServer((req, res) => {
@@ -205,8 +206,31 @@ async function navigate(url) {
   assert(await evaluate(`caches.has('the-way-v0')`), 'old worker fixture is installed');
   serveOldWorker = false;
   await evaluate(`navigator.serviceWorker.getRegistration().then(r => r.update())`);
-  await waitFor(`caches.has('the-way-v57').then(async found => found && !(await caches.has('the-way-v0')))`);
+  await waitFor(`caches.has(${JSON.stringify(applicationCache)}).then(async found => found && !(await caches.has('the-way-v0')))`);
   console.log('PASS: browser activates the new worker and removes the old application cache.');
+  await evaluate(`document.querySelector('.brand').focus()`);
+  await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+  await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+  const introLabels = await evaluate(`(() => {
+    const step = document.querySelector('#s-word'), card = step.firstElementChild;
+    const button = document.querySelector('#chapter-btn'), label = button.querySelector(':scope > span:first-child');
+    const result = {
+      chapterHasKeyboardFocus: document.activeElement === button,
+      duplicateChapterLabel: step.classList.contains('chapter-arrival--same-label') && getComputedStyle(card, '::before').content === 'none',
+      buttonOutline: getComputedStyle(button).outlineStyle,
+      labelOutline: getComputedStyle(label).outlineStyle,
+      buttonWidth: button.getBoundingClientRect().width,
+      labelWidth: label.getBoundingClientRect().width
+    };
+    document.activeElement.blur();
+    return result;
+  })()`);
+  assert(introLabels.chapterHasKeyboardFocus, 'Tab moves from the brand to the chapter menu');
+  assert(introLabels.duplicateChapterLabel, 'the first scene does not repeat the chapter label');
+  assert.equal(introLabels.buttonOutline, 'none', 'the chapter hit area has no full-width outline');
+  assert.equal(introLabels.labelOutline, 'solid', 'keyboard focus remains visible around the chapter label');
+  assert(introLabels.labelWidth < introLabels.buttonWidth / 2, 'the chapter focus outline stays localized');
+  console.log('PASS: prologue heading and chapter keyboard focus are compact and distinct.');
   for (const [width, height] of [[320, 568], [390, 844], [844, 390]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
     await sleep(200);
@@ -349,7 +373,7 @@ async function navigate(url) {
   await send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 });
   await navigate(base + '/');
   await waitFor(`document.querySelectorAll('.step').length === 90`);
-  assert.equal(errors.length, 0, 'no uncaught JavaScript exceptions after offline reload');
+  assert.equal(errors.length, 0, 'no uncaught JavaScript exceptions after offline reload: ' + JSON.stringify(errors));
   console.log('PASS: installed app reopens offline with all 90 scenes and no uncaught JavaScript exceptions.');
   await send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
   // Page-level fetch interception also covers requests handled by the worker.

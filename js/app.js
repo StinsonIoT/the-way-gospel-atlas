@@ -15,6 +15,8 @@
   const experience = window.WAY_EXPERIENCE;
   const LISTEN = window.WAY_LISTEN;
   const JOURNEY = window.WAY_JOURNEY;
+  const JOURNAL = window.WAY_JOURNAL.create(() => localStorage);
+  let readerMode = false;
 
   // ---------- small helpers ----------
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -278,7 +280,7 @@
     let body = '';
     if (s.text) body += `<p class="text">${linkRefs(esc(s.text))}</p>`;
     if (experience.focused(s.id) && s.ref) body += refLink(s.ref, 'ref scene-reading');
-    if (s.note) body += experience.focused(s.id) ? `<details class="scene-context"><summary>Location & Gospel context</summary><p class="note">${linkRefs(esc(s.note))}</p></details>` : `<p class="note">${linkRefs(esc(s.note))}</p>`;
+    if (s.note) body += `<details class="scene-context"><summary>Location & Gospel context</summary><p class="note">${linkRefs(esc(s.note))}</p></details>`;
     if (s.kind === 'legend') body += legendHTML;
     if (s.kind === 'chapter') body += `${experience.focused(s.id) ? '<details class="scene-context chapter-context"><summary>Gospel time markers</summary>' : ''}<p class="sub">Gospel time markers · not calendar dates</p><ol class="times">${s.markers.map((m) => `<li><span>${esc(m[0])}</span><span>${esc(m[1])}</span></li>`).join('')}</ol>${experience.focused(s.id) ? '</details>' : ''}`;
     if (s.guide) body += `<a class="guide-link" href="${esc(s.guide[0])}">${esc(s.guide[1])}<span aria-hidden="true">→</span></a>`;
@@ -288,6 +290,7 @@
       body += `<blockquote class="close-verse">${esc(s.verse)}</blockquote>
         <div class="actions">${refLink(s.ref, 'btn btn-solid')}<a class="btn" href="#top">Begin again</a></div>
         <p class="more">The story continues in the book of Acts.</p>`;
+      body += '<div class="day-actions"><button type="button" data-discover="plan">Your saved discoveries</button><button type="button" data-discover="chapters">Follow a Gospel</button><button type="button" data-discover="topics">Explore a theme</button></div>';
     }
     body += whenHTML(s) + studyRow(s);
     const tight = s.kind === 'list' && s.items && s.items.length > 5 ? ' step-list-tight' : '';
@@ -305,7 +308,12 @@
     if (i > 0 && STEPS[i - 1].ch !== s.ch) {
       sec.classList.add('chapter-arrival');
       const name = String(s.ch || '').replace(/^[IVX]+\s·\s/, '');
-      if (sec.firstElementChild && name) sec.firstElementChild.dataset.chapterTitle = name;
+      if (sec.firstElementChild && name) {
+        sec.firstElementChild.dataset.chapterTitle = name;
+        if (name.trim().toLowerCase() === String(s.kicker || '').trim().toLowerCase()) {
+          sec.classList.add('chapter-arrival--same-label');
+        }
+      }
     }
     // Each caption settles and holds while the reader scrolls through this
     // spacer; then it moves on and the map travels to the next place.
@@ -430,7 +438,7 @@
         // Natural Earth outline for the views that show the whole Mediterranean.
         { id: 'land-wide', type: 'fill', source: 'landwide', maxzoom: 6.5, paint: { 'fill-color': '#1B2624' } },
         { id: 'land', type: 'fill', source: 'land', paint: { 'fill-color': '#1B2624' } },
-        { id: 'hillshade', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.45, 'hillshade-illumination-direction': 315 } },
+        { id: 'hillshade', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.32, 'hillshade-illumination-direction': 315 } },
         ...(hasContours ? [{ id: 'contours', type: 'line', source: 'contours', 'source-layer': 'contours', minzoom: 10,
           paint: { 'line-color': '#000', 'line-opacity': 0.5, 'line-width': ['match', ['get', 'level'], 1, 1, 0.5] } }] : []),
         // Rome's empire (data/rome.json, tools/make-rome.py): shown on the census
@@ -633,6 +641,10 @@
   const is3D = (s) => (s.plan || 0) >= 0.5;
   let camPad = null;
   function computeCams() {
+    if (readerMode) return;
+    // Window resize listeners may run before MapLibre updates its transform.
+    // Fit against the current canvas dimensions, especially across orientation changes.
+    map.resize();
     const pad = padding();
     camPad = pad;
     let k = 0;
@@ -652,7 +664,14 @@
       // when the camera is tilted.
       // (cameraForBounds gives nothing when the padding leaves no room, e.g.
       // mid-resize; fall back to no padding.)
-      const c = map.cameraForBounds(view, { padding: scenePad, bearing }) || map.cameraForBounds(view, { bearing }) || { zoom: map.getZoom() };
+      let c;
+      for (const options of [{ padding: scenePad, bearing }, { bearing }]) {
+        try {
+          const candidate = map.cameraForBounds(view, options);
+          if (candidate && Number.isFinite(candidate.zoom)) { c = candidate; break; }
+        } catch (err) { /* A transient canvas size can make MapLibre's projection nonfinite. Retry without padding. */ }
+      }
+      if (!c) c = { zoom: map.getZoom() };
       const mid = [(view[0][0] + view[1][0]) / 2, (view[0][1] + view[1][1]) / 2];
       const m = maplibregl.MercatorCoordinate.fromLngLat(mid);
       return { x: m.x, y: m.y, zoom: c.zoom - (pitch ? 0.35 : 0), pitch, bearing, padding: scenePad };
@@ -677,6 +696,7 @@
     return Math.round(vh - h - gap);
   }
   function measure() {
+    if (readerMode) return;
     tops = []; ends = [];
     sections.forEach((sec, i) => {
       const cap = sec.firstElementChild;
@@ -696,6 +716,8 @@
     new ResizeObserver(() => { cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { if (started) { measure(); computeCams(); holdAim(); queue(); } }); }).observe(story);
   }
   function progress() {
+    if (readerMode) return session.scene;
+    if (tops.length !== N || ends.length !== N) return 0;
     const y = window.scrollY;
     let i = 0;
     while (i < N - 1 && y >= tops[i + 1]) i++;
@@ -749,6 +771,8 @@
   // Keep the address on the current scene, so a link opens where you are.
   let hashTimer = 0, lastHashStep = -1;
   function noteStep(r) {
+    session.visit(r);
+    updateSceneNav();
     checkBack(r);
     if (r === lastHashStep) return;
     lastHashStep = r;
@@ -758,7 +782,7 @@
     hashTimer = setTimeout(() => {
       try { history.replaceState(null, '', r === 0 ? location.pathname + location.search : '#' + sections[r].id); } catch (err) { /* ignore */ }
       // Remember the reader's place (only once they are into the story).
-      if (r >= 3 && journeyMode() !== 'listening') { try { localStorage.setItem('the-way:last', STEPS[r].id); } catch (err) { /* private mode */ } }
+      if (r >= 1 && journeyMode() !== 'listening') { try { localStorage.setItem('the-way:last', STEPS[r].id); } catch (err) { /* private mode */ } }
     }, 500);
   }
   // ---------- Continue where you left off ----------
@@ -773,7 +797,7 @@
     try { readingId = localStorage.getItem('the-way:last'); } catch (err) { /* storage unavailable */ }
     const days = PLAN.map((d) => [d.title, d.steps.map((i) => STEPS[i].id)]);
     return JOURNEY.snapshot({ scenes: STEPS, days, readingId, listening: LISTEN.read(STEPS), preferredMode: journeyMode(),
-      seenIds: [...seen], savedIds: [...saved] });
+      seenIds: [...seen], savedIds: [...saved], completedDays: [...session.completed] });
   }
   function offerResume() {
     const state = journeySnapshot();
@@ -784,7 +808,7 @@
     const step = STEPS[idx];
     const group = groups.find((gg) => gg.steps.includes(idx));
     const label = primary.mode === 'listening' ? 'Continue listening' : 'Continue reading';
-    box.innerHTML = `<div class="resume-choices"><button type="button" class="resume-go"><span class="resume-k">Continue your journey · ${label}</span><span class="resume-t">${esc(stepLabel(step))}</span><small>${esc(group && group.num ? group.num + ' · ' + group.title : '')}</small></button><button type="button" class="resume-read resume-hub">Your journey</button></div>`;
+    box.innerHTML = `<div class="resume-choices"><button type="button" class="resume-go"><span class="resume-k">${label}</span><span class="resume-t">${esc(stepLabel(step))}</span><small>${esc(group && group.num ? group.num + ' · ' + group.title : '')}</small></button><button type="button" class="resume-read resume-hub">Your journey</button></div>`;
     box.hidden = false;
     box.querySelector('.resume-go').addEventListener('click', () => {
       box.hidden = true;
@@ -879,7 +903,16 @@
 
   function goTo(i, opts) {
     opts = opts || {};
+    if (!Number.isInteger(i) || i < 0 || i >= N) return;
     rememberJourneyMode('reading');
+    if (session.day != null && !session.scope().includes(i)) session.leaveDay();
+    if (readerMode && i === 0) { setReadingMode(false, 0); return; }
+    if (readerMode) {
+      if (tour?.playing) tourPause();
+      if (toc.open) toc.close();
+      session.visit(i); renderReadingScene(); noteStep(i); window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
     if (!opts.quiet) noteJump(progress(), i);
     if (exploring) closeExplore();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
@@ -903,6 +936,7 @@
   // Opening or closing details changes a caption's height. Keep the reader's
   // place in that scene, so the caption stays settled and grows in place.
   story.addEventListener('toggle', (ev) => {
+    if (readerMode) return;
     // Breakpoint changes update many disclosures together; resize/start already
     // measures the resulting layout once, rather than once per scene.
     if (ev.target._layoutToggle) { ev.target._layoutToggle = false; return; }
@@ -960,6 +994,7 @@
     if (was !== name) toc.scrollTop = 0;
     TABS.forEach((t) => {
       document.getElementById('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
+      document.getElementById('tab-' + t).tabIndex = t === name ? 0 : -1;
       document.getElementById('panel-' + t).hidden = t !== name;
     });
     if (name === 'search' && focus) setTimeout(() => qInput.focus(), 30);
@@ -968,6 +1003,18 @@
     if (gf) gf.hidden = name !== 'chapters';
   }
   TABS.forEach((t) => document.getElementById('tab-' + t).addEventListener('click', () => showTab(t)));
+  TABS.forEach((t) => {
+    const tab = document.getElementById('tab-' + t);
+    tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+    tab.addEventListener('keydown', (ev) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) return;
+      ev.preventDefault();
+      const i = TABS.indexOf(t);
+      const next = ev.key === 'Home' ? 0 : ev.key === 'End' ? TABS.length - 1 : (i + (ev.key === 'ArrowRight' ? 1 : -1) + TABS.length) % TABS.length;
+      showTab(TABS[next]);
+      document.getElementById('tab-' + TABS[next]).focus();
+    });
+  });
 
   // ---------- Places index ----------
   // Every named town, traditional site and landmark, with the scenes it appears in.
@@ -1275,6 +1322,9 @@
   const toldBy = (key) => { const k = gIndex(key); return STEPS.map((st, i) => (HARM[st.id] && HARM[st.id][k] ? i : -1)).filter((i) => i >= 0); };
   const harmCount = STEPS.filter((st) => HARM[st.id]).length;
   let deepOpener = null, deepId = null;
+  function reflectionNote(id) {
+    return JOURNAL.get(id);
+  }
   function gospelsHTML(id) {
     const h = HARM[id];
     const told = GOSPELS.filter((g, k) => h[k]).length;
@@ -1289,12 +1339,23 @@
   function layerHTML(st, k) {
     if (k === 'gospels') return gospelsHTML(st.id);
     if (k === 'ot') return otHTML(st);
-    if (k === 'ask') return `<p class="dp-ask">${linkRefs(esc(st.ask))}</p><p class="gos-foot">A question for personal reflection or a small group.</p>`;
+    if (k === 'ask') {
+      const note = reflectionNote(st.id);
+      return `<p class="dp-ask">${linkRefs(esc(st.ask))}</p><p class="gos-foot">A question for personal reflection or a small group.</p>
+        <div class="reflection-note"><label for="reflection-note">Your reflection</label>
+        <textarea id="reflection-note" rows="5" maxlength="4000" aria-describedby="reflection-help reflection-status">${esc(note.value)}</textarea>
+        <p id="reflection-help" class="gos-foot">Write a thought to return to. Notes are saved only on this device. Clear the field and save to remove a note.</p>
+        <button type="button" data-reflection-save>Save reflection</button>
+        <p id="reflection-status" class="gos-foot" role="status">${esc(note.status)}</p></div>`;
+    }
     return `<p class="dp-text">${linkRefs(esc(st[k]))}</p>`;
   }
   function showLayer(k) {
     const st = STEPS.find((x) => x.id === deepId);
-    dpTabs.querySelectorAll('[data-layer]').forEach((b) => b.setAttribute('aria-selected', b.dataset.layer === k ? 'true' : 'false'));
+    dpTabs.querySelectorAll('[data-layer]').forEach((b) => { b.setAttribute('aria-selected', b.dataset.layer === k ? 'true' : 'false'); b.tabIndex = b.dataset.layer === k ? 0 : -1; });
+    dpBody.setAttribute('role', 'tabpanel');
+    dpBody.setAttribute('aria-labelledby', 'dp-tab-' + k);
+    dpBody.tabIndex = 0;
     dpBody.className = 'dp-body dp-' + k;
     dpBody.innerHTML = layerHTML(st, k);
     dpBody.scrollTop = 0;
@@ -1306,13 +1367,31 @@
     deepId = id;
     document.getElementById('dp-kicker').textContent = st.ref ? st.ref[0].replace(/\s*·\s*BSB$/, '') : '';
     document.getElementById('dp-title').textContent = stepLabel(st);
-    dpTabs.innerHTML = layers.map(([k, label]) => `<button type="button" role="tab" data-layer="${k}">${label}</button>`).join('');
+    dpTabs.innerHTML = layers.map(([k, label]) => `<button type="button" role="tab" id="dp-tab-${k}" aria-controls="dp-body" data-layer="${k}">${label}</button>`).join('');
     showLayer(layers.some((l) => l[0] === layer) ? layer : layers[0][0]);
     deepOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
     if (deepOpener && deepOpener.blur) deepOpener.blur();
     if (!deepDlg.open) deepDlg.showModal();
   }
   dpTabs.addEventListener('click', (ev) => { const b = ev.target.closest('[data-layer]'); if (b) showLayer(b.dataset.layer); });
+  dpTabs.addEventListener('keydown', ev => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) return;
+    const tabs = Array.from(dpTabs.querySelectorAll('[data-layer]')), i = tabs.indexOf(ev.target);
+    if (i < 0) return;
+    ev.preventDefault();
+    const next = ev.key === 'Home' ? 0 : ev.key === 'End' ? tabs.length - 1 : (i + (ev.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    showLayer(tabs[next].dataset.layer); tabs[next].focus();
+  });
+  dpBody.addEventListener('input', (ev) => {
+    if (ev.target.id !== 'reflection-note' || !deepId) return;
+    const note = JOURNAL.edit(deepId, ev.target.value);
+    document.getElementById('reflection-status').textContent = note.status;
+  });
+  dpBody.addEventListener('click', (ev) => {
+    if (!ev.target.closest('[data-reflection-save]') || !deepId) return;
+    const note = JOURNAL.save(deepId);
+    document.getElementById('reflection-status').textContent = note.status;
+  });
   deepDlg.addEventListener('close', () => {
     if (deepOpener && deepOpener.focus && !touchedSinceJump) { try { deepOpener.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
     deepOpener = null;
@@ -1437,6 +1516,105 @@
 
   // ---------- Reading plan and saved scenes (kept on this device) ----------
   const PLAN = (window.WAY_PLAN || []).map(([title, ids]) => ({ title, steps: ids.map((id) => STEPS.findIndex((st) => st.id === id)).filter((i) => i >= 0) }));
+  const session = window.WAY_SESSION.create(STEPS, PLAN, () => localStorage);
+  const readingPane = document.getElementById('reading-pane');
+  const sceneNav = document.getElementById('scene-nav');
+  const dayFinish = document.getElementById('day-finish');
+  const readingHeader = document.querySelector('.top');
+  const syncReadingHeader = () => {
+    if (readerMode) document.documentElement.style.setProperty('--reader-header-height', Math.ceil(readingHeader.getBoundingClientRect().bottom) + 'px');
+  };
+  if ('ResizeObserver' in window) new ResizeObserver(syncReadingHeader).observe(readingHeader);
+  function updateSceneNav() {
+    const i = session.scene;
+    const key = [i, session.mode, session.day, follow].join(':');
+    if (sceneNav.dataset.state === key) return;
+    const wasHidden = sceneNav.hidden;
+    sceneNav.dataset.state = key;
+    sceneNav.hidden = OG || i === 0;
+    const allowed = follow ? followList : null;
+    const list = window.WAY_SESSION.sequence(STEPS, session.scope(), allowed);
+    document.getElementById('scene-prev').disabled = session.adjacent(-1, allowed) == null;
+    const next = session.adjacent(1, allowed);
+    const button = document.getElementById('scene-next');
+    button.disabled = next == null && session.day == null;
+    button.textContent = next == null && session.day != null ? 'Finish day' : 'Next';
+    const pos = document.getElementById('scene-position');
+    const position = list.indexOf(i);
+    pos.textContent = `${position < 0 ? '—' : position + 1} / ${list.length}`;
+    pos.setAttribute('aria-label', `${session.day == null ? 'Story' : 'Day ' + (session.day + 1)}: scene ${position < 0 ? 'outside selection' : position + 1} of ${list.length}`);
+    const mode = document.getElementById('reading-toggle');
+    mode.textContent = readerMode ? 'Map view' : 'Reading view';
+    mode.setAttribute('aria-label', readerMode ? 'Switch to map view' : 'Switch to reading view');
+    document.getElementById('scene-announcement').textContent = i > 0 ? `${stepLabel(STEPS[i])}. ${pos.getAttribute('aria-label')}.` : '';
+    if (wasHidden !== sceneNav.hidden && started) requestAnimationFrame(() => { measure(); computeCams(); queue(); });
+  }
+  function renderReadingScene() {
+    const i = Math.max(1, session.scene);
+    session.visit(i);
+    const card = sections[i].firstElementChild.cloneNode(true);
+    card.removeAttribute('style');
+    readingPane.replaceChildren(card);
+    readingPane.hidden = false;
+    document.body.classList.remove('opening');
+    document.body.dataset.moment = STEPS[i].id;
+    chapterEl.textContent = STEPS[i].ch;
+    updateTimeline(i);
+    updateSceneNav();
+    syncReadingHeader();
+  }
+  function setReadingMode(on, targetIndex) {
+    const i = Math.max(on ? 1 : 0, targetIndex ?? (readerMode ? session.scene : Math.round(progress())));
+    if (tour?.playing) tourPause();
+    if (exploring) closeExplore();
+    readerMode = !!on;
+    session.setMode(readerMode ? 'reading' : 'atlas');
+    document.documentElement.classList.toggle('reading-mode', readerMode);
+    aim = -1; touchedSinceJump = true;
+    session.visit(i);
+    lastHashStep = -1; lastCh = '';
+    if (readerMode) { renderReadingScene(); noteStep(i); window.scrollTo({ top: 0, behavior: 'instant' }); document.body.classList.add('ready'); }
+    else { readingPane.hidden = true; readingPane.replaceChildren(); map.resize(); measure(); computeCams(); goTo(i, { quiet: true }); }
+    updateSceneNav();
+  }
+  function navigateScene(direction) {
+    const next = session.adjacent(direction, follow ? followList : null);
+    if (next == null) { if (direction > 0 && session.day != null) showDayFinish(); return; }
+    goTo(next);
+  }
+  function startReadingDay(k, listening = false) {
+    if (!PLAN[k]) return;
+    const indices = window.WAY_SESSION.sequence(STEPS, PLAN[k].steps, follow ? followList : null);
+    if (!indices.length) { showToast('No scenes in this day are told in the selected Gospel. Choose All in Chapters to read the day.'); return; }
+    session.startDay(k);
+    if (listening) { TS.how = 'listen'; saveTS(); startTourAt(indices[0], PLAN[k].steps.at(-1), null, PLAN[k].steps); }
+    else goTo(indices.find(i => !seen.has(STEPS[i].id)) ?? indices[0]);
+    updateSceneNav();
+  }
+  function showDayFinish() {
+    if (session.day == null) return;
+    const k = session.day, day = PLAN[k];
+    const finished = session.completed.has(k);
+    const question = day.steps.map(i => STEPS[i]).reverse().find(s => s.ask);
+    document.getElementById('day-finish-title').textContent = `Day ${k + 1} · ${day.title}`;
+    document.getElementById('day-finish-body').innerHTML = `<p>You reached the end of this day's selection. Take a moment to pause before continuing.</p><ul>${day.steps.map(i => `<li>${esc(stepLabel(STEPS[i]))}</li>`).join('')}</ul>${question ? `<blockquote>${esc(question.ask)}</blockquote><button type="button" data-day-reflect="${question.id}">Write a reflection</button>` : ''}<p id="day-finish-status" role="status">${session.completed.has(k) ? 'You marked this day finished.' : 'Mark the day finished when you are ready. Visiting a scene does not mark a day finished.'}</p><div class="day-actions"><button type="button" data-day-complete>Mark day finished</button>${k + 1 < PLAN.length ? `<button type="button" data-day-next="${k + 1}">Preview the next day</button>` : '<button type="button" data-discover="topics">Choose a theme to revisit</button>'}<button type="button" data-day-leave>Return to the whole story</button></div>`;
+    const complete = dayFinish.querySelector('[data-day-complete]');
+    complete.disabled = finished;
+    if (finished) complete.textContent = 'Day finished';
+    const pause = document.createElement('button');
+    pause.type = 'button'; pause.dataset.dayPause = ''; pause.textContent = 'Pause here';
+    dayFinish.querySelector('.day-actions').appendChild(pause);
+    if (!dayFinish.open) dayFinish.showModal();
+  }
+  function downloadDiscoveries(format) {
+    try {
+      const data = JOURNAL.exportData(STEPS, saved, stepLabel);
+      const content = format === 'json' ? JSON.stringify(data, null, 2) : JOURNAL.markdown(data);
+      const url = URL.createObjectURL(new Blob([content], { type: format === 'json' ? 'application/json;charset=utf-8' : 'text/markdown;charset=utf-8' }));
+      const a = document.createElement('a'); a.href = url; a.download = `the-way-discoveries.${format === 'json' ? 'json' : 'md'}`;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { showToast(err.message || 'Could not export saved discoveries.'); }
+  }
   const loadSet = (key) => { try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); } catch (err) { return new Set(); } };
   const saveSet = (key, set) => { try { localStorage.setItem(key, JSON.stringify([...set])); } catch (err) { /* private mode */ } };
   const seen = loadSet('the-way:seen');
@@ -1470,11 +1648,13 @@
   syncSaveButtons();
   const planBody = document.getElementById('plan-body');
   let resetArmed = false;
+  let clearReflectionsArmed = false;
   function renderPlan() {
     resetArmed = false;
+    clearReflectionsArmed = false;
     const journey = journeySnapshot();
     const doneDay = (d) => d.steps.every((i) => seen.has(STEPS[i].id));
-    const next = PLAN.findIndex((d) => !doneDay(d));
+    const next = PLAN.findIndex((d, k) => !session.completed.has(k) && !doneDay(d));
     const days = PLAN.filter(doneDay).length;
     const total = PLAN.reduce((n, d) => n + d.steps.length, 0);
     const read = PLAN.reduce((n, d) => n + d.steps.filter((i) => seen.has(STEPS[i].id)).length, 0);
@@ -1497,26 +1677,37 @@
       const day = PLAN[journey.nextDay];
       const remaining = day.steps.filter((i) => !seen.has(STEPS[i].id)).map((i) => STEPS[i].id);
       const range = JOURNEY.planRange(remaining, STEPS);
-      if (range) html += `<button type="button" class="journey-position" data-journey-day="${range.start}"><span><b>Next plan day · ${journey.nextDay + 1}</b><small>${esc(day.title)}</small></span><span>Continue</span></button>`;
-    } else html += '<p class="plan-sub">You have read every day in the plan.</p>';
+      if (range) html += `<button type="button" class="journey-position" data-journey-day="${journey.nextDay}"><span><b>Next plan day · ${journey.nextDay + 1}</b><small>${esc(day.title)}</small></span><span>Continue</span></button>`;
+    } else html += '<p class="plan-sub">Every day is finished or fully visited. Choose a day to revisit below.</p>';
     html += '</section>';
     html += list.length ? savedHTML : '';
     html += `<div class="plan-head"><p class="plan-k">Reading plan</p><h3>30 days through the Gospels</h3>
-      <p class="plan-sub">About three scenes a day, at your own pace. A day is ticked once you have scrolled through its scenes.</p>
+      <p class="plan-sub">Read or listen at your own pace. Visited markers show where you have been; mark a day finished yourself at its end.</p>
+      <p class="plan-count">${session.completed.size} days marked finished${session.day == null ? '' : ` · Reading day ${session.day + 1} <button type="button" data-day-leave>Leave this day</button>`}</p>
       <div class="plan-bar" aria-hidden="true"><i style="width:${(100 * read / total).toFixed(1)}%"></i></div>
-      <p class="plan-count">${days} of ${PLAN.length} days · ${read} of ${total} scenes</p>`;
+      <p class="plan-count">${days} of ${PLAN.length} days visited · ${read} of ${total} scenes visited</p>`;
     html += next >= 0
-      ? `<button type="button" class="plan-go" data-i="${startOf(PLAN[next])}"><span class="plan-go-k">${read ? 'Continue' : 'Start'} · Day ${next + 1}</span><span class="plan-go-t">${esc(PLAN[next].title)}</span><small>${esc(sub(PLAN[next]))}</small></button>`
-      : '<p class="plan-done">You have read the whole story. Well done.</p>';
+      ? `<button type="button" class="plan-go" data-plan-read="${next}"><span class="plan-go-k">${read ? 'Continue' : 'Start'} · Day ${next + 1}</span><span class="plan-go-t">${esc(PLAN[next].title)}</span><small>${esc(sub(PLAN[next]))}</small></button>`
+      : '<p class="plan-done">Every day is finished or fully visited. Revisit a day, follow one Gospel, or return to your saved discoveries.</p>';
+    if (next >= 0) html += `<button type="button" class="plan-preview-link" data-plan-preview="${next}">Preview this day</button>`;
     html += '</div><ol class="plan-days">' + PLAN.map((d, k) => {
-      const dn = doneDay(d);
-      return `<li class="${dn ? 'done' : ''}${k === next ? ' next' : ''}"><button type="button" data-i="${startOf(d)}"><span class="d-num">${dn ? '✓' : k + 1}</span><span class="d-t">${esc(d.title)}<small>${esc(sub(d))}</small></span></button></li>`;
+      const dn = session.completed.has(k) || doneDay(d);
+      const visited = d.steps.filter((i) => seen.has(STEPS[i].id)).length;
+      return `<li class="${dn ? 'done' : ''}${k === next ? ' next' : ''}"><details class="plan-day" id="plan-day-${k}">
+        <summary><span class="d-num">${dn ? '✓' : k + 1}</span><span class="d-t">${esc(d.title)}<small>${session.completed.has(k) ? 'Finished · ' : ''}${d.steps.length} scenes · ${visited} visited</small></span><span class="plan-day-toggle" aria-hidden="true">+</span></summary>
+        <div class="plan-day-body"><p class="plan-sub">Day ${k + 1} · Read these scenes at your own pace. Open any scene, or ${dn ? 'revisit the day' : 'continue with the first scene you have not visited'}.</p>
+        <ul class="plan-day-scenes">${d.steps.map((i) => `<li><button type="button" data-i="${i}"><span>${esc(stepLabel(STEPS[i]))}</span>${STEPS[i].ref ? `<small>${esc(STEPS[i].ref[0])}</small>` : ''}${seen.has(STEPS[i].id) ? '<small class="plan-visited">Visited</small>' : ''}</button></li>`).join('')}</ul>
+        <div class="day-actions"><button type="button" class="plan-day-read" data-plan-read="${k}">${dn ? 'Read again' : visited ? 'Continue reading' : 'Start reading'}</button><button type="button" class="plan-day-listen" data-plan-listen="${k}">Listen to this day</button></div>${session.completed.has(k) ? '<p class="plan-sub">Marked finished by you.</p>' : ''}</div></details></li>`;
     }).join('') + '</ol>';
+    const journal = JOURNAL.list(STEPS);
+    const reflections = journal.notes.map(n => STEPS.find(s => s.id === n.scene));
+    if (reflections.length) html += `<section class="plan-reflections" aria-labelledby="plan-reflections-title"><h3 class="plan-h" id="plan-reflections-title">Your reflections</h3><p class="plan-sub">Return to the thoughts you saved on this device.</p><ul class="saved-list">${reflections.map(st => `<li><button type="button" data-reflection-open="${st.id}">${esc(stepLabel(st))}${st.ref ? `<small>${esc(st.ref[0])}</small>` : ''}</button></li>`).join('')}</ul></section>`;
+    html += `<section class="journal-tools" aria-labelledby="journal-export-title"><h3 class="plan-h" id="journal-export-title">Keep your discoveries</h3><p class="plan-sub">Download your saved reflections and scenes. Export before clearing site data or moving to another device.</p><div class="day-actions"><button type="button" data-journal-export="markdown"${!reflections.length && !saved.size ? ' disabled' : ''}>Download readable notes</button><button type="button" data-journal-export="json"${!reflections.length && !saved.size ? ' disabled' : ''}>Download JSON backup</button>${reflections.length ? '<button type="button" data-journal-clear>Clear saved reflections</button>' : ''}</div>${journal.available ? '' : '<p role="status">Device storage is unavailable. Some saved reflections may not be shown.</p>'}</section>`;
     if (!list.length) html += savedHTML;
     if ('serviceWorker' in navigator && 'caches' in window) {
       let when = null;
       try { when = localStorage.getItem('the-way:offline-text'); } catch (err) { /* ignore */ }
-      html += `<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">Save the text of all four Gospels and their study notes to this phone, so every passage opens without a signal (a few megabytes). Map areas you have viewed are kept as well. Listening needs a connection.</p>
+      html += `<h3 class="plan-h">Offline</h3><p class="plan-sub plan-off-sub">Save the text of all four Gospels, Acts 1–2, and their study notes on this device (a few megabytes). Download while connected, then reopen the atlas without a signal. Only map areas and 3D models you have already viewed are kept; other areas need a connection. Audio is streamed and is not included in this download.</p>
         <button type="button" class="plan-offline"${when ? ' data-done="1"' : ''}${savingOffline ? ' disabled' : ''}>${offlineMessage || (when ? 'Saved for offline ✓ · Save again' : 'Save the Gospels for offline')}</button>${savingOffline ? '<button type="button" class="plan-cancel plan-reset">Cancel download</button>' : ''}`;
     }
     html += `<p class="plan-note">Your progress and saved scenes stay on this device.</p>${read || saved.size ? '<button type="button" class="plan-reset">Reset reading progress</button>' : ''}`;
@@ -1601,12 +1792,36 @@
     }
   }
   planBody.addEventListener('click', (ev) => {
+    const readDay = ev.target.closest('[data-plan-read]');
+    if (readDay) { startReadingDay(+readDay.dataset.planRead); return; }
+    const listenDay = ev.target.closest('[data-plan-listen]');
+    if (listenDay) { startReadingDay(+listenDay.dataset.planListen, true); return; }
+    const download = ev.target.closest('[data-journal-export]');
+    if (download) { downloadDiscoveries(download.dataset.journalExport); return; }
+    const clearNotes = ev.target.closest('[data-journal-clear]');
+    if (clearNotes) {
+      if (!clearReflectionsArmed) { clearReflectionsArmed = true; clearNotes.textContent = 'Tap again to permanently clear saved reflections'; return; }
+      const ok = JOURNAL.clear(STEPS); renderPlan(); showToast(ok ? 'Saved reflections cleared.' : 'Some reflections could not be cleared. Device storage is unavailable.'); return;
+    }
+    const preview = ev.target.closest('[data-plan-preview]');
+    if (preview) {
+      const detail = document.getElementById('plan-day-' + preview.dataset.planPreview);
+      if (detail) {
+        detail.open = true;
+        detail.querySelector('summary').focus({ preventScroll: true });
+        const headingBottom = toc.querySelector('.toc-top').getBoundingClientRect().bottom;
+        toc.scrollTop += detail.getBoundingClientRect().top - headingBottom - 12;
+      }
+      return;
+    }
+    const reflection = ev.target.closest('[data-reflection-open]');
+    if (reflection) { toc.close(); openDeeper(reflection.dataset.reflectionOpen, 'ask'); deepOpener = document.getElementById('chapter-btn'); return; }
     const read = ev.target.closest('[data-journey-read]');
     if (read) { goTo(+read.dataset.journeyRead); return; }
     if (ev.target.closest('[data-journey-listen]')) { const bookmark = LISTEN.read(STEPS); if (bookmark) resumeListening(bookmark); return; }
     if (ev.target.closest('[data-journey-forget]')) { LISTEN.clear(); renderPlan(); offerResume(); return; }
     const day = ev.target.closest('[data-journey-day]');
-    if (day) { goTo(+day.dataset.journeyDay); return; }
+    if (day) { startReadingDay(+day.dataset.journeyDay); return; }
     if (ev.target.closest('.plan-cancel')) { cancelOffline(); return; }
     const off = ev.target.closest('.plan-offline');
     if (off) { saveOffline(off); return; }
@@ -1615,7 +1830,7 @@
     const rs = ev.target.closest('.plan-reset');
     if (rs) {
       if (!resetArmed) { resetArmed = true; rs.textContent = 'Tap again to clear your progress'; return; }
-      seen.clear(); saveSet('the-way:seen', seen); renderPlan(); return;
+      seen.clear(); saveSet('the-way:seen', seen); session.clearCompleted(); session.leaveDay(); updateSceneNav(); renderPlan(); return;
     }
     const b = ev.target.closest('[data-i]');
     if (b) goTo(+b.dataset.i);
@@ -1774,11 +1989,19 @@
     if (!notes) notesLoad?.abort();
     ptText.setAttribute('aria-selected', notes ? 'false' : 'true');
     ptNotes.setAttribute('aria-selected', notes ? 'true' : 'false');
+    ptText.tabIndex = notes ? -1 : 0; ptNotes.tabIndex = notes ? 0 : -1;
     pBody.hidden = notes; pNotes.hidden = !notes;
     if (notes) { pNotes.scrollTop = 0; showNotes(); }
   }
   ptText.addEventListener('click', () => showPassageTab('text'));
   ptNotes.addEventListener('click', () => showPassageTab('notes'));
+  ptNotes.tabIndex = -1;
+  [ptText, ptNotes].forEach(tab => tab.addEventListener('keydown', ev => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) return;
+    ev.preventDefault();
+    const notes = ev.key === 'End' || ev.key !== 'Home' && tab === ptText;
+    showPassageTab(notes ? 'notes' : 'text'); (notes ? ptNotes : ptText).focus();
+  }));
   pNotes.addEventListener('click', ev => { if (ev.target.closest('.notes-retry')) showNotes(); });
   // opts.title replaces the heading; opts.focus marks the verses that matter
   // when a passage is shown with the verses around it.
@@ -2034,6 +2257,7 @@
     if (pr && pr.catch) pr.catch(() => {});
   }
   let tour = null, tourToken = 0, tourDwell = 0, glideTouch = false;
+  const playback = window.WAY_PLAYER.create(STEPS);
   let tourLoad = null;
   let listeningWriteAt = 0;
   function saveListening(force = false) {
@@ -2051,6 +2275,7 @@
     const bookmark = { v: 1, scene: STEPS[i].id, end: STEPS[tourEnd].id, follow: follow || null,
       ref: i === tour.i ? tour.label || '' : tourRef(STEPS[i]) || '',
       settings: { reader: tour.reader || TS.reader || '', rate: +TS.rate, len: TS.len === 'key' ? 'key' : 'full' }, segment };
+    if (playback.scopeIds) bookmark.scope = playback.scopeIds;
     LISTEN.write(bookmark, STEPS);
     listeningWriteAt = now;
   }
@@ -2058,13 +2283,13 @@
     Object.assign(TS, { how: 'listen', len: bookmark.settings.len, reader: bookmark.settings.reader, rate: bookmark.settings.rate, where: 'here', sleep: '0' });
     saveTS();
     setFollow(bookmark.follow);
-    startTourAt(STEPS.findIndex(s => s.id === bookmark.scene), STEPS.findIndex(s => s.id === bookmark.end), bookmark);
+    startTourAt(STEPS.findIndex(s => s.id === bookmark.scene), STEPS.findIndex(s => s.id === bookmark.end), bookmark, bookmark.scope?.map(id => STEPS.findIndex(s => s.id === id)));
   }
   window.addEventListener('pagehide', () => saveListening(true));
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveListening(true); });
   window.addEventListener('touchstart', () => { glideTouch = true; }, { passive: true });
   const tourNext = (i) => {
-    const n = follow ? followList.find((x) => x > i) : (i + 1 < N ? i + 1 : null);
+    const n = playback.next(i, follow ? followList : null);
     return n == null || n > tourEnd ? -1 : n;
   };
   // Keep the screen awake during a silent tour (it has no sound to keep going).
@@ -2085,6 +2310,7 @@
   // Scroll smoothly to a scene, so the map flies there; jump if it is far away
   // or the screen is off.
   function glideTo(i) {
+    if (readerMode) { session.visit(i); renderReadingScene(); noteStep(i); window.scrollTo({ top: 0, behavior: 'instant' }); return Promise.resolve(); }
     return new Promise((res) => {
       measure();
       const y0 = window.scrollY, y1 = tops[i] + 2;
@@ -2223,19 +2449,22 @@
     tourDwell = setTimeout(() => { if (token === tourToken && tour && tour.playing) tourPlay(n); }, 900);
   }
   function endTour(finished) {
+    const selection = playback.scoped || tourEnd < N - 1;
     saveListening(true);
     tourToken++;
     tourLoad?.abort();
     clearTimeout(tourDwell);
     tourEl.pause();
     tour = null;
+    if ('mediaSession' in navigator && navigator.mediaSession.setPositionState) { try { navigator.mediaSession.setPositionState(); } catch (_) {} }
     if (finished) LISTEN.clear();
     setTourPlaying(false);
     if (!OG) offerResume();
     if (finished) {
-      tTitle.textContent = 'The end of the story';
+      tTitle.textContent = selection ? 'The end of your selection' : 'The end of the story';
       tSub.textContent = 'Thank you for listening.';
       setTimeout(() => { if (!tour) { tourBar.hidden = true; document.documentElement.classList.remove('touring'); queueDeclutter(); } }, 5000);
+      if (selection && session.day != null && tourEnd >= session.scope().at(-1)) showDayFinish();
     } else {
       tourBar.hidden = true;
       document.documentElement.classList.remove('touring');
@@ -2271,11 +2500,14 @@
   tourEl.addEventListener('play', () => { if (tour && tourEl.dataset.kind === 'tour') setTourPlaying(true); });
   tourEl.addEventListener('seeked', () => saveListening(true));
   const groupEnd = (i) => { const g = groups.find((gg) => gg.steps.includes(i)); return g ? g.steps[g.steps.length - 1] : N - 1; };
-  function startTourAt(i, end, bookmark) {
+  function startTourAt(i, end, bookmark, scope = null) {
+    let bound = end != null ? end : N - 1;
+    if (TS.sleep === 'chapter') bound = Math.min(bound, groupEnd(Math.max(1, i)));
+    const selection = playback.configure({ start: Math.max(1, i), end: bound, scope, allowed: follow ? followList : null });
+    if (!selection) { showToast('No scenes in this selection are told in the selected Gospel.'); return; }
     rememberJourneyMode('listening');
-    const from = Math.max(1, i);
-    tourEnd = end != null ? end : N - 1;
-    if (TS.sleep === 'chapter') tourEnd = Math.min(tourEnd, groupEnd(from));
+    const from = selection.start;
+    tourEnd = selection.end;
     sleepAt = /^\d+$/.test(TS.sleep) && +TS.sleep > 0 ? Date.now() + (+TS.sleep) * 60000 : 0;
     if (TS.how !== 'silent') unlockTour();
     if (exploring) closeExplore();
@@ -2299,11 +2531,13 @@
     const r = Math.round(progress());
     const here = r >= 1 ? groups.find((g) => g.steps.includes(r)) : null;
     tsWhere.innerHTML = '<option value="start">The whole story, from the beginning</option>'
+      + (tour && playback.scoped ? '<option value="selection">Keep this listening selection</option>' : '')
       + (r >= 1 ? `<option value="here">From here: ${esc(stepLabel(STEPS[r]))}</option>` : '')
       + groups.filter((g) => g.num).map((g) => `<option value="g:${g.num}">Only ${esc(g.num + ' · ' + g.title)}</option>`).join('');
     const want = TS.where === 'here' && r < 1 ? 'start' : TS.where;
     tsWhere.value = [...tsWhere.options].some((o) => o.value === want) ? want : (here && tour ? 'here' : 'start');
     if (tour && r >= 1) tsWhere.value = 'here';
+    if (tour && playback.scoped) tsWhere.value = 'selection';
     ['how', 'len', 'rate', 'pace', 'sleep'].forEach((k) => { const f = tsForm.elements[k]; if (f) f.value = String(TS[k]); });
     tsForm.dataset.how = TS.how;
     document.getElementById('ts-start').querySelector('span').textContent = tour ? 'Play with these settings' : 'Play';
@@ -2322,6 +2556,10 @@
     saveTS();
     const r = Math.round(progress());
     let start = 1, end = null;
+    if (TS.where === 'selection' && playback.scopeIds) {
+      const scope = playback.scopeIds.map(id => STEPS.findIndex(s => s.id === id));
+      startTourAt(tour ? tour.i : scope[0], scope.at(-1), null, scope); return;
+    }
     if (TS.where === 'here') start = Math.max(1, r);
     else if (TS.where.startsWith('g:')) { const g = groups.find((gg) => gg.num === TS.where.slice(2)); if (g) { start = g.start; end = g.steps[g.steps.length - 1]; } }
     startTourAt(start, end);
@@ -2334,8 +2572,8 @@
     if (!tour) return;
     if (tour.playing) { tourPause(); return; }
     const r = Math.round(progress());
-    if (tour.ended || r !== tour.i) { startTourAt(r); return; }
-    if (tour.resumeBookmark && !tour.segs.length) { startTourAt(tour.i, tourEnd, tour.resumeBookmark); return; }
+    if (tour.ended || r !== tour.i) { const scope = playback.scopeIds?.map(id => STEPS.findIndex(s => s.id === id)); startTourAt(r, scope?.includes(r) ? tourEnd : null, null, scope?.includes(r) ? scope : null); return; }
+    if (tour.resumeBookmark && !tour.segs.length) { startTourAt(tour.i, tourEnd, tour.resumeBookmark, playback.scopeIds?.map(id => STEPS.findIndex(s => s.id === id))); return; }
     setTourPlaying(true);
     if (tour.loading) return;
     if (tourEl.dataset.kind === 'done') sceneDone();
@@ -2354,6 +2592,13 @@
     if (TS.how !== 'silent') unlockTour();
     tourPlay(n);
   });
+  document.getElementById('t-prev').addEventListener('click', () => {
+    if (!tour) return;
+    const previous = playback.previous(tour.i, follow ? followList : null);
+    if (previous < 0) return;
+    if (TS.how !== 'silent') unlockTour();
+    tourPlay(previous);
+  });
   document.getElementById('t-x').addEventListener('click', () => endTour(false));
   document.addEventListener('click', (ev) => {
     const s = ev.target.closest('[data-tour-start]');
@@ -2368,7 +2613,50 @@
     h('play', () => { if (tour && !tour.playing) tPlay.click(); else if (!tour && aSegs.length) aBtn.click(); });
     h('pause', () => { if (tour) tourPause(); else audioEl.pause(); });
     h('nexttrack', () => { if (tour) document.getElementById('t-next').click(); });
+    h('previoustrack', () => { if (tour) document.getElementById('t-prev').click(); });
+    h('seekto', details => seekPlayback(details.seekTime));
+    h('seekbackward', details => { const sg = tour?.segs[tour.k]; if (sg) seekPlayback(tourEl.currentTime - sg.start - (details.seekOffset || 10)); });
+    h('seekforward', details => { const sg = tour?.segs[tour.k]; if (sg) seekPlayback(tourEl.currentTime - sg.start + (details.seekOffset || 10)); });
   }
+
+  const positionDialog = document.getElementById('playback-position');
+  const seekInput = document.getElementById('playback-seek');
+  const clockText = value => `${Math.floor(value / 60)}:${String(Math.floor(value % 60)).padStart(2, '0')}`;
+  function seekPlayback(elapsed) {
+    if (!tour || tour.loading || tourEl.dataset.kind !== 'tour') return;
+    const absolute = window.WAY_PLAYER.seek(tour.segs[tour.k], elapsed, tourEl.duration);
+    if (absolute != null) { try { tourEl.currentTime = absolute; saveListening(true); updatePlaybackPosition(); } catch (_) {} }
+  }
+  function updatePlaybackPosition() {
+    if (!tour && !positionDialog.open) return;
+    const segment = tour && !tour.loading && tourEl.dataset.kind === 'tour' ? tour.segs[tour.k] : null;
+    const state = window.WAY_PLAYER.progress(segment, tourEl.currentTime, tourEl.duration);
+    document.getElementById('t-prev').disabled = !tour || playback.previous(tour.i, follow ? followList : null) < 0;
+    if (tour && 'mediaSession' in navigator && navigator.mediaSession.setPositionState) {
+      try {
+        if (state.seekable) navigator.mediaSession.setPositionState({ duration: state.duration, position: state.elapsed, playbackRate: +TS.rate });
+        else navigator.mediaSession.setPositionState();
+      } catch (_) { /* Not every platform supports audio position state. */ }
+    }
+    if (!positionDialog.open) return;
+    document.getElementById('playback-scene').textContent = tour ? stepLabel(STEPS[tour.i]) : 'No listening session is active.';
+    seekInput.disabled = !state.seekable;
+    if (document.activeElement !== seekInput) {
+      seekInput.max = state.duration || 1; seekInput.value = state.elapsed;
+      seekInput.setAttribute('aria-valuetext', state.seekable ? `${clockText(state.elapsed)} of ${clockText(state.duration)}` : 'Seeking unavailable');
+    }
+    document.getElementById('playback-time').textContent = state.seekable ? `${clockText(state.elapsed)} / ${clockText(state.duration)}` : tour?.silent ? 'This is a silent reading session.' : 'Position is unavailable until a recording with known bounds is ready.';
+    document.getElementById('playback-toggle').disabled = !tour;
+    document.getElementById('playback-toggle').textContent = tour?.playing ? 'Pause' : 'Play';
+    document.getElementById('playback-next').disabled = !tour;
+  }
+  document.getElementById('t-title').addEventListener('click', () => { if (!positionDialog.open) positionDialog.showModal(); updatePlaybackPosition(); });
+  document.getElementById('playback-position-close').addEventListener('click', () => positionDialog.close());
+  positionDialog.addEventListener('close', () => { if (!tourBar.hidden) tTitle.focus({ preventScroll: true }); });
+  document.getElementById('playback-toggle').addEventListener('click', () => { tPlay.click(); updatePlaybackPosition(); });
+  document.getElementById('playback-next').addEventListener('click', () => document.getElementById('t-next').click());
+  seekInput.addEventListener('change', () => seekPlayback(+seekInput.value));
+  window.setInterval(updatePlaybackPosition, 1000);
 
   document.getElementById('chapter-btn').addEventListener('click', () => { if (exploring) closeExplore(); showTab('chapters'); openToc(); });
   document.getElementById('search-open').addEventListener('click', () => { if (exploring) closeExplore(); showTab('search', true); openToc(); });
@@ -2382,6 +2670,7 @@
   let exploring = false;
   let lastStoryCamera = '';
   function render() {
+    if (readerMode) { noteStep(session.scene); return; }
     if (!cams.length || exploring) { lastStoryCamera = ''; return; }
     const p = progress();
     const i = Math.min(N - 2, Math.floor(p));
@@ -2528,12 +2817,12 @@
     sceneProperty('setPaintProperty', 'temple-line', 'line-color', ['case', isTemple, rgb(mixA(wallC, C.accent, temple)), rgb(wallC)]);
     sceneProperty('setPaintProperty', 'temple-line', 'line-width', ['case', isTemple, 1.2 + temple * 1.4, 1]);
     const WHITE = [255, 255, 255];
-    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-shadow-color', rgb(mixA(C.land, BLACK, 0.45)));
-    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-highlight-color', rgb(mixA(C.land, WHITE, 0.3)));
-    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-accent-color', rgb(mixA(C.land, BLACK, 0.25)));
+    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-shadow-color', rgb(mixA(C.land, BLACK, 0.28)));
+    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-highlight-color', rgb(mixA(C.land, WHITE, 0.2)));
+    sceneProperty('setPaintProperty', 'hillshade', 'hillshade-accent-color', rgb(mixA(C.land, BLACK, 0.17)));
     if (hasContours) {
       sceneProperty('setPaintProperty', 'contours', 'line-color', rgb(mixA(C.land, C.txt, 0.2)));
-      sceneProperty('setPaintProperty', 'contours', 'line-opacity', 0.45 + 0.35 * plan);
+      sceneProperty('setPaintProperty', 'contours', 'line-opacity', 0.28 + 0.42 * plan);
     }
     sceneProperty('setPaintProperty', 'temple-line', 'line-opacity', 0);
     ['area-fill', 'ring-line', 'route'].forEach((id) => sceneProperty('setPaintProperty', id, id === 'area-fill' ? 'fill-color' : 'line-color', rgb(C.accent)));
@@ -2630,7 +2919,8 @@
     measure();
     computeCams();
     const hashIdx = sections.findIndex((sec) => '#' + sec.id === location.hash);
-    if (hashIdx > 0) { aim = hashIdx; window.scrollTo({ top: tops[hashIdx] + 2, behavior: 'instant' }); }
+    if (readerMode) { if (hashIdx > 0) session.visit(hashIdx); renderReadingScene(); }
+    else if (hashIdx > 0) { aim = hashIdx; window.scrollTo({ top: tops[hashIdx] + 2, behavior: 'instant' }); }
     else if (!OG) offerResume();
     render();
     document.body.classList.add('ready');
@@ -2799,8 +3089,41 @@
   document.getElementById('key-close').addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', (ev) => { if (ev.target === dlg) dlg.close(); });
 
+  document.getElementById('scene-prev').addEventListener('click', () => navigateScene(-1));
+  document.getElementById('scene-next').addEventListener('click', () => navigateScene(1));
+  document.getElementById('reading-toggle').addEventListener('click', () => setReadingMode(!readerMode));
+  document.getElementById('day-finish-close').addEventListener('click', () => dayFinish.close());
+  dayFinish.addEventListener('close', () => document.getElementById('chapter-btn').focus({ preventScroll: true }));
+  document.addEventListener('keydown', ev => {
+    if (ev.defaultPrevented || ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey || exploring || tour?.playing || session.scene === 0 || document.querySelector('dialog[open]')) return;
+    if (ev.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+    if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') { ev.preventDefault(); navigateScene(ev.key === 'ArrowRight' ? 1 : -1); }
+  });
+  document.addEventListener('click', ev => {
+    const reading = ev.target.closest('[data-reading-start]');
+    if (reading) { ev.preventDefault(); if (toc.open) toc.close(); setReadingMode(true); return; }
+    const leave = ev.target.closest('[data-day-leave]');
+    if (ev.target.closest('[data-day-pause]')) { dayFinish.close(); return; }
+    if (leave) { session.leaveDay(); updateSceneNav(); if (dayFinish.open) dayFinish.close(); if (toc.open) renderPlan(); return; }
+    const complete = ev.target.closest('[data-day-complete]');
+    if (complete) { const result = session.finishDay(); complete.disabled = true; complete.textContent = 'Day finished'; document.getElementById('day-finish-status').textContent = result.saved ? 'Day marked finished on this device.' : 'Day finished for this visit. Device storage is unavailable, so it could not be saved.'; return; }
+    const reflect = ev.target.closest('[data-day-reflect]');
+    if (reflect) { dayFinish.close(); openDeeper(reflect.dataset.dayReflect, 'ask'); deepOpener = document.getElementById('chapter-btn'); return; }
+    const next = ev.target.closest('[data-day-next]');
+    if (next) { dayFinish.close(); showTab('plan'); openToc(); const detail = document.getElementById('plan-day-' + next.dataset.dayNext); detail.open = true; detail.querySelector('summary').focus({ preventScroll: true }); toc.scrollTop += detail.getBoundingClientRect().top - toc.querySelector('.toc-top').getBoundingClientRect().bottom - 12; return; }
+    const discover = ev.target.closest('[data-discover]');
+    if (discover) { if (dayFinish.open) dayFinish.close(); showTab(discover.dataset.discover); openToc(); }
+  });
+  if (session.mode === 'reading' && !OG) {
+    const hash = sections.findIndex(s => '#' + s.id === location.hash);
+    let last = 1; try { last = Math.max(1, STEPS.findIndex(s => s.id === localStorage.getItem('the-way:last'))); } catch (_) {}
+    session.visit(hash > 0 ? hash : last);
+    if (session.day != null && !session.scope().includes(session.scene)) session.leaveDay();
+    setReadingMode(true, session.scene);
+  }
+
   // Offline cache and Add to Home Screen support.
-  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  if ('serviceWorker' in navigator && window.isSecureContext) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { /* optional */ }); });
   }
 })();
